@@ -194,7 +194,16 @@ function ProductPage() {
                     <span className='text-xl font-bold'>{product.cuaHang.tenCH}</span>
                     <div className='flex gap-2 !mt-3'>
                         <button className='cursor-pointer flex items-center text-lg gap-2 border-1 border-emerald-600 text-emerald-600 !py-1 !px-2 rounded-lg hover:bg-gray-50'><HiOutlineChatBubbleLeftRight/>Chat Ngay</button>
-                        <button className='cursor-pointer flex items-center text-lg gap-2 border-1 border-emerald-600 text-emerald-600 !py-1 !px-2 rounded-lg hover:bg-gray-50'><CiShop/>Xem Shop</button>
+                        <button 
+                        className='cursor-pointer flex items-center text-lg gap-2 border-1 border-emerald-600 text-emerald-600 !py-1 !px-2 rounded-lg hover:bg-gray-50'
+                        onClick={() => {
+                            const nameShop = product.cuaHang.tenCH.replace(/\s+/g, '-');
+                            const idShop = product.cuaHang._id;
+                            navigate(`/shop/${nameShop}`, {
+                                state: { id: idShop },
+                            });
+                        }}
+                        ><CiShop/>Xem Shop</button>
                     </div>
                 </div>
                 <span className='flex flex-col gap-2'>
@@ -258,10 +267,10 @@ function ProductPage() {
             </div>
             <div className='!mt-10 !mb-2 text-center border-b-2 border-emerald-600 text-emerald-600 font-bold text-xl'>CÓ THỂ BẠN CŨNG THÍCH</div>
             <div className="grid grid-cols-5 gap-4 justify-center">
-                    {sanPhamGHienTai.map((product) => (
-                        <ProductCard key={product.id} {...product} />
-                    ))}
-                </div>
+                {sanPhamGHienTai.map((product) => (
+                    <ProductCard key={product.id} {...product} />
+                ))}
+            </div>
             {sanPhamGIndex + soSanPhamGMoiSlide < products2.length && (
                 <button className="cursor-pointer text-xl bg-emerald-600/50 text-white !py-2 !px-5 rounded-xl mx-auto block mt-5" onClick={xemThemSanPhamG}>
                     Xem thêm

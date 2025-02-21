@@ -33,7 +33,7 @@ function ProductCard(props) {
             }}
             >
             <div className='relative'>
-                {discount && (
+                {discount > 0 && (
                 <div className="discount-badge bg-red-500 text-white text-sm font-bold !px-3 !py-1 rounded-tr-xl absolute top-0 right-0">
                     -{discount}%
                 </div>
@@ -55,8 +55,20 @@ function ProductCard(props) {
 
             <div className='!mx-2 flex items-center gap-2 !mt-2 justify-between'>
                 <div className="price-info flex flex-col mt-1">
-                    <span className="old-price text-gray-400 line-through text-xs">{oldPrice.toLocaleString()}đ/Kg</span>
-                    <span className="new-price text-red-500 font-bold">{newPrice.toLocaleString()}đ/Kg</span>
+                    {discount > 0 ? (
+                        <>
+                            <span className="old-price text-gray-400 line-through text-xs">
+                                {oldPrice.toLocaleString()}đ/Kg
+                            </span>
+                            <span className="new-price text-red-500 font-bold">
+                                {newPrice.toLocaleString()}đ/Kg
+                            </span>
+                        </>
+                    ) : (
+                        <span className="old-price text-red-500 font-bold">
+                            {oldPrice.toLocaleString()}đ/Kg
+                        </span>
+                    )}
                 </div>
 
                 <button className="add-to-cart bg-emerald-500 text-white flex items-center justify-center !px-2 !py-2 rounded-lg font-bold w-auto text-sm">
