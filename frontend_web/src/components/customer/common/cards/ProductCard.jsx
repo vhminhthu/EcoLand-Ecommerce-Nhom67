@@ -24,7 +24,7 @@ function ProductCard(props) {
 
     return (
         <div 
-            className="cursor-pointer product-card bg-white rounded-xl shadow-md p-3 w-auto border-1 border-emerald-600"
+            className="cursor-pointer product-card bg-white rounded-xl shadow-md w-auto border-1 border-emerald-600"
             onClick={() => {
                 const nameProduct = title.replace(/\s+/g, '-');
                 navigate(`/${nameProduct}`, {
@@ -59,8 +59,8 @@ function ProductCard(props) {
                     <span className="new-price text-red-500 font-bold">{newPrice.toLocaleString()}đ/Kg</span>
                 </div>
 
-                <button className="add-to-cart bg-emerald-500 text-white flex items-center justify-center gap-1 !px-2 !py-2 rounded-lg font-bold w-auto text-sm">
-                    <BiBasket/>Thêm vào giỏ
+                <button className="add-to-cart bg-emerald-500 text-white flex items-center justify-center !px-2 !py-2 rounded-lg font-bold w-auto text-sm">
+                    Thêm vào giỏ
                 </button>
             </div>
 

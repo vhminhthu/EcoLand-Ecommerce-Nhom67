@@ -27,7 +27,7 @@ function Header({ title }) {
                     </div>
                     
                     <div className="bg-slate-100 rounded-lg flex items-center justify-center w-12 h-12">
-                        <img src="https://via.placeholder.com/40" alt="profile" className="rounded-full w-10 h-10"/>
+                        <img src="https://images.unsplash.com/photo-1417325384643-aac51acc9e5d" alt="profile" className="rounded-full w-10 h-10"/>
                     </div>
                     
                     <p className="flex items-center h-12 font-medium text-base">Tên người dùng</p>
