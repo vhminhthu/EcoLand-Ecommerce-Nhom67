@@ -151,7 +151,7 @@ function HomePage() {
                 </div>
             </div>
 
-            <div className="!my-8 min-w-7xl">
+            <div className="!my-8">
                 <div className="!mb-3 !py-2 !px-5 w-full flex items-center justify-between border-emerald-600 border-b-2">    
                     <h1 className="text-emerald-600 font-bold text-xl !m-auto">GỢI Ý HÔM NAY</h1>
                 </div>                

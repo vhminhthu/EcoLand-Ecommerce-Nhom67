@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { BiStoreAlt, BiBasket  } from "react-icons/bi";
+import { BiStoreAlt } from "react-icons/bi";
 import { FaStar } from "react-icons/fa6";
 import { HiOutlineLocationMarker } from "react-icons/hi";
 import { useNavigate } from 'react-router-dom';

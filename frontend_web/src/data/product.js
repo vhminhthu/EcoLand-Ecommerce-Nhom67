@@ -1,4 +1,4 @@
-const product = {
+export const product = {
     _id: "65a123456789abcd12345678",
     tenSP: "Rau Xà Lách Nhà Trồng",
     moTaSP: "Rau xà lách tươi, trồng tại nhà không hóa chất.",
@@ -54,4 +54,187 @@ const product = {
     ]
 };
 
-export default product;
+
+export const Reviews = [
+    {
+        id: "1",
+        avatar: "https://i.pravatar.cc/40?img=1", 
+        username: "Nguyễn Văn A", 
+        rating: 5, 
+        date: "2024-01-08 09:58", 
+        category: "1kg", 
+        content: "Sản phẩm rất tốt, đóng gói cẩn thận!"
+    },
+    {
+        id: "2",
+        avatar: "https://i.pravatar.cc/40?img=2", 
+        username: "Trần Thị B", 
+        rating: 4, 
+        date: "2024-02-15 14:23", 
+        category: "500g", 
+        content: "Giao hàng nhanh, sản phẩm ổn so với giá tiền."
+    },
+    {
+        id: "3",
+        avatar: "https://i.pravatar.cc/40?img=3", 
+        username: "Lê Quốc C", 
+        rating: 3, 
+        date: "2024-03-02 18:40", 
+        category: "2kg", 
+        content: "Sản phẩm khá ổn nhưng giao hàng hơi chậm."
+    },
+    {
+        id: "4",
+        avatar: "https://i.pravatar.cc/40?img=4", 
+        username: "Hoàng Minh D", 
+        rating: 2, 
+        date: "2024-04-10 11:05", 
+        category: "1kg", 
+        content: "Chất lượng sản phẩm chưa đạt mong đợi."
+    },
+    {
+        id: "5",
+        avatar: "https://i.pravatar.cc/40?img=5", 
+        username: "Phạm Thanh E", 
+        rating: 1, 
+        date: "2024-05-20 20:15", 
+        category: "500g", 
+        content: "Hàng lỗi, shop phản hồi chậm."
+    },
+    {
+        id: "6",
+        avatar: "https://i.pravatar.cc/40?img=6",
+        username: "Đặng Văn F",
+        rating: 5,
+        date: "2024-06-01 08:45",
+        category: "2kg",
+        content: "Sản phẩm chất lượng, giá cả hợp lý."
+    },
+    {
+        id: "7",
+        avatar: "https://i.pravatar.cc/40?img=7",
+        username: "Bùi Thị G",
+        rating: 4,
+        date: "2024-06-10 12:30",
+        category: "1kg",
+        content: "Sản phẩm tốt nhưng đóng gói chưa cẩn thận lắm."
+    },
+    // {
+    //     id: "8",
+    //     avatar: "https://i.pravatar.cc/40?img=8",
+    //     username: "Ngô Quốc H",
+    //     rating: 3,
+    //     date: "2024-06-15 17:55",
+    //     category: "500g",
+    //     content: "Khá ổn, nhưng giá hơi cao so với chất lượng."
+    // },
+    // {
+    //     id: "9",
+    //     avatar: "https://i.pravatar.cc/40?img=9",
+    //     username: "Hồ Minh I",
+    //     rating: 5,
+    //     date: "2024-07-02 10:10",
+    //     category: "2kg",
+    //     content: "Mình đã mua nhiều lần, chất lượng luôn ổn định."
+    // },
+    // {
+    //     id: "10",
+    //     avatar: "https://i.pravatar.cc/40?img=10",
+    //     username: "Trịnh Văn J",
+    //     rating: 2,
+    //     date: "2024-07-08 14:50",
+    //     category: "1kg",
+    //     content: "Hơi thất vọng về chất lượng sản phẩm."
+    // },
+    // {
+    //     id: "11",
+    //     avatar: "https://i.pravatar.cc/40?img=11",
+    //     username: "Lâm Thị K",
+    //     rating: 4,
+    //     date: "2024-07-12 09:35",
+    //     category: "500g",
+    //     content: "Tạm ổn, sẽ ủng hộ nếu giá giảm thêm."
+    // },
+    // {
+    //     id: "12",
+    //     avatar: "https://i.pravatar.cc/40?img=12",
+    //     username: "Dương Quốc L",
+    //     rating: 5,
+    //     date: "2024-08-01 19:20",
+    //     category: "2kg",
+    //     content: "Chất lượng tuyệt vời, giao hàng nhanh."
+    // },
+    // {
+    //     id: "13",
+    //     avatar: "https://i.pravatar.cc/40?img=13",
+    //     username: "Võ Minh M",
+    //     rating: 3,
+    //     date: "2024-08-05 16:15",
+    //     category: "1kg",
+    //     content: "Ổn nhưng đóng gói chưa kỹ."
+    // },
+    // {
+    //     id: "14",
+    //     avatar: "https://i.pravatar.cc/40?img=14",
+    //     username: "Lê Văn N",
+    //     rating: 4,
+    //     date: "2024-08-12 20:40",
+    //     category: "500g",
+    //     content: "Hàng đẹp, chất lượng tương xứng với giá."
+    // },
+    // {
+    //     id: "15",
+    //     avatar: "https://i.pravatar.cc/40?img=15",
+    //     username: "Nguyễn Thị O",
+    //     rating: 5,
+    //     date: "2024-08-18 13:55",
+    //     category: "2kg",
+    //     content: "Rất hài lòng, sẽ tiếp tục mua lần sau."
+    // },
+    // {
+    //     id: "16",
+    //     avatar: "https://i.pravatar.cc/40?img=16",
+    //     username: "Phạm Quốc P",
+    //     rating: 2,
+    //     date: "2024-08-22 11:25",
+    //     category: "1kg",
+    //     content: "Sản phẩm chưa đúng mô tả, cần cải thiện."
+    // },
+    // {
+    //     id: "17",
+    //     avatar: "https://i.pravatar.cc/40?img=17",
+    //     username: "Bùi Thị Q",
+    //     rating: 3,
+    //     date: "2024-09-05 18:00",
+    //     category: "500g",
+    //     content: "Chất lượng tạm ổn nhưng cần cải tiến đóng gói."
+    // },
+    // {
+    //     id: "18",
+    //     avatar: "https://i.pravatar.cc/40?img=18",
+    //     username: "Đặng Minh R",
+    //     rating: 4,
+    //     date: "2024-09-10 15:45",
+    //     category: "2kg",
+    //     content: "Sản phẩm tốt, đóng gói chắc chắn."
+    // },
+    // {
+    //     id: "19",
+    //     avatar: "https://i.pravatar.cc/40?img=19",
+    //     username: "Hoàng Văn S",
+    //     rating: 5,
+    //     date: "2024-09-15 08:30",
+    //     category: "1kg",
+    //     content: "Hàng đúng như mô tả, rất hài lòng."
+    // },
+    // {
+    //     id: "20",
+    //     avatar: "https://i.pravatar.cc/40?img=20",
+    //     username: "Ngô Thị T",
+    //     rating: 1,
+    //     date: "2024-09-20 10:10",
+    //     category: "500g",
+    //     content: "Không như mong đợi, sẽ không mua lại."
+    // }
+];
+
