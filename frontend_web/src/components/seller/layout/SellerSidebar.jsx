@@ -32,7 +32,7 @@ function SellerSidebar() {
     ];
 
     return (
-        <div className='seller-sidebar bg-white h-fit shadow-xl !m-6 rounded-xl w-1/8'>
+        <div className='seller-sidebar bg-white h-fit shadow-xl !m-6 rounded-xl min-w-fit'>
             <div className='logo-seller h-40'></div>
 
             <ul>

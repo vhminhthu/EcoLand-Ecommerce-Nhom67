@@ -8,9 +8,9 @@ const MainLayout = ({ children }) => {
         { id: 2, message: 'Cập nhật dịch vụ thành công.' },
     ]; 
     return (
-        <div className='main-layout'>
+        <div className='main-layout flex flex-col overflow-x-auto min-h-screen'>
             <Header thongBaoList={thongBaoList}/>
-            <div className="content !mx-16 !my-8 ">{children}</div>
+            <div className="content !mx-auto min-w-7xl max-w-7xl !my-8">{children}</div>
             <Footer />
         </div>
     );

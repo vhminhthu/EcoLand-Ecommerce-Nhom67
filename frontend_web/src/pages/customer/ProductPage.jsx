@@ -41,17 +41,17 @@ function ProductPage() {
                 >{product.tenSP}</span>
 
             <div className='flex gap-10 !mt-5'>
-                <div className='w-1/3 flex gap-2 items-center'>
+                <div className='w-fit flex gap-2'>
                     <div className="flex gap-2">
                         <div className="flex flex-col gap-2">
                             {product.anhSP.slice(1).map((anh, index) => (
-                                <div  key={index} className="product-image w-20 h-20 overflow-hidden cursor-pointer hover:opacity-80">
-                                    <img src={anh} alt={product.tenSP}  className="w-full h-full object-cover rounded-lg"/>
+                                <div  key={index} className="product-image w-16 h-16 overflow-hidden cursor-pointer hover:opacity-80">
+                                    <img src={anh} alt={product.tenSP}  className=" h-full object-cover rounded-lg"/>
                                 </div>
                             ))}
                         </div>
-                        <div className="product-image w-110 h-110 overflow-hidden">
-                            <img src={product.anhSP[0]} alt={product.tenSP}  className="w-full h-full object-cover rounded-xl"/>
+                        <div className="product-image w-96 h-96 overflow-hidden">
+                            <img src={product.anhSP[0]} alt={product.tenSP}  className=" h-full object-cover rounded-xl"/>
                         </div>
                     </div>
 
@@ -133,17 +133,21 @@ function ProductPage() {
                             </div>
                             <button className='cursor-pointer w-60 !py-4 bg-emerald-600 text-white text-xl rounded-xl'>Thêm vào giỏ</button>
                             <button className='cursor-pointer w-60 !py-4 bg-emerald-600 text-white text-xl rounded-xl'>Mua ngay</button>
-                            <span className='flex gap-2 items-center'>
-                                {daThich ? (
-                                <IoHeart size={30} className="text-red-400" />
-                                ) : (
-                                <IoMdHeartEmpty size={30} className="text-gray-400" />
-                                )}
-                                <span>Đã thích {product.dsYeuThich.length}</span>
-                            </span>
                         </div>
+                        <span className='flex gap-2 items-center'>
+                            {daThich ? (
+                            <IoHeart size={30} className="text-red-400" />
+                            ) : (
+                            <IoMdHeartEmpty size={30} className="text-gray-400" />
+                            )}
+                            <span>Đã thích {product.dsYeuThich.length}</span>
+                        </span>
                     </div>
-                    <div className='!mt-5 border border-emerald-600 rounded-xl !py-6 !px-8 flex items-center gap-10'>
+                    
+                </div>
+                
+            </div>
+            <div className='!mt-5 border border-emerald-600 rounded-xl !py-6 !px-8 flex items-center gap-10'>
                         <img className="w-20 h-20 object-cover rounded-full cursor-pointer hover:opacity-80" src={product.cuaHang.anhCH} alt={product.cuaHang.tenCH}  ></img>
                         <div>
                             <span className='text-xl font-bold'>{product.cuaHang.tenCH}</span>
@@ -161,11 +165,9 @@ function ProductPage() {
                             <span className='text-gray-500'>Người theo dõi <span className='text-emerald-600 !ml-5'>10</span></span>
                         </span>
                     </div>
-                </div>
-            </div>
-            <div className='!mt-10 !mb-2 w-full text-center border-b-2 border-emerald-600 text-emerald-600 font-bold text-xl'>MÔ TẢ SẢN PHẨM</div>
+            <div className='!mt-10 !mb-2 text-center border-b-2 border-emerald-600 text-emerald-600 font-bold text-xl'>MÔ TẢ SẢN PHẨM</div>
             <span className='!py-5'>{product.moTaSP}</span>
-            <div className='!mt-10 !mb-2 w-full text-center border-b-2 border-emerald-600 text-emerald-600 font-bold text-xl'>ĐÁNH GIÁ SẢN PHẨM</div>
+            <div className='!mt-10 !mb-2 text-center border-b-2 border-emerald-600 text-emerald-600 font-bold text-xl'>ĐÁNH GIÁ SẢN PHẨM</div>
             <div className='!py-5 flex flex-col items-center'>
                 <div className='flex flex-col items-center w-2/3 bg-green-100 !py-5'>
                     <span className='text-2xl'>{product.tongSoSao} trên 5</span>
@@ -197,8 +199,8 @@ function ProductPage() {
                 </div>
 
             </div>
-            <div className='!mt-10 !mb-2 w-full text-center border-b-2 border-emerald-600 text-emerald-600 font-bold text-xl'>CÁC SẢN PHẨM KHÁC CỦA SHOP</div>
-            <div className='!mt-10 !mb-2 w-full text-center border-b-2 border-emerald-600 text-emerald-600 font-bold text-xl'>CÓ THỂ BẠN CŨNG THÍCH</div>
+            <div className='!mt-10 !mb-2 text-center border-b-2 border-emerald-600 text-emerald-600 font-bold text-xl'>CÁC SẢN PHẨM KHÁC CỦA SHOP</div>
+            <div className='!mt-10 !mb-2 text-center border-b-2 border-emerald-600 text-emerald-600 font-bold text-xl'>CÓ THỂ BẠN CŨNG THÍCH</div>
         </MainLayout>
     )
 }

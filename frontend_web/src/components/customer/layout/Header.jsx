@@ -20,8 +20,8 @@ function Header({ thongBaoList }) {
         "Chỉnh sửa video",
     ];
     return (
-        <div className="header bg-emerald-600">
-            <div className="flex justify-between items-center !mx-16 !py-4">
+        <div className="header bg-emerald-600 min-w-7xl">
+            <div className="flex justify-between items-center !py-4 !mx-auto max-w-7xl">
                 <div className="flex items-center gap-3 cursor-pointer">
                     <div className="logo bg-emerald-500 w-12 h-12 rounded-full"></div>
                     <h1 className="text-emerald-500 font-bold">LOGO</h1>
@@ -118,7 +118,7 @@ function Header({ thongBaoList }) {
                     </div>
                 </div>
             </div>
-            <div className="flex gap-5 items-center !mx-16 !py-4 border-t border-emerald-500">
+            <div className="flex gap-5 items-center !mx-auto max-w-7xl !py-4 border-t border-emerald-500">
                 <div className="relative">
                     <button className="cursor-pointer flex items-center gap-3 text-white bg-emerald-500 !px-5 !py-2 rounded-xl" 
                         onMouseEnter={() => setIsOpenCategory(true)}

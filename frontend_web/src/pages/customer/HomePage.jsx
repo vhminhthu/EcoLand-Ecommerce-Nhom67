@@ -11,7 +11,7 @@ function HomePage() {
     const products = [
         {
             id: 1,
-            image: "https://example.com/image1.jpg",
+            image: "https://images.unsplash.com/photo-1533321942807-08e4008b2025?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8ZGVzJTIwbCVDMyVBOWd1bWVzfGVufDB8fDB8fHww",
             discount: 50,
             shopName: "Rau vui vẻ",
             title: "Rau xà lách nhà trồng",
@@ -23,7 +23,7 @@ function HomePage() {
         },
         {
             id: 2,
-            image: "https://example.com/image2.jpg",
+            image: "https://images.unsplash.com/photo-1558818498-28c1e002b655?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OHx8ZGVzJTIwbCVDMyVBOWd1bWVzfGVufDB8fDB8fHww",
             discount: 30,
             shopName: "Nông trại xanh",
             title: "Cà chua hữu cơ",
@@ -35,7 +35,7 @@ function HomePage() {
         },
         {
             id: 3,
-            image: "https://example.com/image3.jpg",
+            image: "https://images.unsplash.com/photo-1663262432134-93bb1e7a60ed?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NjZ8fENPVVJHRVRURSUyMHZlZ2V0YWJsZXxlbnwwfHwwfHx8MA%3D%3D",
             discount: 20,
             shopName: "Trang trại sạch",
             title: "Bí xanh sạch",
@@ -47,7 +47,7 @@ function HomePage() {
         },
         {
             id: 4,
-            image: "https://example.com/image4.jpg",
+            image: "https://images.unsplash.com/photo-1590165482129-1b8b27698780?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTh8fHZlZ2V0YWJsZXxlbnwwfHwwfHx8MA%3D%3D",
             discount: 40,
             shopName: "Farm Organic",
             title: "Khoai lang mật",
@@ -59,7 +59,7 @@ function HomePage() {
         },
         {
             id: 5,
-            image: "https://example.com/image5.jpg",
+            image: "https://images.unsplash.com/photo-1547514701-42782101795e?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8b3JhbmdlJTIwdmVnZXRhYmxlfGVufDB8fDB8fHww",
             discount: 35,
             shopName: "Green Farm",
             title: "Cam sành hữu cơ",
@@ -69,18 +69,6 @@ function HomePage() {
             reviews: 20,
             location: "Lâm Đồng",
         },
-        {
-            id: 5,
-            image: "https://example.com/image5.jpg",
-            discount: 35,
-            shopName: "Green Farm",
-            title: "Cam sành hữu cơ",
-            oldPrice: 220000,
-            newPrice: 143000,
-            rating: 4.6,
-            reviews: 20,
-            location: "Lâm Đồng",
-        }
     ];
 
     const categories = [
@@ -92,8 +80,6 @@ function HomePage() {
         { id: "6", name: "Hạt Hướng Dương", img: "https://example.com/huong-duong.jpg" },
         { id: "7", name: "Hạt Điều", img: "https://example.com/dieu.jpg" },
         { id: "8", name: "Hạt Lanh", img: "https://example.com/lanh.jpg" },
-        { id: "9", name: "Hạt Đậu Nành", img: "https://example.com/dau-nanh.jpg" },
-        { id: "10", name: "Hạt Dưa", img: "https://example.com/dua.jpg" },
     ];   
     
     const shopData = [
@@ -151,65 +137,11 @@ function HomePage() {
             rating: 4.4,
             reviews: 230,
         },
-        {
-            id: "7",
-            img: "https://via.placeholder.com/150",
-            shopName: "Cửa hàng G",
-            location: "Nha Trang",
-            followers: 430,
-            rating: 4.7,
-            reviews: 170,
-        },
-        {
-            id: "8",
-            img: "https://via.placeholder.com/150",
-            shopName: "Store H",
-            location: "Huế",
-            followers: 1020,
-            rating: 4.1,
-            reviews: 300,
-        },
-        {
-            id: "9",
-            img: "https://via.placeholder.com/150",
-            shopName: "Tiệm I",
-            location: "Đà Lạt",
-            followers: 810,
-            rating: 4.3,
-            reviews: 210,
-        },
-        {
-            id: "10",
-            img: "https://via.placeholder.com/150",
-            shopName: "Shop J",
-            location: "Hà Nội",
-            followers: 1250,
-            rating: 5.0,
-            reviews: 520,
-        },
-        {
-            id: "11",
-            img: "https://via.placeholder.com/150",
-            shopName: "Cửa hàng K",
-            location: "TP. Hồ Chí Minh",
-            followers: 950,
-            rating: 4.6,
-            reviews: 390,
-        },
-        {
-            id: "12",
-            img: "https://via.placeholder.com/150",
-            shopName: "Store L",
-            location: "Hải Phòng",
-            followers: 720,
-            rating: 4.3,
-            reviews: 240,
-        },
     ];
     
     return (
         <MainLayout>
-            <div className="bg-gray-200 ro w-full h-150 rounded-2xl relative">
+            <div className="bg-gray-200 h-150 rounded-2xl relative">
                 <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2 !px-4 !py-2 bg-emerald-600 text-white rounded-full w-fit ">
                     <button className="text-xl"><FaChevronLeft/></button>
                     <span>1/10</span>
@@ -217,9 +149,9 @@ function HomePage() {
                 </div>
             </div>
 
-            <div className="!my-8">
+            <div className="!my-8 min-w-7xl">
                 <h1 className="!mb-3 text-emerald-700 font-bold text-xl">Mua sắm theo danh mục</h1>
-                <div className="relative w-full grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-7 xl:grid-cols-9 2xl:grid-cols-10 gap-3 justify-items-center">
+                <div className="relative w-full flex gap-3 justify-center ">
                     <button className="absolute top-1/2 -translate-y-1/2 left-0.5 text-xl bg-emerald-600/50 text-white !p-2 rounded-full"><FaArrowLeft/></button>
                     {categories.map((category) => (
                         <CategoryCard key={category.id} {...category} />
@@ -228,47 +160,51 @@ function HomePage() {
                 </div>
             </div>
 
-            <div className="!my-8">
+            <div className="!my-8 min-w-7xl">
                 <div className="!mb-3 bg-emerald-600 !py-2 !px-5 flex items-center justify-between">
                     <h1 className="text-white text-2xl font-bold">TOP DEAL SIÊU RẺ</h1>
                     <div className="flex items-center text-gray-200">Xem tất cả <BiChevronRight/></div>
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4 justify-items-between">
+                <div className="relative w-full flex gap-4 justify-center">
+                    <button className="absolute top-1/2 -translate-y-1/2 left-0.5 text-xl bg-emerald-600/50 text-white !p-2 rounded-full"><FaArrowLeft/></button>
                     {products.map((product) => (
                         <ProductCard key={product.id} {...product} />
                     ))}
+                    <button className="absolute top-1/2 -translate-y-1/2 right-0.5 text-xl bg-emerald-600/50 text-white !p-2 rounded-full"><FaArrowRight /></button>
                 </div>
             </div>
 
-            <div className="!my-8">
-                <div className="!py-2 flex items-center justify-between">
+            <div className="!my-8 min-w-7xl">
+                <div className="!py-2 flex items-center justify-between w-full">
                     <h1 className="text-emerald-600 text-xl font-bold">Bán chạy nhất</h1>
                     <div className="flex items-center text-gray-500">Xem tất cả <BiChevronRight/></div>
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4 justify-items-between">
+                <div className="relative w-full flex gap-4 justify-center">
+                    <button className="absolute top-1/2 -translate-y-1/2 left-0.5 text-xl bg-emerald-600/50 text-white !p-2 rounded-full"><FaArrowLeft/></button>
                     {products.map((product) => (
                         <ProductCard key={product.id} {...product} />
                     ))}
+                    <button className="absolute top-1/2 -translate-y-1/2 right-0.5 text-xl bg-emerald-600/50 text-white !p-2 rounded-full"><FaArrowRight /></button>
                 </div>
             </div>
 
-            <div className="!my-8">
-                <div className="!py-2 flex items-center justify-between">
+            <div className="!my-8 min-w-7xl">
+                <div className="!py-2 flex items-center justify-between w-screen">
                     <h1 className="text-emerald-600 text-xl font-bold">Gian hàng phổ biến</h1>
                     <div className="flex items-center text-gray-500">Xem tất cả <BiChevronRight/></div>
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4 justify-items-between">
+                <div className="grid grid-cols-3 gap-4 justify-center">
                 {shopData.map((shop) => (
                     <ShopCard key={shop.id} {...shop} />
                 ))}
                 </div>
             </div>
 
-            <div className="!my-8">
-                <div className="!mb-3 !py-2 !px-5 flex items-center justify-between border-emerald-600 border-b-2">    
+            <div className="!my-8 min-w-7xl">
+                <div className="!mb-3 !py-2 !px-5 w-full flex items-center justify-between border-emerald-600 border-b-2">    
                     <h1 className="text-emerald-600 font-bold text-xl !m-auto">GỢI Ý HÔM NAY</h1>
                 </div>                
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4 justify-items-between">
+                <div className="flex gap-4 justify-center">
                     {products.map((product) => (
                         <ProductCard key={product.id} {...product} />
                     ))}

@@ -22,11 +22,11 @@ const MainLayout = ({ children }) => {
     const title = pageTitles[location.pathname] || 'Trang chủ';
 
     return (
-        <div className='main-seller-layout flex bg-slate-50 w-full h-screen'>
+        <div className='main-seller-layout flex bg-slate-50 overflow-x-auto'>
             <SellerSidebar/>
-            <div className='seller-content flex flex-col gap-6 !ml-0 !m-6 w-7/8'>
+            <div className='seller-content flex flex-col gap-6 !ml-0 !m-6 flex-1'>
                 <Header title={title} />
-                <div>{children}</div>
+                {children}
             </div>
         </div>
     );

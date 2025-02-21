@@ -23,9 +23,8 @@ function ProductCard(props) {
     const navigate = useNavigate();
 
     return (
-        <>
         <div 
-            className="cursor-pointer product-card bg-white rounded-xl shadow-md p-3 relative w-auto border-1 border-emerald-600"
+            className="cursor-pointer product-card bg-white rounded-xl shadow-md p-3 w-auto border-1 border-emerald-600"
             onClick={() => {
                 const nameProduct = title.replace(/\s+/g, '-');
                 navigate(`/${nameProduct}`, {
@@ -33,13 +32,15 @@ function ProductCard(props) {
                 });
             }}
             >
-            {discount && (
+            <div className='relative'>
+                {discount && (
                 <div className="discount-badge bg-red-500 text-white text-sm font-bold !px-3 !py-1 rounded-tr-xl absolute top-0 right-0">
                     -{discount}%
                 </div>
-            )}
+                )}
+            </div>
 
-            <div className="product-image w-full h-55 rounded-xl overflow-hidden !p-2 bg-amber-50">
+            <div className="product-image w-full h-55 rounded-xl overflow-hidden !p-2">
                 <img src={image} alt={title} className="w-full h-full object-cover rounded-xl bg-green-300"/>
             </div>
 
@@ -54,8 +55,8 @@ function ProductCard(props) {
 
             <div className='!mx-2 flex items-center gap-2 !mt-2 justify-between'>
                 <div className="price-info flex flex-col mt-1">
-                    <span className="old-price text-gray-400 line-through text-xs">{oldPrice}đ/Kg</span>
-                    <span className="new-price text-red-500 font-bold">{newPrice}đ/Kg</span>
+                    <span className="old-price text-gray-400 line-through text-xs">{oldPrice.toLocaleString()}đ/Kg</span>
+                    <span className="new-price text-red-500 font-bold">{newPrice.toLocaleString()}đ/Kg</span>
                 </div>
 
                 <button className="add-to-cart bg-emerald-500 text-white flex items-center justify-center gap-1 !px-2 !py-2 rounded-lg font-bold w-auto text-sm">
@@ -75,9 +76,6 @@ function ProductCard(props) {
             </div>
 
         </div>
-        </>
-
-        
     )
 }
 
