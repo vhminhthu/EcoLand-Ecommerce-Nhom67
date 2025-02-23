@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 import connectMongoDB from "./db/connectMongoDB.js";
 import cors from "cors";
+import authRoutes from "./routes/auth.route.js"
 
 dotenv.config();
 
@@ -15,6 +16,8 @@ app.use(morgan("tiny"));
 app.use(express.json({ limit: "500mb" }));
 app.use(express.urlencoded({ extended: true, limit: "500mb" }));
 app.use(cookieParser());
+
+app.use("/api/auth",authRoutes )
 
 app.get("/", (req, res) => {
     res.send("Xin chào bạn");
