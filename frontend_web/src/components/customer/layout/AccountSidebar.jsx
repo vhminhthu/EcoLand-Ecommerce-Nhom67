@@ -6,7 +6,7 @@ function AccountSidebar() {
     const location = useLocation(); // Lấy đường dẫn hiện tại
 
     return (
-        <div className="account-sidebar min-w-fit max-w-fit border-2 border-emerald-700 rounded-lg !p-4">
+        <div className="account-sidebar min-w-fit max-w-fit border-2 border-emerald-700 rounded-lg !p-4 h-fit">
             <div className="flex items-center gap-2 !mb-12">
                 <div className="flex justify-center bg-amber-100 rounded-full w-12 h-12 !mx-auto">
                     <img src="https://via.placeholder.com/150" alt="profile" className="rounded-full w-100 h-100 mx-auto" />

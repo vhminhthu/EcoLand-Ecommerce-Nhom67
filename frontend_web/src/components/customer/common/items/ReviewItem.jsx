@@ -2,17 +2,17 @@ import PropTypes from 'prop-types';
 import { FaStar, FaStarHalfAlt, FaRegStar } from "react-icons/fa";
 
 function ReviewItem(props) {
-        const {id, avatar, username, rating, date, category, content} = props;
+    const {id, avatar, username, rating, date, category, content} = props;
     
-        ReviewItem.propTypes = {
-            id: PropTypes.string,
-            avatar: PropTypes.string, 
-            username: PropTypes.string, 
-            rating: PropTypes.number, 
-            date: PropTypes.string, 
-            category: PropTypes.string, 
-            content: PropTypes.string, 
-        };
+    ReviewItem.propTypes = {
+        id: PropTypes.string,
+        avatar: PropTypes.string, 
+        username: PropTypes.string, 
+        rating: PropTypes.number, 
+        date: PropTypes.string, 
+        category: PropTypes.string, 
+        content: PropTypes.string, 
+    };
     
     return (
         <div key={id} className="border border-emerald-600 w-full h-fit flex items-center gap-5 !py-3 !px-5 rounded-xl shadow-lg">

@@ -238,3 +238,50 @@ export const Reviews = [
     // }
 ];
 
+
+export const orders = [
+    {
+        id: "order001",
+        shopName: "Nông Trại Xanh",
+        orderStatus: "Chờ giao hàng",
+        products: [
+            { name: "Gạo ST25", type: "Túi 5kg", quantity: 1, price: 250000 },
+            { name: "Đậu xanh", type: "Túi 1kg", quantity: 2, price: 50000 }
+        ],
+        totalPrice: 350000,
+        orderReceived: false
+    },
+    {
+        id: "order002",
+        shopName: "Rau Củ Quê Hương",
+        orderStatus: "Đã giao hàng",
+        products: [
+            { name: "Rau cải xanh", type: "Bó 500g", quantity: 3, price: 30000 },
+            { name: "Cà chua bi", type: "Hộp 500g", quantity: 2, price: 40000 }
+        ],
+        totalPrice: 70000,
+        orderReceived: true
+    },
+    {
+        id: "order003",
+        shopName: "Trái Cây Miền Tây",
+        orderStatus: "Chờ giao hàng",
+        products: [
+            { name: "Sầu riêng Ri6", type: "Trái 2kg", quantity: 1, price: 300000 },
+            { name: "Bưởi da xanh", type: "Trái 1.5kg", quantity: 1, price: 120000 }
+        ],
+        totalPrice: 420000,
+        orderReceived: false
+    },
+    {
+        id: "order004",
+        shopName: "Nông Sản Đà Lạt",
+        orderStatus: "Đã giao hàng",
+        products: [
+            { name: "Khoai lang mật", type: "Túi 2kg", quantity: 1, price: 80000 },
+            { name: "Dâu tây", type: "Hộp 500g", quantity: 2, price: 150000 }
+        ],
+        totalPrice: 230000,
+        orderReceived: true
+    }
+];
