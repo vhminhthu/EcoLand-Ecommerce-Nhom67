@@ -1,4 +1,4 @@
-import { Routes, Route } from 'react-router-dom';
+
 import HomePage from '../pages/customer/HomePage';
 import CartPage from '../pages/customer/CartPage';
 import PurchasePage from '../pages/customer/PurchasePage';
@@ -12,11 +12,42 @@ import PaymentPage from '../pages/customer/PaymentPage';
 import AddressPage from '../pages/customer/AddressPage';
 import PasswordPage from '../pages/customer/PasswordPage';
 import SupportPage from '../pages/customer/SupportPage';
+import Signup from '../pages/auth/Signup/Signup';
+
+
+import axios from 'axios'
+import {useQuery} from '@tanstack/react-query'
+import { Routes ,Route} from "react-router-dom";
 
 function CustomerRoutes() {
+
+    
+    const { data: authUser, isLoading } = useQuery({
+        queryKey: ['authUser'],
+        queryFn: async () => {
+          try {
+            const response = await axios.get('/api/auth/getme');
+            if (response.data.error) {
+              throw new Error(response.data.error);
+            }
+            return response.data;
+          } catch (error) {
+            if (error.response && error.response.status === 401) {
+              return null;
+            }
+            throw error;
+          }
+        },
+        retry: false,
+      });
+    
+      if (isLoading) {
+        return <div>Loading...</div>;
+      }
+
     return (
         <Routes>
-            <Route path="/" element={<HomePage />} />
+            <Route path="/" element={!authUser ? <Signup /> :<HomePage/> } />
             <Route path="/customer/notification" element={<NotificationPage />} />
             <Route path="/customer/wishlist" element={<WishlistPage />} />
             <Route path="/cart" element={<CartPage />} />
