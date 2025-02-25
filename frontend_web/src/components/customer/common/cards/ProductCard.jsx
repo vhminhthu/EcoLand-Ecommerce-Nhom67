@@ -1,23 +1,27 @@
 import PropTypes from 'prop-types';
 import { BiStoreAlt } from "react-icons/bi";
-import { FaStar } from "react-icons/fa6";
+import { FaStar } from "react-icons/fa";
 import { HiOutlineLocationMarker } from "react-icons/hi";
 import { useNavigate } from 'react-router-dom';
 
 function ProductCard(props) {
-    const {id, image, discount, shopName, title, oldPrice, newPrice, rating, reviews, location  } = props;
+    const { _id, dsAnhSP, phanLoai, tenSP, nguonGoc } = props;
 
     ProductCard.propTypes = {
-        id: PropTypes.string,
-        image: PropTypes.string, 
-        discount: PropTypes.number, 
-        shopName: PropTypes.string, 
-        title: PropTypes.string, 
-        oldPrice: PropTypes.string, 
-        newPrice: PropTypes.string, 
-        rating: PropTypes.number, 
-        reviews: PropTypes.number, 
-        location: PropTypes.string 
+        _id: PropTypes.string.isRequired,
+        dsAnhSP: PropTypes.string.isRequired, 
+        phanLoai: PropTypes.arrayOf(
+            PropTypes.shape({
+                id: PropTypes.number.isRequired,
+                tenLoai: PropTypes.string.isRequired,
+                giaLoai: PropTypes.number.isRequired,
+                donVi: PropTypes.string.isRequired,
+                khuyenMai: PropTypes.number,
+                khoHang: PropTypes.number,
+            })
+        ).isRequired,
+        tenSP: PropTypes.string.isRequired, 
+        nguonGoc: PropTypes.string.isRequired 
     };
 
     const navigate = useNavigate();
@@ -26,47 +30,50 @@ function ProductCard(props) {
         <div 
             className="cursor-pointer product-card bg-white rounded-xl shadow-md w-auto border-1 border-emerald-600"
             onClick={() => {
-                const nameProduct = title.replace(/\s+/g, '-');
+                const nameProduct = tenSP.replace(/\s+/g, '-');
                 navigate(`/${nameProduct}`, {
-                    state: { id: id },
+                    state: { id: _id },
                 });
             }}
-            >
+            key={_id}
+        >
             <div className='relative'>
-                {discount > 0 && (
-                <div className="discount-badge bg-red-500 text-white text-sm font-bold !px-3 !py-1 rounded-tr-xl absolute top-0 right-0">
-                    -{discount}%
-                </div>
+                {phanLoai && phanLoai.length > 0 && phanLoai[0].khuyenMai > 0 && (
+                    <div className="discount-badge bg-red-500 text-white text-sm font-bold !px-3 !py-1 rounded-tr-xl absolute top-0 right-0">
+                        -{phanLoai[0].khuyenMai}%
+                    </div>
                 )}
             </div>
 
             <div className="product-image w-full h-55 rounded-xl overflow-hidden !p-2">
-                <img src={image} alt={title} className="w-full h-full object-cover rounded-xl bg-green-300"/>
+                <img src={dsAnhSP} alt={tenSP} className="w-full h-full object-cover rounded-xl bg-green-300"/>
             </div>
 
             <div className="!mx-2 shop-info text-gray-500 text-sm mt-2 flex items-center gap-1">
                 <span className="icon"><BiStoreAlt/></span>
-                <span>{shopName}</span>
+                <span>Rau xanh</span>
             </div>
 
             <h2 className="!px-2 product-title font-bold !mt-1 line-clamp-2">
-                {title}
+                {tenSP}
             </h2>
 
             <div className='!mx-2 flex items-center gap-2 !mt-2 justify-between'>
                 <div className="price-info flex flex-col mt-1">
-                    {discount > 0 ? (
+                    {phanLoai && phanLoai.length > 0 && phanLoai[0].khuyenMai > 0 ? (
                         <>
                             <span className="old-price text-gray-400 line-through text-xs">
-                                {oldPrice.toLocaleString()}đ/Kg
+                                {phanLoai[0].giaLoai.toLocaleString()}đ/Kg
                             </span>
                             <span className="new-price text-red-500 font-bold">
-                                {newPrice.toLocaleString()}đ/Kg
+                                {(
+                                    phanLoai[0].giaLoai * (1 - phanLoai[0].khuyenMai / 100)
+                                ).toLocaleString()}đ/Kg
                             </span>
                         </>
                     ) : (
                         <span className="old-price text-red-500 font-bold">
-                            {oldPrice.toLocaleString()}đ/Kg
+                            {phanLoai && phanLoai.length > 0 ? phanLoai[0].giaLoai.toLocaleString() : '0'}đ/Kg
                         </span>
                     )}
                 </div>
@@ -78,12 +85,12 @@ function ProductCard(props) {
 
             <div className='!mx-2 flex justify-between items-center !mt-2 !mb-2'>
                 <div className="rating flex items-center gap-1 text-yellow-500 text-sm mt-1">
-                    <FaStar/> <span className="font-bold">{rating}</span> 
-                    <span className="text-gray-500">({reviews})</span>
+                    <FaStar/> <span className="font-bold">5</span> 
+                    <span className="text-gray-500">(10)</span>
                 </div>
 
                 <div className="location flex gap-1 items-center text-gray-500 text-sm mt-1">
-                    <HiOutlineLocationMarker/> <span>{location}</span>
+                    <HiOutlineLocationMarker/> <span>{nguonGoc}</span>
                 </div>
             </div>
 
@@ -91,5 +98,4 @@ function ProductCard(props) {
     )
 }
 
-
-export default ProductCard
+export default ProductCard;

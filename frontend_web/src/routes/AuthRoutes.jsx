@@ -7,7 +7,6 @@ import Login from '../pages/auth/Login/Login';
 import CustomerRoutes from './CustomerRoutes';
 
 function AuthRoutes() {
-
     const { data: authUser, isLoading } = useQuery({
         queryKey: ['authUser'],
         queryFn: async () => {
@@ -33,7 +32,7 @@ function AuthRoutes() {
 
     return (
         <Routes>
-            <Route path="/*" element={!authUser ? <Navigate to="/signup" /> : <CustomerRoutes/> } />
+          <Route path="/*" element={!authUser ? <Navigate to="/signup" /> : <CustomerRoutes/> } />
           <Route path="/signup" element={!authUser ? <Signup /> : <CustomerRoutes/> } />
           <Route path="/login"  element={!authUser ? <Login /> : <CustomerRoutes/>} />    
         </Routes>

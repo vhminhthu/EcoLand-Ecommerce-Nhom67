@@ -11,6 +11,7 @@ import SupportPage from "../pages/seller/SupportPage";
 import SettingsPage from "../pages/seller/SettingsPage";
 import NotificationPage from "../pages/seller/NotificationPage";
 import ChatPage from "../pages/seller/ChatPage";
+import ProductsPageAdd from "../pages/seller/ProductsPageAdd";
 
 function SellerRoutes() {
     return (
@@ -20,6 +21,7 @@ function SellerRoutes() {
         <Route path="reviews" element={<ReviewsPage />} />
         <Route path="finance" element={<FinancePage />} />
         <Route path="products" element={<ProductsPage />} />
+        <Route path="products/add" element={<ProductsPageAdd />} />
         <Route path="store" element={<StorePage />} />
         <Route path="promotions" element={<PromotionsPage />} />
         <Route path="shipping" element={<ShippingPage />} />

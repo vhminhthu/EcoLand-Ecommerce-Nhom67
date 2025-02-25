@@ -12,6 +12,7 @@ const MainLayout = ({ children }) => {
         '/seller/reviews': 'Đánh giá',
         '/seller/finance': 'Tài chính',
         '/seller/products': 'Sản phẩm',
+        '/seller/products/add': 'Thêm sản phẩm mới',
         '/seller/store': 'Cửa hàng',
         '/seller/promotions': 'Khuyến mãi',
         '/seller/shipping': 'Vận chuyển',

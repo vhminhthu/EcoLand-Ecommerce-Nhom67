@@ -3,6 +3,8 @@ import { useState } from "react";
 import { FaBars } from "react-icons/fa";
 import ProductCard from "../../components/customer/common/cards/ProductCard";
 import { products2 } from "../../data/home";
+import axios from "axios";
+import { useEffect } from "react";
 
 const allCategories = [
   "Rau củ", "Trái cây", "Thực phẩm tươi sống", "Thủy sản", "Gạo",
@@ -17,13 +19,28 @@ function CategoryPage() {
   const [sanPhamGIndex, setSanPhamGIndex] = useState(0);
   const soSanPhamGMoiSlide = 15;
 
+  const [products, setProducts] = useState([]);
+
+  useEffect(() => {
+      const fetchProducts = async () => {
+          try {
+              const response = await axios.get('/api/sanpham/lay/tatca');
+              console.log(response.data);
+              setProducts(response.data); 
+          } catch (error) {
+              console.error("Có lỗi xảy ra khi lấy sản phẩm:", error);
+          }
+      };
+      fetchProducts();
+  }, []);
+
   const xemThemSanPhamG = () => {
-    if (sanPhamGIndex + soSanPhamGMoiSlide < products2.length) {
+    if (sanPhamGIndex + soSanPhamGMoiSlide < products.length) {
       setSanPhamGIndex((prevIndex) => prevIndex + soSanPhamGMoiSlide);
     }
   };
 
-  const sanPhamGHienTai = products2.slice(0, sanPhamGIndex + soSanPhamGMoiSlide);
+  const sanPhamGHienTai = products.slice(0, sanPhamGIndex + soSanPhamGMoiSlide);
   const categoriesToShow = expanded ? allCategories : allCategories.slice(0, 5);
 
   return (

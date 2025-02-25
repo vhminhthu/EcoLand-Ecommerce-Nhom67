@@ -2,12 +2,12 @@ import PropTypes from 'prop-types';
 import { useNavigate } from 'react-router-dom';
 
 function CategoryCard(props) {
-    const { id, name, img } = props;
+    const { _id, tenDM, anhDM } = props;
 
     CategoryCard.propTypes = {
-        id: PropTypes.string,
-        name: PropTypes.string,
-        img: PropTypes.string,
+        _id: PropTypes.string,
+        tenDM: PropTypes.string,
+        anhDM: PropTypes.string,
     };
 
     const navigate = useNavigate();
@@ -19,14 +19,15 @@ function CategoryCard(props) {
                 onClick={() => {
                     const nameCategory = name.replace(/\s+/g, '-');
                     navigate(`/category/${nameCategory}`, {
-                        state: { id: id },
+                        state: { id: _id },
                     });
                 }}
+                key={_id}
                 >
                 <div className="w-32 h-32 rounded-2xl bg-amber-50 overflow-hidden flex justify-center items-center">
-                    <img className="w-full h-full object-cover rounded-2xl" src={img} alt={name} />
+                    <img className="w-full h-full object-cover rounded-2xl" src={anhDM} alt={tenDM} />
                 </div>
-                <p className="text-white font-bold text-xl text-center w-32 line-clamp-2">{name}</p>
+                <p className="text-white font-bold text-xl text-center w-32 line-clamp-2">{tenDM}</p>
             </div>
         </>
 

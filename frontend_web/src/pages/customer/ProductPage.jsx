@@ -11,13 +11,36 @@ import { products2, products } from "../../data/home";
 import ProductCard from '../../components/customer/common/cards/ProductCard.jsx';
 import { FaArrowRight, FaArrowLeft } from "react-icons/fa6";
 import ReviewItem from '../../components/customer/common/items/ReviewItem.jsx';
+import axios from 'axios';
+import { useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 
 function ProductPage() {
     const navigate = useNavigate()
-    const [selectedLoai, setSelectedLoai] = useState(product.phanLoai[0]);
+    const location = useLocation();
+    const { id } = location.state || {};
     const [quantity, setQuantity] = useState(1);
     const daThich = false;
     const [selectedSao, setSelectedSao] = useState('Tất cả');
+    const [sanPham, setSanPham] = useState(null);
+    const [selectedLoai, setSelectedLoai] = useState(null);
+
+    useEffect(() => {
+        if (!id) return;
+        const fetchProductDetails = async (id) => {
+            try {
+                const response = await axios.get(`/api/sanpham/lay/${id}`);
+                console.log(response.data);
+                setSanPham(response.data);
+                setSelectedLoai(response.data.phanLoai[0]);
+            } catch (error) {
+                console.error("Lỗi khi tải dịch vụ:", error);
+            }
+        };
+    
+        fetchProductDetails(id);
+    }, [id]);
+    
 
     //Sản phẩm của shop
     const [sanPhamBIndex, setSanPhamBIndex] = useState(0);
@@ -52,85 +75,85 @@ function ProductPage() {
             <span 
                 className='hover:text-emerald-600 cursor-pointer' 
                 onClick={() => {
-                    const nameCategory = product.danhMuc.tenDM.replace(/\s+/g, '-');
+                    const nameCategory = sanPham?.idDM?.tenDM.replace(/\s+/g, '-');
                     navigate(`/category/${nameCategory}`, {
-                        state: { id: product.danhMuc._id },
+                        state: { id: sanPham?.idDM?._id },
                     });
                 }}
 
-                >{product.danhMuc.tenDM} / </span>
+                >{sanPham?.idDM?.tenDM} / </span>
             <span 
                 className='hover:text-emerald-600 cursor-pointer'
                 onClick={() => {
-                    const nameProduct = product.tenSP.replace(/\s+/g, '-');
+                    const nameProduct = sanPham?.tenSP.replace(/\s+/g, '-');
                     navigate(`/${nameProduct}`, {
-                        state: { id: product._id },
+                        state: { id: sanPham?._id },
                     });
                 }}
-                >{product.tenSP}</span>
+                >{sanPham?.tenSP}</span>
 
             <div className='flex gap-10 !mt-5'>
                 <div className='w-fit flex gap-2'>
                     <div className="flex gap-2">
-                        <div className="flex flex-col gap-2">
-                            {product.anhSP.slice(1).map((anh, index) => (
+                        {/* <div className="flex flex-col gap-2">
+                            {sanPham?.dsAnhSP.slice(1).map((anh, index) => (
                                 <div  key={index} className="product-image w-16 h-16 overflow-hidden cursor-pointer hover:opacity-80">
-                                    <img src={anh} alt={product.tenSP}  className=" h-full object-cover rounded-lg"/>
+                                    <img src={anh} alt={sanPham?.tenSP}  className=" h-full object-cover rounded-lg"/>
                                 </div>
                             ))}
-                        </div>
+                        </div> */}
                         <div className="product-image w-96 h-96 overflow-hidden">
-                            <img src={product.anhSP[0]} alt={product.tenSP}  className=" h-full object-cover rounded-xl"/>
+                            <img src={sanPham?.dsAnhSP} alt={sanPham?.tenSP}  className=" h-full object-cover rounded-xl"/>
                         </div>
                     </div>
 
                 </div>
                 <div className='w-2/3'>
-                    <p className='text-2xl'>{product.tenSP}</p>
+                    <p className='text-2xl'>{sanPham?.tenSP}</p>
                     <div>
                         <div className="flex justify-between items-center">
                             <div className='flex !my-2'>
                                 {[1,2,3,4,5].map((star) => {
-                                    if (star <= Math.floor(product.tongSoSao)) {
+                                    if (star <= Math.floor(sanPham?.tongSoSao)) {
                                         return <FaStar key={star} size={20} className="text-yellow-500 !mr-1" />;
-                                    } else if (star <= Math.ceil(product.tongSoSao) && product.tongSoSao % 1 !== 0) {
+                                    } else if (star <= Math.ceil(sanPham?.tongSoSao) && sanPham?.tongSoSao % 1 !== 0) {
                                         return <FaStarHalfAlt key={star} size={20} className="text-yellow-500 !mr-1" />;
                                     } else {
                                         return <FaRegStar key={star} size={20} className="text-gray-300 !mr-1" />;
                                     }
                                 })}
-                                <p className='!mx-2'>{product.tongSoSao}</p>
-                                <p>( {product.tongSoDanhGia} Đánh giá )</p>
+                                <p className='!mx-2'>{sanPham?.tongSoSao}</p>
+                                <p>( {sanPham?.tongSoDanhGia} Đánh giá )</p>
                             </div>
                             <span className='text-sm text-gray-400 cursor-pointer'>Tố cáo</span>
                         </div>                    
                     </div>
                     <div className="flex gap-3 items-center !mb-3">
-                        {selectedLoai.khuyenMai > 0 ? (
+                        {selectedLoai && selectedLoai?.khuyenMai > 0 ? (
                             <>
                             <span className="text-red-600 font-bold text-2xl">
                                 {(
-                                selectedLoai.giaLoai * (1 - selectedLoai.khuyenMai / 100)
+                                selectedLoai?.giaLoai * (1 - selectedLoai?.khuyenMai / 100)
                                 ).toLocaleString()} đ
                             </span>
                             <span className="text-gray-500 line-through text-lg">
-                                {selectedLoai.giaLoai.toLocaleString()} đ
+                                {selectedLoai?.giaLoai.toLocaleString()} đ
                             </span>
                             </>
                         ) : (
-                            <span className="text-2xl font-bold">{selectedLoai.giaLoai.toLocaleString()} đ</span>
+                            <span className="text-2xl font-bold">{selectedLoai?.giaLoai.toLocaleString()} đ</span>
                         )}
-                        <span className='border border-red-500 text-red-500 rounded-full !py-0.5 !px-3'>-{selectedLoai.khuyenMai}%</span>
+                        <span className='border border-red-500 text-red-500 rounded-full !py-0.5 !px-3'>-{selectedLoai?.khuyenMai}%</span>
                     </div>
 
                     <div className='!my-3'>
                         <p className='!mb-1'>Phân loại</p>
-                        {product.phanLoai.map((loai) => (
+                        {sanPham?.phanLoai.map((loai) => (
                         <button
                             key={loai.tenLoai}
                             onClick={() => setSelectedLoai(loai)} // Cập nhật loại được chọn
                             className={`text-emerald-600 !py-2 w-26 !mr-2 rounded-full border border-emerald-600 cursor-pointer 
-                                ${selectedLoai.tenLoai === loai.tenLoai 
+                                ${selectedLoai?.tenLoai === loai.tenLoai 
                                     ? "bg-emerald-600 text-white cursor-default"
                                     : "hover:bg-gray-50"}`
                             }
@@ -181,7 +204,7 @@ function ProductPage() {
                             ) : (
                             <IoMdHeartEmpty size={30} className="text-gray-400 cursor-pointer" />
                             )}
-                            <span>Đã thích {product.dsYeuThich.length}</span>
+                            <span>Đã thích {sanPham?.dsYeuThich.length}</span>
                         </span>
                     </div>
 
@@ -216,16 +239,16 @@ function ProductPage() {
                 </span>
             </div>
             <div className='!mt-10 !mb-2 text-center border-b-2 border-emerald-600 text-emerald-600 font-bold text-xl'>MÔ TẢ SẢN PHẨM</div>
-            <span className='!py-5'>{product.moTaSP}</span>
+            <span className='!py-5'>{sanPham?.moTaSP}</span>
             <div className='!mt-10 !mb-2 text-center border-b-2 border-emerald-600 text-emerald-600 font-bold text-xl'>ĐÁNH GIÁ SẢN PHẨM</div>
             <div className='!py-5 flex flex-col items-center'>
                 <div className='flex flex-col items-center w-full bg-gray-50 !py-5'>
-                    <span className='text-4xl'>{product.tongSoSao} trên 5</span>
+                    <span className='text-4xl'>{sanPham?.tongSoSao} trên 5</span>
                     <div className='flex !my-2'>
                         {[1,2,3,4,5].map((star) => {
-                            if (star <= Math.floor(product.tongSoSao)) {
+                            if (star <= Math.floor(sanPham?.tongSoSao)) {
                                 return <FaStar key={star} size={40} className="text-emerald-600 !mr-1" />;
-                            } else if (star <= Math.ceil(product.tongSoSao) && product.tongSoSao % 1 !== 0) {
+                            } else if (star <= Math.ceil(sanPham?.tongSoSao) && sanPham?.tongSoSao % 1 !== 0) {
                                 return <FaStarHalfAlt key={star} size={40} className="text-emerald-600 !mr-1" />;
                             } else {
                                 return <FaRegStar key={star} size={40} className="text-gray-300 !mr-1" />;

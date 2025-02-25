@@ -2,8 +2,10 @@
 import { useState } from "react";
 import MainLayout from "../../layouts/seller/MainLayout";
 import { FaEdit } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 
 function ProductsPage() {
+    const navigate = useNavigate();
     const products = Array.from({ length: 30 }, (_, i) => ({
         id: i + 1,
         name: "Tam’s rice",
@@ -40,7 +42,12 @@ function ProductsPage() {
                         className="border-2 border-[#E7E7E7] !px-4 !py-2 rounded-full !w-1/3 !outline-none focus:outline-none"
                     />
                     <div>
-                        <button className="border-2 border-[#37906C] text-[#37906C] font-bold bg-white !px-8 !py-2 !mr-5 rounded-lg hover:bg-green-100 hover:border-green-700">
+                        <button 
+                            className="border-2 border-[#37906C] text-[#37906C] font-bold bg-white !px-8 !py-2 !mr-5 rounded-lg hover:bg-green-100 hover:border-green-700"
+                            onClick={() => {
+                                navigate(`/seller/products/add`);
+                            }}
+                            >
                             New product
                         </button>
 
@@ -140,7 +147,6 @@ function ProductsPage() {
             {isEditing && selectedProduct && (
     <div className="fixed !inset-0 flex items-center justify-center bg-gray-950/50">
         <div className="bg-white !p-6 rounded-lg shadow-lg !w-[600px] flex !gap-6">
-           
             <div className="!w-1/2 flex flex-col items-center">
                 <h3 className="text-sm font-medium !mb-2">Product Image</h3>
                 <div className="relative !w-60 !h-80 border rounded-lg flex items-center justify-center overflow-hidden">
@@ -158,7 +164,6 @@ function ProductsPage() {
                 <p className="text-xs text-gray-500 !mt-2">Click to change image</p>
             </div>
 
-           
             <div className="!w-1/2">
                 <h2 className="text-lg font-semibold !mb-4">Edit Product</h2>
 
@@ -170,7 +175,6 @@ function ProductsPage() {
                     defaultValue={selectedProduct.name}
                 />
 
-              
                 <label className="block text-sm font-medium">Price</label>
                 <input
                     type="text"
@@ -178,7 +182,6 @@ function ProductsPage() {
                     defaultValue={selectedProduct.price}
                 />
 
-              
                 <label className="block text-sm font-medium">Sales Off (%)</label>
                 <input
                     type="number"
@@ -186,14 +189,12 @@ function ProductsPage() {
                     defaultValue={selectedProduct.salesOff}
                 />
 
-              
                 <label className="block text-sm font-medium">Status</label>
                 <select className="w-full border !p-2 rounded !mb-3" defaultValue={selectedProduct.status}>
                     <option value="available">Available</option>
                     <option value="not-available">Not Available</option>
                 </select>
 
-               
                 <div className="flex justify-end !gap-2 !mt-4">
                     <button
                         className="!px-4 !py-2 bg-gray-300 rounded-lg"

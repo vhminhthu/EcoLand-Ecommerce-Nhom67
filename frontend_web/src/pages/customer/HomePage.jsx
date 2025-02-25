@@ -2,14 +2,44 @@ import CategoryCard from "../../components/customer/common/cards/CategoryCard"
 import ProductCard from "../../components/customer/common/cards/ProductCard";
 import ShopCard from "../../components/customer/common/cards/ShopCard";
 import MainLayout from "../../layouts/customer/MainLayout"
-import { products, ads, shopData, categories, products2 } from "../../data/home";
+import { ads, shopData, products2 } from "../../data/home";
 
 import { BiChevronRight } from "react-icons/bi";
 import { FaChevronLeft, FaChevronRight  } from "react-icons/fa";
 import { FaArrowRight, FaArrowLeft } from "react-icons/fa6";
 import { useState, useEffect } from "react";
+import axios from "axios";
 
 function HomePage() {
+    const [categories, setCategories] = useState([]);
+    const [products, setProducts] = useState([]);
+
+    useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                const response = await axios.get('/api/danhmuc/lay');
+                setCategories(response.data); 
+            } catch (error) {
+                console.error("Có lỗi xảy ra khi lấy danh mục:", error);
+            }
+        };
+
+        fetchCategories();
+    }, []);
+
+    useEffect(() => {
+        const fetchProducts = async () => {
+            try {
+                const response = await axios.get('/api/sanpham/lay/tatca');
+                console.log(response.data);
+                setProducts(response.data); 
+            } catch (error) {
+                console.error("Có lỗi xảy ra khi lấy sản phẩm:", error);
+            }
+        };
+        fetchProducts();
+    }, []);
+
     //Quảng cáo
     const [quangCaoIndex, setQuangCaoIndex] = useState(0);
     const nextQuangCao = () => {
@@ -74,11 +104,11 @@ function HomePage() {
     const [sanPhamGIndex, setSanPhamGIndex] = useState(0);
     const soSanPhamGMoiSlide = 15;
     const xemThemSanPhamG = () => {
-        if (sanPhamGIndex + soSanPhamGMoiSlide < products2.length) {
+        if (sanPhamGIndex + soSanPhamGMoiSlide < products.length) {
             setSanPhamGIndex((prevIndex) => prevIndex + soSanPhamGMoiSlide);
         }
     };    
-    const sanPhamGHienTai = products2.slice(0, sanPhamGIndex + soSanPhamGMoiSlide);
+    const sanPhamGHienTai = products.slice(0, sanPhamGIndex + soSanPhamGMoiSlide);
 
     return (
         <MainLayout>
@@ -105,7 +135,7 @@ function HomePage() {
                 <div className="relative w-full flex gap-3 justify-center ">
                     <button className="cursor-pointer absolute top-1/2 -translate-y-1/2 left-0.5 text-xl bg-emerald-600/50 text-white !p-2 rounded-full"  onClick={prevDanhMuc}><FaArrowLeft/></button>
                     {danhMucHienTai.map((category) => (
-                        <CategoryCard key={category.id} {...category} />
+                        <CategoryCard key={category._id} {...category} />
                     ))}
                     <button className="cursor-pointer absolute top-1/2 -translate-y-1/2 right-0.5 text-xl bg-emerald-600/50 text-white !p-2 rounded-full"  onClick={nextDanhMuc}><FaArrowRight /></button>
                 </div>
@@ -119,7 +149,7 @@ function HomePage() {
                 <div className="relative w-full flex gap-4 justify-center">
                     <button className="cursor-pointer absolute top-1/2 -translate-y-1/2 left-0.5 text-xl bg-emerald-600/50 text-white !p-2 rounded-full" onClick={prevSanPhamD}><FaArrowLeft/></button>
                     {sanPhamDHienTai.map((product) => (
-                        <ProductCard key={product.id} {...product} />
+                        <ProductCard key={product._id} {...product} />
                     ))}
                     <button className="cursor-pointer absolute top-1/2 -translate-y-1/2 right-0.5 text-xl bg-emerald-600/50 text-white !p-2 rounded-full" onClick={nextSanPhamD}><FaArrowRight /></button>
                 </div>
@@ -133,7 +163,7 @@ function HomePage() {
                 <div className="relative w-full flex gap-4 justify-center">
                     <button className="cursor-pointer absolute top-1/2 -translate-y-1/2 left-0.5 text-xl bg-emerald-600/50 text-white !p-2 rounded-full" onClick={prevSanPhamB}><FaArrowLeft/></button>
                     {sanPhamBHienTai.map((product) => (
-                        <ProductCard key={product.id} {...product} />
+                        <ProductCard key={product._id} {...product} />
                     ))}
                     <button className="cursor-pointer absolute top-1/2 -translate-y-1/2 right-0.5 text-xl bg-emerald-600/50 text-white !p-2 rounded-full" onClick={nextSanPhamB}><FaArrowRight /></button>
                 </div>
@@ -157,7 +187,7 @@ function HomePage() {
                 </div>                
                 <div className="grid grid-cols-5 gap-4 justify-center">
                     {sanPhamGHienTai.map((product) => (
-                        <ProductCard key={product.id} {...product} />
+                        <ProductCard key={product._id} {...product} />
                     ))}
                 </div>
                 {sanPhamGIndex + soSanPhamGMoiSlide < products2.length && (
