@@ -13,7 +13,10 @@ const danhmucSchema = new mongoose.Schema(
                 ref: "Sanpham",
                 default: []
             }
-        ]
+        ],
+        anhDM:{
+            type: String,
+        }
     },
     {
         timestamps: true
