@@ -5,6 +5,7 @@ import cookieParser from "cookie-parser";
 import connectMongoDB from "./db/connectMongoDB.js";
 import cors from "cors";
 import authRoutes from "./routes/auth.route.js"
+import danhmucRoutes from "./routes/danhmuc.route.js"
 
 dotenv.config();
 
@@ -18,6 +19,7 @@ app.use(express.urlencoded({ extended: true, limit: "500mb" }));
 app.use(cookieParser());
 
 app.use("/api/auth",authRoutes )
+app.use("/api/danhmuc",danhmucRoutes )
 
 app.get("/", (req, res) => {
     res.send("Xin chào bạn");
