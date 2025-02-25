@@ -1,10 +1,14 @@
+import { Route, Routes } from "react-router-dom";
 import "./App.css";
+import AdminRoutes from "./routes/AdminRoutes.jsx";
+
 
 function App() {
   return (
-    <div className="flex items-center justify-center h-screen bg-gray-100 text-gray-900">
-      <h1 className="text-4xl font-bold text-blue-600">Frontend Admin</h1>
-      <p className="text-lg font-semibold text-pink-600">with Tailwind CSS</p>
+    <div>
+     <Routes>
+      <Route path="/*" element={<AdminRoutes />} />
+     </Routes>
     </div>
   );
 }
