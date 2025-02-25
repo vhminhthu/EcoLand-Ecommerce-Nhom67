@@ -1,45 +1,79 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import axios from "axios";
 import Header from "../components/Header";
 import Navigation from "../components/Navigation";
 import { FaEdit, FaPlus } from "react-icons/fa";
 
 export const Category = () => {
-  const [categories] = useState([
-    { id: 1, name: "Rau củ", image: "https://images.unsplash.com/photo-1663262432134-93bb1e7a60ed?w=600&auto=format&fit=crop&q=60" },
-    { id: 2, name: "Trái cây", image: "https://images.unsplash.com/photo-1533321942807-08e4008b2025?w=600&auto=format&fit=crop&q=60" },
-    { id: 3, name: "Hạt", image: "https://images.unsplash.com/photo-1590165482129-1b8b27698780?w=600&auto=format&fit=crop&q=60" },
-  ]);
-
+  const [categories, setCategories] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [isEditing, setIsEditing] = useState(false);
   const [isAdding, setIsAdding] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [selectedCategory, setSelectedCategory] = useState({ tenDM: "", anhDM: "" });
+  const [CategoryId, setCategoryId] = useState("");
   const [imagePreview, setImagePreview] = useState("");
-  
-  const itemsPerPage = 4;
-  const totalPages = Math.ceil(categories.length / itemsPerPage);
-  const displayedCategories = categories.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
-  const handleEdit = (category) => {
-    setSelectedCategory(category);
-    setImagePreview(category.image);
-    setIsEditing(true);
+  useEffect(() => {
+    fetchCategories();
+  }, []);
+
+  const fetchCategories = async () => {
+    try {
+      const response = await axios.get("/api/danhmuc/lay");
+      if (response.status === 200) {
+        setCategories(response.data);
+      } else {
+        alert("Lỗi khi lấy danh mục.");
+      }
+    } catch (error) {
+      console.error("Lỗi khi lấy danh mục:", error);
+      alert("Lỗi: " + (error.response?.data?.message || error.message));
+    }
   };
 
-  const handleAdd = () => {
-    setSelectedCategory({ name: "", image: "" });
-    setImagePreview("");
-    setIsAdding(true);
-  };
-
-  const handleImageChange = (event) => {
-    const file = event.target.files[0];
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
     if (file) {
       const reader = new FileReader();
-      reader.onload = () => setImagePreview(reader.result);
+      reader.onloadend = () => {
+        setSelectedCategory({ ...selectedCategory, anhDM: reader.result });
+        setImagePreview(reader.result);
+      };
       reader.readAsDataURL(file);
     }
   };
+
+  const addCategory = async () => {
+    try {
+      await axios.post("/api/danhmuc/them", selectedCategory);
+      setIsAdding(false);
+      fetchCategories();
+    } catch (error) {
+      alert("Lỗi: " + (error.response?.data?.message || error.message));
+    }
+  };
+
+  const editCategory = async () => {
+    try {
+      await axios.patch(`/api/danhmuc/sua/${CategoryId}`, selectedCategory);
+      setIsEditing(false);
+      fetchCategories();
+    } catch (error) {
+      alert("Lỗi: " + (error.response?.data?.message || error.message));
+    }
+  };
+
+  const handleSave = () => {
+    if (isEditing) {
+      editCategory();
+    } else {
+      addCategory();
+    }
+  };
+
+  const itemsPerPage = 4;
+  const totalPages = Math.ceil(categories.length / itemsPerPage);
+  const displayedCategories = categories.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
   return (
     <Navigation>
@@ -47,7 +81,10 @@ export const Category = () => {
       <div className="!pt-16 !p-4 min-h-screen flex flex-col">
         <div className="!p-6 max-w-6xl mx-auto bg-white rounded-lg shadow-md flex-grow">
           <div className="!mb-4 flex justify-end">
-            <button className="bg-[#075312] hover:opacity-80 text-white !px-6 !p-2 rounded flex items-center gap-2" onClick={handleAdd}>
+            <button
+              className="bg-[#075312] hover:opacity-80 text-white !px-6 !p-2 rounded flex items-center gap-2"
+              onClick={() => setIsAdding(true)}
+            >
               <FaPlus /> Thêm
             </button>
           </div>
@@ -61,13 +98,25 @@ export const Category = () => {
             </thead>
             <tbody>
               {displayedCategories.map((category) => (
-                <tr key={category.id} className="hover:bg-gray-50 border-b">
+                <tr key={category._id} className="hover:bg-gray-50 border-b">
                   <td className="!p-3 text-center">
-                    <img src={category.image} alt={category.name} className="!w-10 !h-10 object-cover rounded-lg" />
+                    <img
+                      src={category.anhDM}
+                      alt={category.tenDM}
+                      className="!w-10 !h-10 object-cover rounded-lg"
+                    />
                   </td>
-                  <td className="!p-3">{category.name}</td>
+                  <td className="!p-3">{category.tenDM}</td>
                   <td className="!p-3 flex justify-center items-center gap-2">
-                    <button className="bg-[#2A7534] hover:opacity-80 text-white !p-2 rounded flex items-center" onClick={() => handleEdit(category)}>
+                    <button
+                      className="bg-[#2A7534] hover:opacity-80 text-white !p-2 rounded flex items-center"
+                      onClick={() => {
+                        setSelectedCategory(category);
+                        setImagePreview(category.anhDM);
+                        setCategoryId(category._id);
+                        setIsEditing(true);
+                      }}
+                    >
                       <FaEdit size={16} />
                     </button>
                   </td>
@@ -94,29 +143,24 @@ export const Category = () => {
           </div>
         </div>
       </div>
-      
       {(isEditing || isAdding) && (
-        <div className="fixed !inset-0 flex items-center justify-center ">
-          <div className="bg-white !p-6 rounded-lg shadow-lg !w-[600px] flex gap-6">
-            <div className="!w-1/2 flex flex-col items-center">
-              <h3 className="text-sm font-medium !mb-2">Ảnh danh mục</h3>
-              <div className="relative !w-40 !h-40 border rounded-lg flex items-center justify-center overflow-hidden">
-                <img 
-                  src={imagePreview || "https://via.placeholder.com/150"} 
-                  alt="Category"
-                  className="w-full h-full object-cover"
-                />
-                <input type="file" accept="image/*" onChange={handleImageChange} className="absolute inset-0 opacity-0 cursor-pointer" />
-              </div>
-              <p className="text-xs text-gray-500 !mt-2">Nhấp để thay đổi ảnh</p>
-            </div>
-            <div className="!w-1/2">
-              <h2 className="text-lg font-semibold !mb-4">{isEditing ? "Chỉnh sửa danh mục" : "Thêm danh mục mới"}</h2>
-              <input type="text" defaultValue={selectedCategory.name} placeholder="Tên danh mục" className="w-full border !p-2 rounded !mb-3" />
-              <div className="flex justify-end gap-2 !mt-4">
-                <button className="!px-4 !py-2 bg-gray-300 rounded-lg" onClick={() => { isEditing ? setIsEditing(false) : setIsAdding(false); }}>Hủy</button>
-                <button className="bg-green-600 text-white !px-4 !py-2 rounded">{isEditing ? "Lưu" : "Thêm"}</button>
-              </div>
+        <div className="fixed !inset-0 flex items-center justify-center">
+          <div className="bg-white !p-6 rounded-lg shadow-lg !w-[600px] flex flex-col gap-6">
+            <h2 className="text-lg font-semibold !mb-4">
+              {isEditing ? "Chỉnh sửa danh mục" : "Thêm danh mục mới"}
+            </h2>
+            <input
+              type="text"
+              value={selectedCategory.tenDM}
+              onChange={(e) => setSelectedCategory({ ...selectedCategory, tenDM: e.target.value })}
+              placeholder="Tên danh mục"
+              className="w-full border !p-2 rounded !mb-3"
+            />
+            <input type="file" onChange={handleImageChange} className="!mb-3" />
+            {imagePreview && <img src={imagePreview} alt="Xem trước" className="!w-24 !h-24 object-cover" />}
+            <div className="flex justify-end gap-2">
+              <button className="!px-4 !py-2 bg-gray-300 rounded-lg" onClick={() => { setIsEditing(false); setIsAdding(false); }}>Hủy</button>
+              <button className="bg-green-600 text-white !px-4 !py-2 rounded" onClick={handleSave}>{isEditing ? "Lưu" : "Thêm"}</button>
             </div>
           </div>
         </div>
