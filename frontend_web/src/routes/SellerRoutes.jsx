@@ -12,8 +12,14 @@ import SettingsPage from "../pages/seller/SettingsPage";
 import NotificationPage from "../pages/seller/NotificationPage";
 import ChatPage from "../pages/seller/ChatPage";
 import ProductsPageAdd from "../pages/seller/ProductsPageAdd";
+import BecomeSeller from "../pages/seller/BecomeSeller";
+import { useAuth } from "../context/AuthContext";
 
 function SellerRoutes() {
+    const { user, loading } = useAuth();
+
+    if (loading) return <p>Đang tải thông tin...</p>;
+
     return (
     <Routes>
         <Route path="home" element={<HomePage />} />
@@ -29,6 +35,7 @@ function SellerRoutes() {
         <Route path="settings" element={<SettingsPage />} />
         <Route path="notification" element={<NotificationPage />} />
         <Route path="chat" element={<ChatPage />} />
+        <Route path="become-a-seller" element={user?.vaiTro == 'seller' ? <HomePage /> :<BecomeSeller/>} />
     </Routes>
     );
 }

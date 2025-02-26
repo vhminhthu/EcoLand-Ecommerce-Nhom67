@@ -8,7 +8,22 @@ const cuahangSchema = new mongoose.Schema(
         idNguoiDung: { type: mongoose.Schema.Types.ObjectId, ref: "Nguoidung", required: true },
         dsQuangCao: [{ type: mongoose.Schema.Types.ObjectId, ref: "Quangcao", default: [] }],
         dsSanPham: [{ type: mongoose.Schema.Types.ObjectId, ref: "Sanpham", default: [] }],
-        diaChiCH: { type: String, required: true }
+        diaChiCH: { type: String, required: true },
+        trangThaiCH: { type: String, default: "Chờ xác nhận" },
+        emailCH: { type: String, required: true },
+        soDienThoaiCH: { type: String, required: true },
+        thongTinThue: {
+            loaiHinhKD: { type: String, required: true },
+            diaChiDK: { type: String, required: true },
+            emailHD: { type: String, required: true },
+            maSoThue: { type: String, required: true }
+        },
+        thongTinDinhDanh: {
+            loaiThe: { type: String, required: true },
+            hinhChup: { type: String, required: true },
+            soDinhDanh: { type: String, required: true },
+            hoVaTen: { type: String, required: true }
+        }
     },
     {
         timestamps: true

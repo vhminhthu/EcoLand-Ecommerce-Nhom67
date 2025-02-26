@@ -8,6 +8,7 @@ import { v2 as cloudinary } from "cloudinary";
 import authRoutes from "./routes/auth.route.js"
 import danhmucRoutes from "./routes/danhmuc.route.js"
 import sanphamRoutes from "./routes/sanpham.route.js"
+import cuahangRoutes from "./routes/cuahang.route.js"
 
 dotenv.config();
 
@@ -41,6 +42,7 @@ app.use(
 app.use("/api/auth",authRoutes)
 app.use("/api/danhmuc",danhmucRoutes)
 app.use("/api/sanpham",sanphamRoutes)
+app.use("/api/cuahang",cuahangRoutes)
 
 app.get("/", (req, res) => {
     res.send("Xin chào bạn");

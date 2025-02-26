@@ -218,7 +218,7 @@ function Header({ thongBaoList }) {
                                         </Link>
                                     </li>
                                     <li>
-                                        <Link to="/seller/home" className="block hover:text-emerald-600 hover:bg-gray-100 font-medium !p-3">
+                                        <Link to="/seller/become-a-seller" className="block hover:text-emerald-600 hover:bg-gray-100 font-medium !p-3">
                                             Kênh người bán
                                         </Link>
                                     </li>

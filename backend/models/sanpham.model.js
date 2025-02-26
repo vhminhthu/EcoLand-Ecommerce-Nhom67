@@ -17,7 +17,7 @@ const sanphamSchema = new mongoose.Schema(
                 khoHang: { type: Number, default: 0 },
             }
         ],
-        trangThai: { type: String},
+        trangThai: { type: String, default: "Chờ xác nhận"},
         luotXem: { type: Number, default: 0 },
         daBan: { type: Number, default: 0 },
         dsAnhSP: { type: String },

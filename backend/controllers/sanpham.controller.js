@@ -1,10 +1,12 @@
 import SanPham from "../models/sanpham.model.js";
 import {v2 as cloudinary} from 'cloudinary'
-
+import DanhMuc from "../models/danhmuc.model.js";
+import NguoiDung from "../models/nguoidung.model.js";
+import CuaHang from "../models/cuahang.model.js";
 export const addSanPham = async (req, res) => {
     try {
+        const idND = req.nguoidung._id.toString();
         const { tenSP, moTaSP, idDM, nguonGoc, phanLoai, chungNhan, image } = req.body;
-        console.log(req.body);
         if (!tenSP || !moTaSP || !idDM || !nguonGoc || !phanLoai || !chungNhan) {
             return res.status(400).json({ error: "Vui lòng nhập đầy đủ thông tin!" });
         }
@@ -32,7 +34,7 @@ export const addSanPham = async (req, res) => {
             }
         }
         
-        const newProduct = new SanPham({
+        const sanPhamMoi = new SanPham({
             tenSP,
             moTaSP,
             idDM,
@@ -42,8 +44,28 @@ export const addSanPham = async (req, res) => {
             dsAnhSP: anhSPUrl,
         });
 
-        await newProduct.save();
-        res.status(201).json({ message: "Thêm sản phẩm thành công!", sanPham: newProduct });
+        const danhMuc = await DanhMuc.findById(idDM);
+        if (!danhMuc) {
+            return res.status(404).json({ message: "Không tìm thấy danh mục" });
+        }
+
+        danhMuc.dsSanPham.push(sanPhamMoi._id); 
+        await danhMuc.save();
+
+        const nguoiDung = await NguoiDung.findById(idND);
+        if (!nguoiDung) {
+            return res.status(404).json({ message: "nguoiDung không tồn tại." });
+        }
+
+        const cuaHang = await CuaHang.findOne({ idNguoiDung: idND });
+        if (!cuaHang) {
+            return res.status(404).json({ message: "Cửa hàng không tồn tại." });
+        }
+        cuaHang.dsSanPham.push(sanPhamMoi._id); 
+        await cuaHang.save();
+
+        await sanPhamMoi.save();
+        res.status(201).json({ message: "Thêm sản phẩm thành công!", sanPham: sanPhamMoi });
 
     } catch (error) {
         console.error("Lỗi khi thêm sản phẩm:", error);
