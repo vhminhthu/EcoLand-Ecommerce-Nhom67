@@ -24,8 +24,8 @@ function CategoryCard(props) {
                 }}
                 key={_id}
                 >
-                <div className="w-32 h-32 rounded-2xl bg-amber-50 overflow-hidden flex justify-center items-center">
-                    <img className="w-full h-full object-cover rounded-2xl" src={anhDM} alt={tenDM} />
+                <div className="w-32 h-32 rounded-2xl overflow-hidden flex justify-center items-center">
+                    <img className="w-22 h-22 object-cover rounded-2xl" src={anhDM} alt={tenDM} />
                 </div>
                 <p className="text-white font-bold text-xl text-center w-32 line-clamp-2">{tenDM}</p>
             </div>

@@ -1,10 +1,10 @@
 import { FaBox } from "react-icons/fa";
 import PropTypes from "prop-types"; 
 
-const Header = ({ title }) => {
+const Header = ({ title = "Dashboard" }) => {
   return (
     <header className="bg-white shadow-md fixed !top-0 !left-64 !w-[calc(100%-16rem)] !z-50">
-      <div className=" !px-6 !py-3 flex justify-between items-center">
+      <div className="!px-6 !py-3 flex justify-between items-center">
         <div className="flex items-center !space-x-2">
           <FaBox className="text-green-700" size={20} />
           <span className="text-green-700 font-semibold">{title}</span>
@@ -19,14 +19,8 @@ const Header = ({ title }) => {
   );
 };
 
-
 Header.propTypes = {
   title: PropTypes.string.isRequired, 
-};
-
-
-Header.defaultProps = {
-  title: "Dashboard",
 };
 
 export default Header;
