@@ -4,15 +4,8 @@ import { useState } from "react";
 import PropTypes from 'prop-types';
 import { useNavigate } from "react-router-dom";
 import { IoIosArrowDown } from "react-icons/io";
-
-const dsSP = [
-    "Gạo sạch",
-    "Rau hữu cơ",
-    "Trái cây tươi",
-    "Mật ong rừng",
-    "Hạt giống chất lượng",
-    "Đặc sản vùng miền",
-];
+import { useEffect } from "react";
+import axios from "axios";
 
 function Header({ thongBaoList }) {
     const navigate = useNavigate();
@@ -23,20 +16,29 @@ function Header({ thongBaoList }) {
     const [isOpenCategorySearch, setIsOpenCategorySearch] = useState(false); 
 
     const [chonDanhMucTimKiem, setChonDanhMucTimKiem] = useState("Tất cả danh mục");
+    const [danhMucChon, setDanhMucChon] = useState("");
     const [timKiem, setTimKiem] = useState("");
     const [danhSachGoiY, setDanhSachGoiY] = useState([]);
 
-    const handleChange = (e) => {
+    const handleChange = async (e) => {
         const value = e.target.value;
         setTimKiem(value);
-
-        if (value.trim() === "") {
+        if (value.trim() === '') {
             setDanhSachGoiY([]);
-        } else {
-            const filtered = dsSP.filter((item) =>
-                item.toLowerCase().includes(value.toLowerCase())
-            );
-            setDanhSachGoiY(filtered);
+            return;
+        }
+        
+        try {
+            const response = await axios.get(`/api/sanpham/search/goiy?search=${value}&danhmuc=${danhMucChon}`);
+            setDanhSachGoiY(response.data);
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+    const handleKeyPress = (e) => {
+        if (e.key === 'Enter' && danhSachGoiY.length > 0) {
+            navigate(`/search/dichvu?search=${timKiem}&loc=phobien&trang=1`);
         }
     };
 
@@ -45,18 +47,32 @@ function Header({ thongBaoList }) {
         setDanhSachGoiY([]);
     };
 
-    const categories = [
-        "Rau xanh",
-        "Củ",
-        "Qủa",
-        "Trái cây",
-        "Trái cây sấy",
-        "Ngũ cốc",
-    ];
+    const [categories, setCategories] = useState([]);
+
+    useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                const response = await axios.get('/api/danhmuc/lay');
+                setCategories(response.data); 
+            } catch (error) {
+                console.error("Có lỗi xảy ra khi lấy danh mục:", error);
+            }
+        };
+
+        fetchCategories();
+    }, []);
 
     const handleCategorySelect = (category) => {
-        setChonDanhMucTimKiem(category);
-        setIsOpenCategorySearch(false);
+        if (!category) {
+            setDanhMucChon("");
+            setChonDanhMucTimKiem("Tất cả danh mục");
+            setIsOpenCategorySearch(false);
+            return;
+        } else{
+            setDanhMucChon(category._id);
+            setChonDanhMucTimKiem(category.tenDM);
+            setIsOpenCategorySearch(false);
+        }
     };
     return (
         <div className="header bg-emerald-600 min-w-7xl">
@@ -83,9 +99,15 @@ function Header({ thongBaoList }) {
                                     onMouseLeave={() => setIsOpenCategorySearch(false)}
                                 >
                                     <ul>
+                                        <li 
+                                            className="text-black font-semibold hover:bg-gray-100 !p-2 cursor-pointer"
+                                            onClick={() => handleCategorySelect(null)}
+                                        >
+                                            Tất cả danh mục
+                                        </li>
                                         {categories.map((category, index) => (
                                             <li key={index} className=" text-black hover:bg-gray-100 !p-2 cursor-pointer" onClick={() => handleCategorySelect(category)}>
-                                                {category}
+                                                {category.tenDM}
                                             </li>
                                         ))}
                                     </ul>
@@ -100,6 +122,7 @@ function Header({ thongBaoList }) {
                             type="text"
                             value={timKiem}
                             onChange={handleChange}
+                            onKeyPress={handleKeyPress}
                             />
                         <BiSearch className="text-xl !mr-5 text-white" />
                         {danhSachGoiY.length > 0 && (
@@ -111,7 +134,7 @@ function Header({ thongBaoList }) {
                                             className="!p-2 text-black hover:bg-gray-100 cursor-pointer"
                                             onClick={() => xuLyChonGoiY(item)}
                                         >
-                                            {item}
+                                            {item.tenSP}
                                         </li>
                                     ))}
                                 </ul>

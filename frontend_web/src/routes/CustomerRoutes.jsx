@@ -63,6 +63,8 @@ function CustomerRoutes() {
             <Route path="/shop/:nameShop" element={<ShopPage/>} />
 
             <Route path="/customer/support" element={<SupportPage/>} />
+
+            <Route path="/customer/support" element={<SupportPage/>} />
             
         </Routes>
     )
