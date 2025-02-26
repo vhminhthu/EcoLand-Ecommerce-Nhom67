@@ -7,7 +7,7 @@ const nguoidungSchema = new mongoose.Schema(
         matKhau: { type: String, required: true },
         diaChi: { type: String },
         soDienThoai: { type: String },
-        vaiTro: { type: String },
+        vaiTro: { type: String, default: "customer" },
         trangThai: { type: String },
         anhND: { type: String },
         dsTheoDoi: [{ type: mongoose.Schema.Types.ObjectId, ref: "Nguoidung", default: [] }],
