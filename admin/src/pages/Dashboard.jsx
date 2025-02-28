@@ -1,6 +1,7 @@
 import Navigation from "../components/Navigation";
 import Header from "../components/Header";
 import { CiShop } from "react-icons/ci";
+import AreaChartComponent from "./other/AreaChart.jsx";
 
 const Dashboard = () => {
   return (
@@ -51,7 +52,7 @@ const Dashboard = () => {
             <h3 className="text-green-700 font-bold">Top Selling Items</h3>
             <p className="text-gray-600 text-sm">The top order products this week</p>
             <div className="!mt-3 !space-y-2">
-              {[1, 2, 3, 4].map((_, index) => (
+              {[1, 2, 3].map((_, index) => (
                 <div key={index} className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <img
@@ -74,7 +75,7 @@ const Dashboard = () => {
 
         {/* Biểu đồ cột */}
         <div className="bg-white !p-6 !mt-4 rounded-lg shadow text-center text-xl text-gray-700">
-          biểu đồ cột ở đây :))))
+          <AreaChartComponent/>
         </div>
       </div>
     </Navigation>

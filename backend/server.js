@@ -9,6 +9,7 @@ import authRoutes from "./routes/auth.route.js"
 import danhmucRoutes from "./routes/danhmuc.route.js"
 import sanphamRoutes from "./routes/sanpham.route.js"
 import cuahangRoutes from "./routes/cuahang.route.js"
+import adminRoutes from "./routes/admin.route.js"
 
 dotenv.config();
 
@@ -43,10 +44,14 @@ app.use("/api/auth",authRoutes)
 app.use("/api/danhmuc",danhmucRoutes)
 app.use("/api/sanpham",sanphamRoutes)
 app.use("/api/cuahang",cuahangRoutes)
+app.use("/api/admin",adminRoutes)
 
 app.get("/", (req, res) => {
     res.send("Xin chào bạn");
 });
+
+console.log("Giá trị JWT_SECRET_ADMIN:", process.env.JWT_SECRET_ADMIN);
+
 
 app.listen(5000, () => {
     console.log(`Server is running on port ${PORT}`);

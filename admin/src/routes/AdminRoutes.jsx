@@ -8,14 +8,43 @@ import { Report } from "../pages/Report";
 import { Roles } from "../pages/Roles";
 import Product from "../pages/Product";
 import { Category } from "../pages/Category";
+import Login from "../pages/auth/Login";
+
+import {useQuery} from '@tanstack/react-query'
+import axios from 'axios'
 
 function AdminRoutes() {
 
+    
+    const { data: authUser, isLoading } = useQuery({
+        queryKey: ['authUser'],
+        queryFn: async () => {
+          try {
+            const response = await axios.get('/api/admin/getme',{
+                withCredentials: true,
+            });
+            if (response.data.error) {
+              throw new Error(response.data.error);
+            }
+            return response.data;
+          } catch (error) {
+            if (error.response && error.response.status === 401) {
+              return null;
+            }
+            throw error;
+          }
+        },
+        retry: false,
+      });
+    
+      if (isLoading) {
+        return <div>Loading...</div>;
+      }
 
 
     return (
         <Routes>
-             <Route path="/" element={<Dashboard />} />
+             <Route path="/" element={!authUser ? <Login /> : <Dashboard/> } />
              <Route path="/user" element={<User />} />
              <Route path="/category" element={<Category />} />
              <Route path="/product" element={<Product />} />
