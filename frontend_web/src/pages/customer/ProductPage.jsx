@@ -20,7 +20,8 @@ function ProductPage() {
     const location = useLocation();
     const { id } = location.state || {};
     const [quantity, setQuantity] = useState(1);
-    const daThich = false;
+    const [isFavorite, setIsFavorite] = useState(false);
+
     const [selectedSao, setSelectedSao] = useState('Tất cả');
     const [sanPham, setSanPham] = useState(null);
     const [selectedLoai, setSelectedLoai] = useState(null);
@@ -31,7 +32,8 @@ function ProductPage() {
             try {
                 const response = await axios.get(`/api/sanpham/lay/${id}`);
                 //console.log(response.data);
-                setSanPham(response.data);
+                setSanPham(response.data.product);
+                setIsFavorite(response.data.isFavorite);
                 setSelectedLoai(response.data.phanLoai[0]);
                 if(response.status === 200) {
                     console.log("Tải sản phẩm thành công!");
@@ -68,6 +70,18 @@ function ProductPage() {
             setSanPhamGIndex((prevIndex) => prevIndex + soSanPhamGMoiSlide);
         }
     };    
+
+    //Yêu thích
+    const toggleFavorite = async () => {
+        try {
+            const response = await axios.patch(`/api/nguoidung/capnhat/yeuthich/${id}`);
+            setIsFavorite(!isFavorite);
+            console.log(response.data.message);
+        } catch (error) {
+            console.error("Lỗi khi cập nhật yêu thích:", error.message);
+        }
+    };
+
     const sanPhamGHienTai = products2.slice(0, sanPhamGIndex + soSanPhamGMoiSlide);
     return (
         <MainLayout>
@@ -202,12 +216,12 @@ function ProductPage() {
                             Mua ngay
                         </button>
                         <span className='flex gap-2 items-center'>
-                            {daThich ? (
-                            <IoHeart size={30} className="text-red-400 cursor-pointer" />
+                            {isFavorite ? (
+                            <IoHeart size={30} className="text-red-400 cursor-pointer" onClick={toggleFavorite} />
                             ) : (
-                            <IoMdHeartEmpty size={30} className="text-gray-400 cursor-pointer" />
+                            <IoMdHeartEmpty size={30} className="text-gray-400 cursor-pointer" onClick={toggleFavorite} />
                             )}
-                            <span>Đã thích {sanPham?.dsYeuThich.length}</span>
+                            <span>Đã thích {sanPham?.yeuThich}</span>
                         </span>
                     </div>
 

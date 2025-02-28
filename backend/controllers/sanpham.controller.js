@@ -88,12 +88,22 @@ export const getTatCaSanPham = async (req, res) => {
 export const getSanPhamById = async (req, res) => {
     try {
         const { id } = req.params;
+        const idND = req.nguoidung._id; 
         const product = await SanPham.findById(id).populate("idDM");
-        console.log(product);
+        //console.log(product);
         if (!product) {
             return res.status(404).json({ message: "Không tìm thấy sản phẩm!" });
         }
-        res.status(200).json(product);
+
+        let isFavorite = false;
+        if (idND) {
+            isFavorite = await NguoiDung.exists({
+                _id: idND,
+                dsYeuThich: id,
+            });
+        }
+
+        res.status(200).json({ product, isFavorite });
     } catch (error) {
         console.error("Lỗi khi lấy sản phẩm:", error);
         res.status(500).json({ message: "Lỗi server!", error: error.message });
