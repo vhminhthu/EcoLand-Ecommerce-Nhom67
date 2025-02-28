@@ -38,13 +38,17 @@ function Header({ thongBaoList }) {
 
     const handleKeyPress = (e) => {
         if (e.key === 'Enter' && danhSachGoiY.length > 0) {
-            navigate(`/search/dichvu?search=${timKiem}&loc=phobien&trang=1`);
+            navigate(`/search/sp?search=${timKiem}&sort=phobien&page=1&limit=1`, {state: { id: danhMucChon }});
         }
     };
 
     const xuLyChonGoiY = (goiY) => {
-        setTimKiem(goiY);
+        setTimKiem(goiY.tenSP);
         setDanhSachGoiY([]);
+        const nameProduct = goiY.tenSP.replace(/\s+/g, '-');
+        navigate(`/${nameProduct}`, {
+            state: { id: goiY._id },
+        });
     };
 
     const [categories, setCategories] = useState([]);
@@ -53,6 +57,7 @@ function Header({ thongBaoList }) {
         const fetchCategories = async () => {
             try {
                 const response = await axios.get('/api/danhmuc/lay');
+                console.log(response.data);
                 setCategories(response.data); 
             } catch (error) {
                 console.error("Có lỗi xảy ra khi lấy danh mục:", error);
@@ -69,8 +74,8 @@ function Header({ thongBaoList }) {
             setIsOpenCategorySearch(false);
             return;
         } else{
-            setDanhMucChon(category._id);
-            setChonDanhMucTimKiem(category.tenDM);
+            setDanhMucChon(category?._id);
+            setChonDanhMucTimKiem(category?.tenDM);
             setIsOpenCategorySearch(false);
         }
     };
@@ -107,7 +112,7 @@ function Header({ thongBaoList }) {
                                         </li>
                                         {categories.map((category, index) => (
                                             <li key={index} className=" text-black hover:bg-gray-100 !p-2 cursor-pointer" onClick={() => handleCategorySelect(category)}>
-                                                {category.tenDM}
+                                                {category?.tenDM}
                                             </li>
                                         ))}
                                     </ul>
@@ -250,9 +255,16 @@ function Header({ thongBaoList }) {
                             onMouseLeave={() => setIsOpenCategory(false)}
                         >
                             <ul>
-                                {categories.map((category, index) => (
-                                    <li key={index} className="hover:bg-gray-100 !p-2 cursor-pointer" onClick={() => navigate(`/category/${category}`)}>
-                                        {category}
+                                {categories.map(category => (
+                                    <li key={category._id} className="hover:bg-gray-100 !p-2 cursor-pointer" 
+                                        onClick={() => {
+                                            const nameCategory = category?.tenDM.replace(/\s+/g, '-');
+                                            navigate(`/category/${nameCategory}?sort=phobien&page=1&limit=1`, {
+                                                state: { id: category?._id },
+                                            });
+                                        }}
+                                    >
+                                        {category?.tenDM}
                                     </li>
                                 ))}
                             </ul>

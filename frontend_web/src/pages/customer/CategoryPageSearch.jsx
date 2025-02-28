@@ -6,11 +6,12 @@ import axios from "axios";
 import { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import {ListLocations} from "../../data/ListLocations";
+import { GrInfo } from "react-icons/gr";
 import { FaAngleLeft, FaAngleRight } from "react-icons/fa6";
 
 const ratings = [5, 4, 3, 2, 1];
 
-function CategoryPage() {
+function CategoryPageSearch() {
   const [expanded, setExpanded] = useState(false);
   const [categories, setCategories] = useState([]);
   const [products, setProducts] = useState([]);
@@ -21,6 +22,7 @@ function CategoryPage() {
   const navigate = useNavigate();
 
   const query = new URLSearchParams(window.location.search); 
+  const search = query.get('search');
   const page = parseInt(query.get('trang')) || 1;
   const sort = query.get('sort') || 'phobien';
   const limit = query.get('limit') || 1;
@@ -31,20 +33,25 @@ function CategoryPage() {
   useEffect(() => {
       const fetchProducts = async () => {
           try { 
-            //console.log(id);
-            const response = await axios.get('/api/danhmuc/lay');
-            //console.log(response.data);
-            setCategories(response.data); 
-            const responsesp = await axios.get(`/api/sanpham/lay/danhmuc/sp?sort=${sort}&page=${page}&limit=${limit}&danhmuc=${id}&minStar=${minStar}&maxStar=${maxStar}&locations=${locations}`);
-            //console.log(responsesp.data);
-            setProducts(responsesp.data.sp);
-            setTongPages(responsesp.data.tongPage);
+              const response = await axios.get('/api/danhmuc/lay');
+              console.log(response.data);
+              setCategories(response.data); 
+              if(id){
+                const responsesp = await axios.get(`/api/sanpham/search/timkiem?search=${search}&sort=${sort}&page=${page}&limit=${limit}&danhmuc=${id}&minStar=${minStar}&maxStar=${maxStar}&locations=${locations}`);
+                console.log(responsesp.data);
+                setProducts(responsesp.data.sp);
+                setTongPages(responsesp.data.tongPage);
+              } else {
+                const responsesp = await axios.get(`/api/sanpham/search/timkiem?search=${search}&sort=${sort}&page=${page}&limit=${limit}&minStar=${minStar}&maxStar=${maxStar}&locations=${locations}`);
+                console.log(responsesp.data);
+                setProducts(responsesp.data.sp);
+              }
           } catch (error) {
-            console.error("Có lỗi xảy ra khi lấy sản phẩm:", error);
+              console.error("Có lỗi xảy ra khi lấy sản phẩm:", error);
           }
       };
       fetchProducts();
-  }, [id, sort, page, limit, minStar, maxStar, locations]);
+  }, [search, sort, page, limit, id, minStar, maxStar, locations]);
 
   const categoriesToShow = expanded ? categories : categories.slice(0, 5);
 
@@ -107,13 +114,12 @@ function CategoryPage() {
       state: { id: id }
     });
   };
-  
 
   return (
     <MainLayout>
       <div className="flex gap-6 p-4">
         {/* Sidebar */}
-        <div className={`w-64 p-4 rounded-lg shadow-lg bg-[#FCFCFC] transition-all duration-300 ${expanded ? "h-auto" : "h-[800px]"}`}>
+        <div className={`w-64 p-4 rounded-lg shadow-lg bg-[#FCFCFC] transition-all duration-300 ${expanded ? "h-auto" : "h-fit"}`}>
           <div className="flex items-center gap-2 text-[#1B8057] font-semibold mb-7">
             <FaBars />
             <span>Tất cả danh mục</span>
@@ -175,7 +181,7 @@ function CategoryPage() {
                 <div key={index} className="flex items-center gap-5 mb-3">
                   <input
                     type="checkbox"
-                    className="w-4 h-4 accent-[#1B8057]"
+                    className="w-4 h-4 accent-[#1B8057] cursor-pointer"
                     checked={isChecked}
                     onChange={handleCheckboxChange}
                   />
@@ -189,19 +195,23 @@ function CategoryPage() {
 
         {/* Product Grid */}
         <div className="flex-1">
+          <p className="flex items-center gap-2 font-semibold mb-4 text-xl">
+            <GrInfo /> Kết quả tìm kiếm cho từ khóa <span className="text-[#1B8057]">{search}</span>
+          </p>
+          <hr className="my-4 text-[#959595] font-bold" />
           <div className="flex justify-between mb-4">
             <span className="font-semibold">Sắp xếp theo</span>
             <div className="flex gap-2">
               <button 
-                className={`px-4 py-2 border font-semibold rounded-lg hover:bg-[#1B8057] hover:text-white transition duration-200 ${sort === 'phobien' ? 'bg-[#1B8057] text-white' : 'bg-white '}`}
+                className={`px-4 py-2 border font-semibold rounded-lg hover:bg-[#1B8057] hover:text-white transition duration-200 cursor-pointer ${sort === 'phobien' ? 'bg-[#1B8057] text-white' : 'bg-white '}`}
                 onClick={() => handleSortChange('phobien')} 
                 >Phổ Biến</button>
               <button 
-                className={`px-4 py-2 border font-semibold rounded-lg hover:bg-[#1B8057] hover:text-white transition duration-200 ${sort === 'moinhat' ? 'bg-[#1B8057] text-white' : 'bg-white '}`}
+                className={`px-4 py-2 border font-semibold rounded-lg hover:bg-[#1B8057] hover:text-white transition duration-200 cursor-pointer ${sort === 'moinhat' ? 'bg-[#1B8057] text-white' : 'bg-white '}`}
                 onClick={() => handleSortChange('moinhat')} 
                 >Mới nhất</button>
               <button 
-                className={`px-4 py-2 border font-semibold rounded-lg hover:bg-[#1B8057] hover:text-white transition duration-200 ${sort === 'banchay' ? 'bg-[#1B8057] text-white' : 'bg-white '}`}
+                className={`px-4 py-2 border font-semibold rounded-lg hover:bg-[#1B8057] hover:text-white transition duration-200 cursor-pointer ${sort === 'banchay' ? 'bg-[#1B8057] text-white' : 'bg-white '}`}
                 onClick={() => handleSortChange('banchay')} 
                 >Bán chạy</button>
               <select 
@@ -248,4 +258,4 @@ function CategoryPage() {
   );
 }
 
-export default CategoryPage;
+export default CategoryPageSearch;

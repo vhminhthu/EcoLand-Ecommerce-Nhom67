@@ -22,7 +22,6 @@ export const addDanhMuc = async (req, res) => {
             }
         }
 
-        // Tạo danh mục mới
         const danhMucMoi = new Danhmuc({ tenDM,anhDM:anhDMUrl });
         await danhMucMoi.save();
 
@@ -34,7 +33,8 @@ export const addDanhMuc = async (req, res) => {
 
 export const getDanhMuc = async (req, res) => {
     try {
-        const danhMucList = await Danhmuc.find(); // Lấy toàn bộ danh mục
+        const danhMucList = await Danhmuc.find();
+        //console.log(danhMucList)
         res.status(200).json(danhMucList);
     } catch (error) {
         res.status(500).json({ message: "Lỗi server!", error: error.message });

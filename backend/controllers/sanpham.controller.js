@@ -3,6 +3,8 @@ import {v2 as cloudinary} from 'cloudinary'
 import DanhMuc from "../models/danhmuc.model.js";
 import NguoiDung from "../models/nguoidung.model.js";
 import CuaHang from "../models/cuahang.model.js";
+import mongoose from "mongoose";
+
 export const addSanPham = async (req, res) => {
     try {
         const idND = req.nguoidung._id.toString();
@@ -100,7 +102,7 @@ export const getSanPhamById = async (req, res) => {
 
 
 export const goiYTimKiem = async (req, res) => {
-    const { search, danhmuc } = req.query;  // Sửa lỗi truy vấn query
+    const { search, danhmuc } = req.query;
     
     if (!search) {
         return res.status(400).json({ message: 'Vui lòng nhập từ tìm kiếm' });
@@ -118,60 +120,105 @@ export const goiYTimKiem = async (req, res) => {
         res.status(500).json({ message: 'Server error' });
     }
 };
+export const getSanPhamByIdDM = async (req, res) => { 
+    try {
+        const {sort, page, limit, danhmuc, minStar=0, maxStar=0, locations=''} = req.query;
+        const result = await sapxepSanPham({sort, page, limit, danhmuc, minStar, maxStar,locations });
+        return res.status(200).json(result);
+    } catch (error) {
+        res.status(500).json({ error: "Lỗi 500" });
+        console.log("Lỗi getSanPhamByIdDM controller", error.message);
+    }
+};
 
 export const timKiem = async (req, res) => { 
-    const { search, sort = "phobien", page = 1, limit = 4 } = req.query;
-
-    const pageSize = parseInt(limit);
-    const skip = (page - 1) * pageSize;
     try {
-        const tong = await Dichvu.countDocuments({
-            tenDichVu: { $regex: search, $options: 'i' }, 
-            trangThaiDV: 'Công khai'});
-        const tongPage = Math.ceil(tong / pageSize);
-
-        let sortQuery;
-        switch (sort) {
-            case 'phobien':
-                sortQuery = { luotXem: -1 }; // Sắp xếp theo lượt xem (giảm dần)
-                break;
-            case 'moinhat':
-                sortQuery = { createdAt: -1 }; // Sắp xếp theo ngày tạo (mới nhất)
-                break;
-            case 'nhieunguoidat':
-                sortQuery = { soLuongDonHang: -1 }; // Sắp xếp theo số lượng đơn hàng (giảm dần)
-                break;
-            case 'giatang':
-                sortQuery = { 'phanLoai.coban.giaLoai': 1 }; // Sắp xếp theo giá (tăng dần)
-                break;
-            case 'giagiam':
-                sortQuery = { 'phanLoai.coban.giaLoai': -1 }; // Sắp xếp theo giá (tăng dần)
-                break;
-            default:
-                sortQuery = { luotXem: -1 }; // Mặc định sắp xếp theo lượt xem (giảm dần)
-                break;
-        }
-
-        const dichvu = await Dichvu.find({
-            tenDichVu: { $regex: search, $options: 'i' }, 
-            trangThaiDV: 'Công khai'})
-        .populate("idNguoiDungDV")
-        .populate("idDanhMucDV")
-        .sort(sortQuery)
-        .skip(skip)
-        .limit(pageSize);
-
-        if (dichvu.length === 0) {
-            return res.status(404).json({ message: 'Không có dịch vụ công khai trong danh mục này' });
-        }
-
-        return res.status(200).json({
-            tong,
-            dichvu,
-            tongPage,
-        });
+        const { search, sort, page, limit, danhmuc='', minStar=0, maxStar=0, locations='' } = req.query;
+        const result = await sapxepSanPham({ search, sort, page, limit, danhmuc, minStar, maxStar,locations });
+        return res.status(200).json(result);
     } catch (error) {
         res.status(500).json({ error: "Lỗi 500" });
         console.log("Lỗi tim kiem controller", error.message);
     }
 };
+
+export const sapxepSanPham = async ({ search = '', sort = "phobien", page = 1, limit = 1, danhmuc, minStar, maxStar, locations }) => {
+    const pageSize = parseInt(limit);
+    const skip = (page - 1) * pageSize;
+
+    const matchStage = { trangThai: 'Đang bán' };
+
+    // Chỉ thêm điều kiện tìm kiếm khi search có giá trị
+    if (search.trim()) {
+        matchStage.tenSP = { $regex: search, $options: 'i' };
+    }
+    
+    // Chỉ lọc theo danh mục nếu có danh mục được truyền vào
+    if (danhmuc) {
+        matchStage.idDM = new mongoose.Types.ObjectId(danhmuc);
+    }
+
+    const min = Number(minStar);
+    const max = Number(maxStar);
+
+    if (min && max !== '0') { 
+        matchStage.tongSoSao = { $gte: min, $lte: max }
+    }
+
+    if (locations !== '') {
+        const locationsArray = locations.split(",");
+        matchStage.nguonGoc = { $in: locationsArray };
+    }
+    
+    const tong = await SanPham.countDocuments(matchStage);
+    const tongPage = Math.ceil(tong / pageSize);
+
+    let sortStage = { luotXem: -1 };
+    if (sort === "moinhat") {
+        sortStage = { createdAt: -1 };
+    } else if (sort === "nhieunguoidat") {
+        sortStage = { daBan: -1 };
+    } else if (sort === "giatang" || sort === "giagiam") {
+        sortStage = { giaSauGiam: sort === "giatang" ? 1 : -1 };
+    }
+
+    const sp = await SanPham.aggregate([
+        { $match: matchStage },
+        {
+            $addFields: {
+                giaSauGiam: {
+                    $subtract: [
+                        { $arrayElemAt: ["$phanLoai.giaLoai", 0] },
+                        {
+                            $multiply: [
+                                { $arrayElemAt: ["$phanLoai.giaLoai", 0] },
+                                { $divide: [{ $arrayElemAt: ["$phanLoai.khuyenMai", 0] }, 100] }
+                            ]
+                        }
+                    ]
+                }
+            }
+        },
+        { $sort: sortStage },
+        { $skip: skip },
+        { $limit: pageSize }
+    ]);
+
+    return { tong, sp, tongPage };
+};
+
+
+export const capNhatLuotXem = async (req, res) => {
+    const { id } = req.params; 
+    try {   
+        const sp = await  SanPham.updateOne({ _id: id }, { $inc: { luotXem: 1 } });
+        if (!sp) {
+            return res.status(404).json({ error: "Sản phẩm không tồn tại" });
+        }
+        res.status(200).json({ message: "Cập nhật lượt xem thành công", luotXem: sp.luotXem });
+    } catch (error) {
+        console.error("Lỗi cập nhật lượt xem controller:", error.message);
+        res.status(500).json({ error: "Lỗi 500" });
+    }
+};
+

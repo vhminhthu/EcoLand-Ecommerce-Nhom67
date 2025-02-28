@@ -18,6 +18,7 @@ import Signup from '../pages/auth/Signup/Signup';
 import axios from 'axios'
 import {useQuery} from '@tanstack/react-query'
 import { Routes ,Route} from "react-router-dom";
+import CategoryPageSearch from '../pages/customer/CategoryPageSearch';
 
 function CustomerRoutes() {
 
@@ -59,6 +60,7 @@ function CustomerRoutes() {
             <Route path="/customer/account/password" element={<PasswordPage/>} />
 
             <Route path="/category/:nameCategory" element={<CategoryPage/>} />
+            <Route path="/search/sp" element={<CategoryPageSearch/>} />
             <Route path="/:nameProduct" element={<ProductPage/>} />
             <Route path="/shop/:nameShop" element={<ShopPage/>} />
 

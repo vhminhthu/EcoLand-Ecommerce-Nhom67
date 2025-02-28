@@ -30,18 +30,21 @@ function ProductPage() {
         const fetchProductDetails = async (id) => {
             try {
                 const response = await axios.get(`/api/sanpham/lay/${id}`);
-                console.log(response.data);
+                //console.log(response.data);
                 setSanPham(response.data);
                 setSelectedLoai(response.data.phanLoai[0]);
+                if(response.status === 200) {
+                    console.log("Tải sản phẩm thành công!");
+                    await axios.put(`/api/sanpham/capnhat/luotxem/${id}`);
+                }
             } catch (error) {
-                console.error("Lỗi khi tải dịch vụ:", error);
+                console.error("Lỗi khi tải sản phẩm:", error);
             }
         };
     
         fetchProductDetails(id);
     }, [id]);
     
-
     //Sản phẩm của shop
     const [sanPhamBIndex, setSanPhamBIndex] = useState(0);
     const soSanPhamBMoiSlide = 5;
