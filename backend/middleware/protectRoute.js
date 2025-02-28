@@ -25,10 +25,3 @@ export const protectRoute = async (req,res,next)=>{
 }
 
 
-export const isAdmin = async (req,res,next) => {
-    if (req.nguoidung && req.nguoidung.roleND == "admin") {
-        next();
-    } else {
-        return res.status(403).json({error: "Error: Chỉ dành cho admin" })
-    }
-}

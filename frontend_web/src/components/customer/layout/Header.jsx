@@ -79,6 +79,17 @@ function Header({ thongBaoList }) {
             setIsOpenCategorySearch(false);
         }
     };
+
+    const logout = async () => {
+        try {
+            await axios.post('/api/auth/logout');
+            navigate("/signup");
+        } catch (error) {
+            console.error("Lỗi đăng xuất:", error);
+        }
+    };
+
+
     return (
         <div className="header bg-emerald-600 min-w-7xl">
             <div className="flex justify-between items-center !py-4 !mx-auto max-w-7xl">
@@ -228,9 +239,12 @@ function Header({ thongBaoList }) {
                                         </Link>
                                     </li>
                                     <li>
-                                        <Link to="/" className="block hover:text-emerald-600 hover:bg-gray-100 font-medium !p-3">
+                                        <button 
+                                            onClick={logout} 
+                                            className="block text-left w-full hover:text-emerald-600 hover:bg-gray-100 font-medium !p-3"
+                                        >
                                             Đăng xuất
-                                        </Link>
+                                        </button>
                                     </li>
                                 </ul>
                             </div>
