@@ -3,12 +3,14 @@ import { BiStoreAlt } from "react-icons/bi";
 import { FaStar } from "react-icons/fa";
 import { HiOutlineLocationMarker } from "react-icons/hi";
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 function ProductCard(props) {
-    const { _id, dsAnhSP, phanLoai, tenSP, nguonGoc } = props;
+    const { _id, idCH, dsAnhSP, phanLoai, tenSP, nguonGoc, tongSoSao, tongSoDanhGia } = props;
 
     ProductCard.propTypes = {
         _id: PropTypes.string.isRequired,
+        idCH: PropTypes.string.isRequired,
         dsAnhSP: PropTypes.string.isRequired, 
         phanLoai: PropTypes.arrayOf(
             PropTypes.shape({
@@ -21,14 +23,34 @@ function ProductCard(props) {
             })
         ).isRequired,
         tenSP: PropTypes.string.isRequired, 
-        nguonGoc: PropTypes.string.isRequired 
+        nguonGoc: PropTypes.string.isRequired,
+        tongSoSao: PropTypes.number.isRequired,
+        tongSoDanhGia: PropTypes.number.isRequired 
     };
 
     const navigate = useNavigate();
 
+    const handleAddToCart = async () => {
+        const giohang = {
+            idSP: _id,
+            idLoai: phanLoai[0].id,
+            soLuong: 1,
+        };
+    
+        try {
+            await axios.post('/api/giohang/them', giohang);
+            alert("Sản phẩm đã được thêm vào giỏ hàng!");
+        } catch (error) {
+            console.error("Lỗi khi thêm vào giỏ hàng:", error);
+            if (error.response && error.response.status === 403) {
+                alert("Bạn không có quyền thực hiện này");
+            }
+        }
+    };
+
     return (
         <div 
-            className="cursor-pointer product-card bg-white rounded-xl shadow-md w-auto border-1 border-emerald-600"
+            className="cursor-pointer product-card bg-white rounded-xl shadow-md w-auto border-1 border-emerald-600 hover:bg-gray-50 hover:shadow-lg hover:scale-102 transition-all duration-300"
             onClick={() => {
                 const nameProduct = tenSP.replace(/\s+/g, '-');
                 navigate(`/${nameProduct}`, {
@@ -45,13 +67,13 @@ function ProductCard(props) {
                 )}
             </div>
 
-            <div className="product-image w-full h-55 rounded-xl overflow-hidden !p-2">
+            <div className="product-image m-auto w-56 h-55 rounded-xl overflow-hidden !p-2">
                 <img src={dsAnhSP} alt={tenSP} className="w-full h-full object-cover rounded-xl bg-green-300"/>
             </div>
 
             <div className="!mx-2 shop-info text-gray-500 text-sm mt-2 flex items-center gap-1">
                 <span className="icon"><BiStoreAlt/></span>
-                <span>Rau xanh</span>
+                <span>{idCH?.tenCH}</span>
             </div>
 
             <h2 className="!px-2 product-title font-bold !mt-1 line-clamp-2">
@@ -78,15 +100,20 @@ function ProductCard(props) {
                     )}
                 </div>
 
-                <button className="add-to-cart bg-emerald-500 text-white flex items-center justify-center !px-2 !py-2 rounded-lg font-bold w-auto text-sm">
+                <button 
+                    className="add-to-cart bg-emerald-500 text-white flex items-center justify-center !px-2 !py-2 rounded-lg font-bold w-auto text-sm cursor-pointer hover:bg-emerald-600"  
+                    onClick={(event) => {
+                        event.stopPropagation();
+                        handleAddToCart();
+                    }}>
                     Thêm vào giỏ
                 </button>
             </div>
 
             <div className='!mx-2 flex justify-between items-center !mt-2 !mb-2'>
                 <div className="rating flex items-center gap-1 text-yellow-500 text-sm mt-1">
-                    <FaStar/> <span className="font-bold">5</span> 
-                    <span className="text-gray-500">(10)</span>
+                    <FaStar/> <span className="font-bold">{tongSoSao}</span> 
+                    <span className="text-gray-500">({tongSoDanhGia})</span>
                 </div>
 
                 <div className="location flex gap-1 items-center text-gray-500 text-sm mt-1">

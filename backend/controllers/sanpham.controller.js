@@ -35,11 +35,18 @@ export const addSanPham = async (req, res) => {
                 return res.status(500).json({ error: "Lỗi khi upload ảnh chứng nhận lên Cloudinary" });
             }
         }
+
+        const cuaHang = await CuaHang.findOne({ idNguoiDung: idND });
+
+        if (!cuaHang) {
+            return console.log("Không tìm thấy cửa hàng!");
+        }
         
         const sanPhamMoi = new SanPham({
             tenSP,
             moTaSP,
             idDM,
+            idCH: cuaHang._id,
             nguonGoc,
             phanLoai: phanLoai,
             chungNhan: chungNhan,
@@ -59,10 +66,6 @@ export const addSanPham = async (req, res) => {
             return res.status(404).json({ message: "nguoiDung không tồn tại." });
         }
 
-        const cuaHang = await CuaHang.findOne({ idNguoiDung: idND });
-        if (!cuaHang) {
-            return res.status(404).json({ message: "Cửa hàng không tồn tại." });
-        }
         cuaHang.dsSanPham.push(sanPhamMoi._id); 
         await cuaHang.save();
 
@@ -77,7 +80,8 @@ export const addSanPham = async (req, res) => {
 
 export const getTatCaSanPham = async (req, res) => {
     try {
-        const products = await SanPham.find();
+        const products = await SanPham.find({ trangThai: 'Đang bán' }).populate("idCH");
+
         res.status(200).json(products);
     } catch (error) {
         console.error("Lỗi khi lấy sản phẩm:", error);
@@ -89,7 +93,7 @@ export const getSanPhamById = async (req, res) => {
     try {
         const { id } = req.params;
         const idND = req.nguoidung._id; 
-        const product = await SanPham.findById(id).populate("idDM");
+        const product = await SanPham.findById(id).populate("idDM").populate("idCH");
         //console.log(product);
         if (!product) {
             return res.status(404).json({ message: "Không tìm thấy sản phẩm!" });
@@ -211,7 +215,16 @@ export const sapxepSanPham = async ({ search = '', sort = "phobien", page = 1, l
         },
         { $sort: sortStage },
         { $skip: skip },
-        { $limit: pageSize }
+        { $limit: pageSize },
+        {
+            $lookup: {
+                from: "Cuahang",  // Collection
+                localField: "idCH",
+                foreignField: "_id",
+                as: "cuaHang"
+            }
+        },
+        { $unwind: { path: "$cuaHang", preserveNullAndEmptyArrays: true } }
     ]);
 
     return { tong, sp, tongPage };

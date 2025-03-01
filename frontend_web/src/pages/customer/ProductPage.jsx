@@ -34,7 +34,7 @@ function ProductPage() {
                 //console.log(response.data);
                 setSanPham(response.data.product);
                 setIsFavorite(response.data.isFavorite);
-                setSelectedLoai(response.data.phanLoai[0]);
+                setSelectedLoai(response.data.product.phanLoai[0]);
                 if(response.status === 200) {
                     console.log("Tải sản phẩm thành công!");
                     await axios.put(`/api/sanpham/capnhat/luotxem/${id}`);
@@ -74,15 +74,40 @@ function ProductPage() {
     //Yêu thích
     const toggleFavorite = async () => {
         try {
-            const response = await axios.patch(`/api/nguoidung/capnhat/yeuthich/${id}`);
+            await axios.patch(`/api/nguoidung/capnhat/yeuthich/${id}`);
             setIsFavorite(!isFavorite);
-            console.log(response.data.message);
+            //console.log(response.data.message);
         } catch (error) {
             console.error("Lỗi khi cập nhật yêu thích:", error.message);
         }
     };
 
     const sanPhamGHienTai = products2.slice(0, sanPhamGIndex + soSanPhamGMoiSlide);
+
+    const handleAddToCart = async () => {
+        if (!sanPham) return;
+        const idLoai = selectedLoai.id; 
+        if (!idLoai) {
+            alert("Vui lòng chọn phân loại trước khi thêm vào giỏ hàng!");
+            return;
+        }
+    
+        const giohang = {
+            idSP: sanPham._id,
+            idLoai: selectedLoai.id,
+            soLuong: quantity,
+        };
+    
+        try {
+            await axios.post('/api/giohang/them', giohang);
+            alert("Sản phẩm đã được thêm vào giỏ hàng!");
+        } catch (error) {
+            console.error("Lỗi khi thêm vào giỏ hàng:", error);
+            if (error.response && error.response.status === 403) {
+                alert("Bạn không có quyền thực hiện này");
+            }
+        }
+    };
     return (
         <MainLayout>
             <span  
@@ -205,9 +230,9 @@ function ProductPage() {
                         </div>
                     </div>
                     <div className='flex items-center gap-10 !mt-10'>
-                        <button className="cursor-pointer w-60 !py-4 bg-emerald-600 text-white text-xl rounded-xl 
-                            hover:bg-emerald-500 hover:scale-105 transition-all duration-300 shadow-md 
-                            active:scale-95 active:bg-emerald-700">
+                        <button 
+                            className="cursor-pointer w-60 !py-4 bg-emerald-600 text-white text-xl rounded-xl hover:bg-emerald-500 hover:scale-105 transition-all duration-300 shadow-md active:scale-95 active:bg-emerald-700"
+                            onClick={handleAddToCart}>
                             Thêm vào giỏ
                         </button>
                         <button className="cursor-pointer w-60 !py-4 bg-emerald-600 text-white text-xl rounded-xl 
@@ -231,7 +256,7 @@ function ProductPage() {
             <div className='!mt-5 border border-emerald-600 rounded-xl !py-6 !px-8 flex items-center gap-10'>
                 <img className="w-20 h-20 object-cover rounded-full cursor-pointer hover:opacity-80" src={product.cuaHang.anhCH} alt={product.cuaHang.tenCH}  ></img>
                 <div>
-                    <span className='text-xl font-bold'>{product.cuaHang.tenCH}</span>
+                    <span className='text-xl font-bold'>{sanPham?.idCH?.tenCH}</span>
                     <div className='flex gap-2 !mt-3'>
                         <button className='cursor-pointer flex items-center text-lg gap-2 border-1 border-emerald-600 text-emerald-600 !py-1 !px-2 rounded-lg hover:bg-gray-50'><HiOutlineChatBubbleLeftRight/>Chat Ngay</button>
                         <button 

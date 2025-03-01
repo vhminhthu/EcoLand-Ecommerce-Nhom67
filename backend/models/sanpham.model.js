@@ -5,7 +5,7 @@ const sanphamSchema = new mongoose.Schema(
         tenSP: { type: String, required: true },
         moTaSP: { type: String },
         idDM: { type: mongoose.Schema.Types.ObjectId, ref: "Danhmuc"},
-        idCH: { type: mongoose.Schema.Types.ObjectId, ref: "CuaHang" },
+        idCH: { type: mongoose.Schema.Types.ObjectId, ref: "Cuahang" },
         yeuThich: { type: Number, default: 0 },
         phanLoai: [
             {
