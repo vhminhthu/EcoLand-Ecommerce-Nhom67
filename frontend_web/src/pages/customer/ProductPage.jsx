@@ -36,7 +36,7 @@ function ProductPage() {
                 setIsFavorite(response.data.isFavorite);
                 setSelectedLoai(response.data.product.phanLoai[0]);
                 if(response.status === 200) {
-                    console.log("Tải sản phẩm thành công!");
+                    // console.log("Tải sản phẩm thành công!");
                     await axios.put(`/api/sanpham/capnhat/luotxem/${id}`);
                 }
             } catch (error) {

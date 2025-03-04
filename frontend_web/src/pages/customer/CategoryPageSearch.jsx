@@ -34,16 +34,16 @@ function CategoryPageSearch() {
       const fetchProducts = async () => {
           try { 
               const response = await axios.get('/api/danhmuc/lay');
-              console.log(response.data);
+              // console.log(response.data);
               setCategories(response.data); 
               if(id){
                 const responsesp = await axios.get(`/api/sanpham/search/timkiem?search=${search}&sort=${sort}&page=${page}&limit=${limit}&danhmuc=${id}&minStar=${minStar}&maxStar=${maxStar}&locations=${locations}`);
-                console.log(responsesp.data);
+                // console.log(responsesp.data);
                 setProducts(responsesp.data.sp);
                 setTongPages(responsesp.data.tongPage);
               } else {
                 const responsesp = await axios.get(`/api/sanpham/search/timkiem?search=${search}&sort=${sort}&page=${page}&limit=${limit}&minStar=${minStar}&maxStar=${maxStar}&locations=${locations}`);
-                console.log(responsesp.data);
+                // console.log(responsesp.data);
                 setProducts(responsesp.data.sp);
               }
           } catch (error) {

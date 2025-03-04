@@ -213,7 +213,7 @@ function StepTwo({ formData, handleThueChange }) {
         <div>
             <div className="bg-blue-100 p-3 rounded-md border border-blue-200 flex gap-3">
                 <IoIosInformationCircleOutline className="text-blue-600 text-4xl"/>
-                <p className="text-sm">Việc thu thập Thông Tin Thuế và Thông Tin Định Danh là bắt buộc theo quy định của Luật an ninh mạng, Thương mại điện tử và Thuế của Việt Nam. Thông Tin Thuế và Thông Tin Định Danh sẽ được bảo vệ theo chính sách bảo mật của Shopee. Người bán hoàn toàn chịu trách nhiệm về tính chính xác của thông tin.</p>
+                <p className="text-sm">Việc thu thập Thông Tin Thuế và Thông Tin Định Danh là bắt buộc theo quy định của Luật an ninh mạng, Thương mại điện tử và Thuế của Việt Nam. Thông Tin Thuế và Thông Tin Định Danh sẽ được bảo vệ theo chính sách bảo mật của EcoLand. Người bán hoàn toàn chịu trách nhiệm về tính chính xác của thông tin.</p>
             </div>
             <div className="flex flex-col gap-5 mt-5">
                 <div className="flex items-center space-x-4">

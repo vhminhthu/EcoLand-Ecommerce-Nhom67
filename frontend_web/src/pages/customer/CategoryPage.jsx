@@ -113,7 +113,7 @@ function CategoryPage() {
     <MainLayout>
       <div className="flex gap-6 p-4">
         {/* Sidebar */}
-        <div className={`w-64 p-4 rounded-lg shadow-lg bg-[#FCFCFC] transition-all duration-300 ${expanded ? "h-auto" : "h-[800px]"}`}>
+        <div className={`w-64 p-4 rounded-lg shadow-lg bg-[#FCFCFC] transition-all duration-300 ${expanded ? "h-auto" : "h-fit"}`}>
           <div className="flex items-center gap-2 text-[#1B8057] font-semibold mb-7">
             <FaBars />
             <span>Tất cả danh mục</span>

@@ -19,6 +19,7 @@ import axios from 'axios'
 import {useQuery} from '@tanstack/react-query'
 import { Routes ,Route} from "react-router-dom";
 import CategoryPageSearch from '../pages/customer/CategoryPageSearch';
+import CheckoutPage from '../pages/customer/CheckoutPage';
 
 function CustomerRoutes() {
 
@@ -52,6 +53,8 @@ function CustomerRoutes() {
             <Route path="/customer/notification" element={<NotificationPage />} />
             <Route path="/customer/wishlist" element={<WishlistPage />} />
             <Route path="/cart" element={<CartPage />} />
+            <Route path="/checkout" element={<CheckoutPage />} />
+
             <Route path="/customer/account/profile" element={<ProfilePage />} />
             <Route path="/customer/purchase" element={<PurchasePage />} />
 

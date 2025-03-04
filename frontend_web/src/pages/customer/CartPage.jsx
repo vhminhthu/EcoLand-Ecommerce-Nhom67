@@ -1,10 +1,11 @@
 import CartItem from '../../components/customer/common/items/CartItem';
 import MainLayout from '../../layouts/customer/MainLayout';
-import { useState } from "react";
-import { useEffect } from 'react';
+import { useState, useEffect } from "react";
 import axios from 'axios';
+import { useNavigate } from "react-router-dom";
 
 function CartPage() {
+    const navigate = useNavigate();
     const [gioHang, setGioHang] = useState([]);
     const [selectedItems, setSelectedItems] = useState([]);
     const [totalPrice, setTotalPrice] = useState(0);
@@ -92,7 +93,6 @@ function CartPage() {
                 const phanLoai = sanPhamChiTiet.sanPhamChiTiet.find(sp => 
                     sp.idSP?.phanLoai?.some(loai => loai.id === item.idLoai)
                 )?.idSP?.phanLoai?.find(loai => loai.id === item.idLoai);
-                console.log("phân loại", phanLoai)
                 if (!phanLoai) return total;
 
                 const { giaLoai, khuyenMai } = phanLoai;
@@ -105,6 +105,25 @@ function CartPage() {
         const newTotalQuantity = selectedItems.filter(item => item.checked).length;
         setTotalQuantity(newTotalQuantity);
     }, [gioHang, selectedItems]);
+
+    //Mua hàng
+    const handlePurchase = () => {
+        if (selectedItems.length === 0) {
+            alert("Vui lòng chọn sản phẩm trước khi mua hàng!");
+            return;
+        }
+
+        const Stores = new Set(selectedItems.map(item => item.idSP.idCH));
+
+        if (Stores.size > 1) {
+            alert("Bạn chỉ có thể mua hàng từ một cửa hàng tại một thời điểm.");
+            return;
+        }
+
+        navigate('/checkout', { 
+            state: { selectedItems, totalPrice }
+        });
+    };
     
     return (
         <MainLayout>
@@ -135,7 +154,9 @@ function CartPage() {
                 <p className='text-xl'>Tổng thanh toán ({totalQuantity} Sản phẩm)</p>
                 <p className='text-2xl text-emerald-600'>{totalPrice.toLocaleString()} đ</p>
                 <div 
-                    className='bg-emerald-600 text-white px-15 py-3 hover:bg-emerald-700 cursor-pointer hover:font-bold'>
+                    className='bg-emerald-600 text-white px-15 py-3 hover:bg-emerald-700 cursor-pointer hover:font-bold'
+                    onClick={handlePurchase}
+                    disabled={selectedItems.length === 0}>
                 Mua hàng
                 </div>
             </div>

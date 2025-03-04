@@ -12,7 +12,7 @@ export const AuthProvider = ({ children }) => {
         const fetchUser = async () => {
         try {
             const response = await axios.get("/api/auth/getme");
-            console.log("Thông tin người dùng", response.data);
+            // console.log("Thông tin người dùng", response.data);
             setUser(response.data);
         } catch (error) {
             console.error("Lỗi khi lấy thông tin người dùng", error);

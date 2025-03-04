@@ -31,7 +31,7 @@ function HomePage() {
         const fetchProducts = async () => {
             try {
                 const response = await axios.get('/api/sanpham/lay/tatca');
-                console.log(response.data);
+                // console.log(response.data);
                 setProducts(response.data); 
             } catch (error) {
                 console.error("Có lỗi xảy ra khi lấy sản phẩm:", error);

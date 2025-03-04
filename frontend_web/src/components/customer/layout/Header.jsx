@@ -57,7 +57,7 @@ function Header({ thongBaoList }) {
         const fetchCategories = async () => {
             try {
                 const response = await axios.get('/api/danhmuc/lay');
-                console.log(response.data);
+                // console.log(response.data);
                 setCategories(response.data); 
             } catch (error) {
                 console.error("Có lỗi xảy ra khi lấy danh mục:", error);
