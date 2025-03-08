@@ -292,6 +292,12 @@ function Header({ thongBaoList }) {
                         </div>
                     </Link>
 
+                    <Link to="/category/tatca">
+                        <div className=" text-white hover:bg-emerald-500 !px-8 !py-2 rounded-xl">
+                            Danh mục
+                        </div>
+                    </Link>
+
                     <Link to="/customer/support">
                         <div className=" text-white hover:bg-emerald-500 !px-8 !py-2 rounded-xl">
                             Hỗ trợ

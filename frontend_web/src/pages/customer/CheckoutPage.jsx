@@ -1,6 +1,6 @@
 import MainLayout from '../../layouts/customer/MainLayout'
 import { MdOutlineStorefront } from "react-icons/md";
-import { useLocation } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import CheckoutItem from '../../components/customer/common/items/CheckoutItem';
 import { useState } from 'react';
 import { useAuth } from "../../context/AuthContext";
@@ -8,6 +8,7 @@ import axios from 'axios';
 import { useEffect } from 'react';
 function CheckoutPage() {
     const { user, setUser } = useAuth();
+    const navigate = useNavigate();
     const location = useLocation();
     const { selectedItems, totalPrice, totalQuantity } = location.state || { selectedItems: [], totalPrice: 0, totalQuantity: 0 };
     const tienShip = 14000;
@@ -20,6 +21,12 @@ function CheckoutPage() {
 
     const [tenCH, setTenCH] = useState("");
     const idCH = selectedItems.length > 0 ? selectedItems[0]?.idSP?.idCH : null;
+
+    // console.log("selectedItems", selectedItems)
+    
+    // console.log("totalPrice", totalPrice)
+    
+    // console.log("totalQuantity", totalQuantity)
 
     useEffect(() => {
         const getTenCH = async () => {
@@ -98,6 +105,7 @@ function CheckoutPage() {
             const response = await themDonHang();
             if (response.status === 201) {
                 alert("Đặt hàng thành công!");
+                navigate("/cart");
             } else {
                 alert("Lỗi khi đặt hàng!");
             }

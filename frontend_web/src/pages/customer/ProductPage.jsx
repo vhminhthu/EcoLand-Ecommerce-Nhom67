@@ -108,6 +108,31 @@ function ProductPage() {
             }
         }
     };
+
+    const handlePurchase = () => {
+        const selectedItems = [{
+            checked: true,
+            idLoai: selectedLoai.id,  
+            idSP: {
+                _id: sanPham._id,
+                tenSP: sanPham.tenSP,
+                dsAnhSP: sanPham.dsAnhSP,
+                idCH: sanPham.idCH._id,
+                phanLoai: sanPham.phanLoai,
+            },
+            soLuong: quantity,
+        }];
+    
+        navigate('/checkout', {
+            state: {
+                selectedItems,
+                totalPrice: (selectedLoai?.giaLoai * (1 - selectedLoai?.khuyenMai / 100)) * quantity,
+                totalQuantity: quantity
+            }
+        });
+    };
+    
+    
     return (
         <MainLayout>
             <span  
@@ -237,7 +262,8 @@ function ProductPage() {
                         </button>
                         <button className="cursor-pointer w-60 !py-4 bg-emerald-600 text-white text-xl rounded-xl 
                             hover:bg-emerald-500 hover:scale-105 transition-all duration-300 shadow-md 
-                            active:scale-95 active:bg-emerald-700">
+                            active:scale-95 active:bg-emerald-700"
+                            onClick={handlePurchase}>
                             Mua ngay
                         </button>
                         <span className='flex gap-2 items-center'>

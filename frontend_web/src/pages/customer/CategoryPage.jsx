@@ -35,10 +35,17 @@ function CategoryPage() {
             const response = await axios.get('/api/danhmuc/lay');
             //console.log(response.data);
             setCategories(response.data); 
-            const responsesp = await axios.get(`/api/sanpham/lay/danhmuc/sp?sort=${sort}&page=${page}&limit=${limit}&danhmuc=${id}&minStar=${minStar}&maxStar=${maxStar}&locations=${locations}`);
-            //console.log(responsesp.data);
-            setProducts(responsesp.data.sp);
-            setTongPages(responsesp.data.tongPage);
+            if(id){
+              const responsesp = await axios.get(`/api/sanpham/lay/danhmuc/sp?sort=${sort}&page=${page}&limit=${limit}&danhmuc=${id}&minStar=${minStar}&maxStar=${maxStar}&locations=${locations}`);
+              // console.log(responsesp.data.sp);
+              setProducts(responsesp.data.sp);
+              setTongPages(responsesp.data.tongPage);
+            } else {
+              const responsesp = await axios.get(`/api/sanpham/lay/tatca/danhmuc?sort=${sort}&page=${page}&limit=${limit}&danhmuc=${id}&minStar=${minStar}&maxStar=${maxStar}&locations=${locations}`);
+              // console.log(responsesp.data.sp);
+              setProducts(responsesp.data.sp);
+              setTongPages(responsesp.data.tongPage);
+            }
           } catch (error) {
             console.error("Có lỗi xảy ra khi lấy sản phẩm:", error);
           }

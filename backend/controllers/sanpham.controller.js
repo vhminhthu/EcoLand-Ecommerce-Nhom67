@@ -89,6 +89,17 @@ export const getTatCaSanPham = async (req, res) => {
     }
 };
 
+export const getTatCaSanPhamDM = async (req, res) => {
+    try {
+        const {sort, page, limit, minStar=0, maxStar=0, locations=''} = req.query;
+        const result = await sapxepSanPham({sort, page, limit, minStar, maxStar,locations });
+        return res.status(200).json(result);
+    } catch (error) {
+        console.error("Lỗi khi lấy sản phẩm:", error);
+        res.status(500).json({ message: "Lỗi server!", error: error.message });
+    }
+};
+
 export const getSanPhamById = async (req, res) => {
     try {
         const { id } = req.params;
@@ -145,6 +156,17 @@ export const getSanPhamByIdDM = async (req, res) => {
     }
 };
 
+export const getSanPhamByIdCH = async (req, res) => { 
+    try {
+        const {sort, page, limit, cuahang} = req.query;
+        const result = await sapxepSanPham({sort, page, limit, cuahang });
+        return res.status(200).json(result);
+    } catch (error) {
+        res.status(500).json({ error: "Lỗi 500" });
+        console.log("Lỗi getSanPhamByIdCH controller", error.message);
+    }
+};
+
 export const timKiem = async (req, res) => { 
     try {
         const { search, sort, page, limit, danhmuc='', minStar=0, maxStar=0, locations='' } = req.query;
@@ -156,7 +178,7 @@ export const timKiem = async (req, res) => {
     }
 };
 
-export const sapxepSanPham = async ({ search = '', sort = "phobien", page = 1, limit = 1, danhmuc, minStar, maxStar, locations }) => {
+export const sapxepSanPham = async ({ search = '', sort = "phobien", page = 1, limit = 1, danhmuc, minStar=0, maxStar=0, locations='', cuahang='' }) => {
     const pageSize = parseInt(limit);
     const skip = (page - 1) * pageSize;
 
@@ -172,12 +194,23 @@ export const sapxepSanPham = async ({ search = '', sort = "phobien", page = 1, l
         matchStage.idDM = new mongoose.Types.ObjectId(danhmuc);
     }
 
+    // Chỉ lọc theo cửa hàng nếu có cửa hàng được truyền vào
+    if (cuahang) {
+        matchStage.idCH = new mongoose.Types.ObjectId(cuahang);
+    }
+
     const min = Number(minStar);
     const max = Number(maxStar);
 
-    if (min && max !== '0') { 
-        matchStage.tongSoSao = { $gte: min, $lte: max }
-    }
+    if (min && max !== '0') {
+        matchStage.$expr = {
+            $and: [
+                { $gt: ["$tongSoDanhGia", 0] }, 
+                { $gte: [{ $divide: ["$tongSoSao", "$tongSoDanhGia"] }, min] },
+                { $lte: [{ $divide: ["$tongSoSao", "$tongSoDanhGia"] }, max] }
+            ]
+        };
+    }    
 
     if (locations !== '') {
         const locationsArray = locations.split(",");
@@ -221,10 +254,10 @@ export const sapxepSanPham = async ({ search = '', sort = "phobien", page = 1, l
                 from: "Cuahang",  // Collection
                 localField: "idCH",
                 foreignField: "_id",
-                as: "cuaHang"
+                as: "idCH"
             }
         },
-        { $unwind: { path: "$cuaHang", preserveNullAndEmptyArrays: true } }
+        { $unwind: { path: "$idCH", preserveNullAndEmptyArrays: true } }
     ]);
 
     return { tong, sp, tongPage };

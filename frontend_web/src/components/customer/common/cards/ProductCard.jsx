@@ -112,7 +112,7 @@ function ProductCard(props) {
 
             <div className='!mx-2 flex justify-between items-center !mt-2 !mb-2'>
                 <div className="rating flex items-center gap-1 text-yellow-500 text-sm mt-1">
-                    <FaStar/> <span className="font-bold">{tongSoSao}</span> 
+                    <FaStar/> <span className="font-bold">{(tongSoSao/tongSoDanhGia) || 0}</span> 
                     <span className="text-gray-500">({tongSoDanhGia})</span>
                 </div>
 

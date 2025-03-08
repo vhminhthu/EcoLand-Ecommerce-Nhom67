@@ -2,7 +2,7 @@ import CategoryCard from "../../components/customer/common/cards/CategoryCard"
 import ProductCard from "../../components/customer/common/cards/ProductCard";
 import ShopCard from "../../components/customer/common/cards/ShopCard";
 import MainLayout from "../../layouts/customer/MainLayout"
-import { ads, shopData, products2 } from "../../data/home";
+import { ads, products2 } from "../../data/home";
 
 import { BiChevronRight } from "react-icons/bi";
 import { FaChevronLeft, FaChevronRight  } from "react-icons/fa";
@@ -13,6 +13,7 @@ import axios from "axios";
 function HomePage() {
     const [categories, setCategories] = useState([]);
     const [products, setProducts] = useState([]);
+    const [shops, setShops] = useState([]);
 
     useEffect(() => {
         const fetchCategories = async () => {
@@ -31,13 +32,25 @@ function HomePage() {
         const fetchProducts = async () => {
             try {
                 const response = await axios.get('/api/sanpham/lay/tatca');
-                // console.log(response.data);
                 setProducts(response.data); 
             } catch (error) {
                 console.error("Có lỗi xảy ra khi lấy sản phẩm:", error);
             }
         };
         fetchProducts();
+    }, []);
+
+    useEffect(() => {
+        const fetchShop = async () => {
+            try {
+                const response = await axios.get('/api/cuahang/laytatca');
+                //console.log("shop",response.data);
+                setShops(response.data); 
+            } catch (error) {
+                console.error("Có lỗi xảy ra khi lấy cửa hàng:", error);
+            }
+        };
+        fetchShop();
     }, []);
 
     //Quảng cáo
@@ -175,8 +188,8 @@ function HomePage() {
                     <div className="cursor-pointer flex items-center text-gray-500 hover:text-emerald-500">Xem tất cả <BiChevronRight/></div>
                 </div>
                 <div className="grid grid-cols-3 gap-4 justify-center">
-                {shopData.map((shop) => (
-                    <ShopCard key={shop.id} {...shop} />
+                {shops.map((shop) => (
+                    <ShopCard key={shop._id} {...shop} />
                 ))}
                 </div>
             </div>
