@@ -45,3 +45,20 @@ export const addCuaHang = async (req, res) => {
         res.status(500).json({ message: "Lỗi server!", error: error.message });
     }
 };
+
+export const getCuaHangById = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const cuaHang = await CuaHang.findById(id);
+
+        if (!cuaHang) {
+            return res.status(404).json({ message: "Không tìm thấy cửa hàng!" });
+        }
+
+        res.status(200).json(cuaHang);
+    } catch (error) {
+        console.error("Lỗi khi lấy cửa hàng theo ID:", error);
+        res.status(500).json({ message: "Lỗi server!", error: error.message });
+    }
+};

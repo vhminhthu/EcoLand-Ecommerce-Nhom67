@@ -121,7 +121,7 @@ function CartPage() {
         }
 
         navigate('/checkout', { 
-            state: { selectedItems, totalPrice }
+            state: { selectedItems, totalPrice, totalQuantity }
         });
     };
     

@@ -35,3 +35,31 @@ export const yeuThich = async (req, res) => {
     }
 };
 
+export const updateThongTinGiaoHang = async (req, res) => {
+    try {
+        const { hoVaTen, sdt, diaChi } = req.body;
+        const idND = req.nguoidung._id;
+
+        if (!hoVaTen || !sdt || !diaChi) {
+            return res.status(400).json({ message: "Vui lòng nhập đầy đủ thông tin" });
+        }
+
+        const updated = await Nguoidung.findByIdAndUpdate(
+            idND,
+            { thongTinGiaoHang: { hoVaTen, sdt, diaChi } },
+            { new: true }
+        );
+
+        if (!updated) {
+            return res.status(404).json({ message: "Người dùng không tồn tại" });
+        }
+
+        res.status(200).json({ message: "Cập nhật thành công", nguoidung: updated });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Lỗi máy chủ" });
+    }
+};
+
+
+

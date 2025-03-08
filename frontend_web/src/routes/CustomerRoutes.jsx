@@ -20,6 +20,7 @@ import {useQuery} from '@tanstack/react-query'
 import { Routes ,Route} from "react-router-dom";
 import CategoryPageSearch from '../pages/customer/CategoryPageSearch';
 import CheckoutPage from '../pages/customer/CheckoutPage';
+import PaymentResult from '../pages/customer/PaymentResult';
 
 function CustomerRoutes() {
 
@@ -67,7 +68,8 @@ function CustomerRoutes() {
             <Route path="/:nameProduct" element={<ProductPage/>} />
             <Route path="/shop/:nameShop" element={<ShopPage/>} />
 
-            <Route path="/customer/support" element={<SupportPage/>} />            
+            <Route path="/customer/support" element={<SupportPage/>} /> 
+            <Route path="/payment-result" element={<PaymentResult />} />
         </Routes>
     )
 }

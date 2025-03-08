@@ -2,29 +2,35 @@ import mongoose from "mongoose";
 
 const donhangSchema = new mongoose.Schema(
     {
-        trangThai: { type: String, required: true },
-        tongTien: { type: Number, required: true },
+        thongTinGiaoHang: {
+            hoVaTen: { type: String, required: true },
+            sdt: { type: String, required: true },
+            diaChi: { type: String, required: true },
+        },
         dsSanPham: [
             {
                 idSP: { type: mongoose.Schema.Types.ObjectId, ref: "Sanpham", required: true },
-                phanLoai: [ 
-                    {
-                        tenLoai: { type: String, required: true },
-                        giaLoai: { type: Number, required: true },
-                        donVi: { type: String, required: true },
-                        khuyenMai: { type: Number, default: 0 }
-                    }
-                ]
+                phanLoai: {
+                    id: { type: Number },
+                    tenLoai: { type: String, required: true },
+                    giaLoai: { type: Number, required: true },
+                    khuyenMai: { type: Number, default: 0 },
+                },
+                soLuong: { type: Number, required: true }
             }
         ],
-        nguoiBanId: { type: mongoose.Schema.Types.ObjectId, ref: "Nguoidung", required: true },
+        tongTienHang: { type: Number, required: true },
+        luuY: { type: String, default: "" },
+        phiVanChuyen: { type: Number, required: true },
+        phuongThucThanhToan: { type: String, required: true },
+        tongTienThanhToan: { type: Number, required: true },
+        trangThai: { type: String, required: true, default: "Chờ xác nhận" },
+        cuaHangId: { type: mongoose.Schema.Types.ObjectId, ref: "Nguoidung", required: true },
         khachHangId: { type: mongoose.Schema.Types.ObjectId, ref: "Nguoidung", required: true },
         ngayDat: { type: Date, default: Date.now },
-        ngayGiao: { type: Date },
         ngayHoanThanh: { type: Date },
-        idGiaoDich: { type: mongoose.Schema.Types.ObjectId, ref: "GiaoDich" },
-        idVanChuyen: { type: mongoose.Schema.Types.ObjectId, ref: "VanChuyen" },
-        phuongThucThanhToan: { type: String, required: true }
+        idGiaoDich: { type: mongoose.Schema.Types.ObjectId, ref: "Giaodich" },
+        idVanChuyen: { type: mongoose.Schema.Types.ObjectId, ref: "Vanchuyen" },
     },
     {
         timestamps: true
