@@ -32,7 +32,7 @@ const donhangSchema = new mongoose.Schema(
         ngayHoanThanh: { type: Date },
         idGiaoDich: { type: mongoose.Schema.Types.ObjectId, ref: "Giaodich" },
         idVanChuyen: { type: mongoose.Schema.Types.ObjectId, ref: "Vanchuyen" },
-        idDanhGia: { type: mongoose.Schema.Types.ObjectId, ref: "Danhgia" },
+        idDanhGia: [{ type: mongoose.Schema.Types.ObjectId, ref: "Danhgia" }],
     },
     {
         timestamps: true

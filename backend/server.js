@@ -14,7 +14,7 @@ import nguoidungRoutes from "./routes/nguoidung.route.js"
 import giohangRoutes from "./routes/giohang.route.js"
 import donhangRoutes from "./routes/donhang.route.js"
 import vnpayRoutes from "./routes/vnpay.route.js";
-import giaodichRoutes from "./routes/giaodich.routes.js";
+import giaodichRoutes from "./routes/giaodich.route.js";
 import danhgiaRoutes from "./routes/danhgia.route.js";
 
 dotenv.config();

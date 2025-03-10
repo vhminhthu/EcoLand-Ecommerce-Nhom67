@@ -8,11 +8,8 @@ import axios from 'axios';
 function PurchasePage() {
     const [selected, setSelected] = useState('Tất cả');
     const [donhang, setDonHang] = useState([]);
-    const [danhGiaMoi, setDanhGiaMoi] = useState({
-        soSao: 5,
-        noiDung: "",
-        idDonHang: "",
-    });
+    const [danhGiaMoi, setDanhGiaMoi] = useState(null);
+
     const [isDanhGia, setIsDanhGia] = useState(false);
 
 
@@ -52,23 +49,32 @@ function PurchasePage() {
         }
     };
 
-    const moDanhGia = (idDonHang) => {
+    const moDanhGia = (idDonHang, sanPhamDanhGia) => {
+        // console.log("ID đơn hàng:", idDonHang);
+        // console.log("Danh sách sản phẩm đánh giá:", sanPhamDanhGia);
         setDanhGiaMoi({
-            ...danhGiaMoi,
-            idDonHang: idDonHang,
+            idDonHang,
+            sanPhamDanhGia: sanPhamDanhGia.map(sp => ({
+                ...sp,
+                soSao: 5,
+                noiDung: ""
+            }))
         });
         setIsDanhGia(true);
     };
 
+    useEffect(() => {
+        if (danhGiaMoi !== null) {
+            console.log("Dữ liệu sau khi set:", danhGiaMoi);
+            setIsDanhGia(true);
+        }
+    }, [danhGiaMoi]); 
+
     const themDanhGia = async () => {
         try {
-            await axios.post(`/api/danhgia/them`, {
-                soSao: danhGiaMoi.soSao,
-                noiDung: danhGiaMoi.noiDung,
-                idDonHang: danhGiaMoi.idDonHang,
-            });
+            await axios.post(`/api/danhgia/them`, danhGiaMoi);
             fetchDonHang();
-            setDanhGiaMoi({ soSao: 5, noiDung: "", idDonHang: "" });
+            setDanhGiaMoi(null);
             setIsDanhGia(false);
         } catch (error) {
             console.error("Lỗi khi thêm đánh giá:", error);
@@ -95,7 +101,7 @@ function PurchasePage() {
                     <div className="flex flex-col gap-3 px-5 pb-5 mt-5">
                         {donHangDaLoc.length > 0 ? (
                             donHangDaLoc.map((pu) => (
-                                <PurchaseItem key={pu._id} {...pu} onCapNhatTrangThai={capNhatTrangThai} onDanhGia={moDanhGia}/>
+                                <PurchaseItem key={pu._id} {...pu} onCapNhatTrangThai={capNhatTrangThai} moDanhGia={moDanhGia}/>
                             ))
                         ) : (
                             <p className="text-center text-gray-500">Không có đơn hàng nào.</p>
@@ -106,49 +112,62 @@ function PurchasePage() {
                     <div className="fixed inset-0 bg-black/50 bg-opacity-50 flex items-center justify-center z-50">
                         <div className="bg-white p-6 rounded-lg shadow-lg w-96">
                             <h2 className="text-xl text-emerald-600 text-center font-semibold mb-4">Đánh giá đơn hàng</h2>
-                            <div className="mb-4">
-                                <label className="block text-sm font-semibold mb-2">Số sao:</label>
-                                <div className="flex items-center space-x-2">
-                                    {[1, 2, 3, 4, 5].map((sao) => (
-                                        <button
-                                            key={sao}
-                                            onClick={() => setDanhGiaMoi({ ...danhGiaMoi, soSao: sao })}
-                                            className={`text-3xl transition-colors ${
-                                                sao <= danhGiaMoi.soSao ? "text-yellow-500" : "text-gray-300"
-                                            }`}
-                                        >
-                                            ★
-                                        </button>
-                                    ))}
+                            {danhGiaMoi.sanPhamDanhGia.map((sp, index) => (
+                                <div key={sp.idSP} className="mb-4 border-b pb-4">
+                                    <div className='flex gap-2'>
+                                        <img src={sp.idSP.dsAnhSP} alt={sp.idSP.tenSP} className='w-14 h-14 object-cover rounded' />
+                                        <span>
+                                            <p className="text-lg font-semibold">{sp.idSP.tenSP}</p>
+                                            <p className="text-sm text-gray-600">{sp.phanLoai.tenLoai}</p>
+                                        </span>
+                                    </div>
+                                    <div className="flex items-center space-x-2">
+                                        <p className='mr-5'>Chất lượng sản phẩm</p>
+                                        {[1, 2, 3, 4, 5].map((sao) => (
+                                            <button
+                                                key={sao}
+                                                onClick={() => {
+                                                    const updatedSanPhamDanhGia = [...danhGiaMoi.sanPhamDanhGia];
+                                                    updatedSanPhamDanhGia[index].soSao = sao;
+                                                    setDanhGiaMoi({ ...danhGiaMoi, sanPhamDanhGia: updatedSanPhamDanhGia });
+                                                }}
+                                                className={`text-3xl transition-colors cursor-pointer ${
+                                                    sao <= sp.soSao ? "text-yellow-500" : "text-gray-300"
+                                                }`}
+                                            >
+                                                ★
+                                            </button>
+                                        ))}
+                                    </div>
+                                    <textarea
+                                        className="w-full border border-gray-300 rounded-lg px-3 py-2 h-24 resize-none mt-2"
+                                        placeholder="Nhập nhận xét của bạn..."
+                                        value={sp.noiDung}
+                                        onChange={(e) => {
+                                            const updatedSanPhamDanhGia = [...danhGiaMoi.sanPhamDanhGia];
+                                            updatedSanPhamDanhGia[index].noiDung = e.target.value;
+                                            setDanhGiaMoi({ ...danhGiaMoi, sanPhamDanhGia: updatedSanPhamDanhGia });
+                                        }}
+                                    />
                                 </div>
-                            </div>
-
-                            <div className="mb-4">
-                                <label className="block text-sm font-semibold mb-2">Nội dung đánh giá:</label>
-                                <textarea
-                                    className="w-full border border-gray-300 rounded-lg px-3 py-2 h-24 resize-none"
-                                    placeholder="Nhập nhận xét của bạn..."
-                                    value={danhGiaMoi.noiDung}
-                                    onChange={(e) => setDanhGiaMoi({ ...danhGiaMoi, noiDung: e.target.value })}
-                                />
-                            </div>
+                            ))}
 
                             <div className="flex justify-end gap-3">
                                 <button 
                                     onClick={() => {
                                         setIsDanhGia(false); 
-                                        setDanhGiaMoi({ soSao: 5, noiDung: "", idDonHang: "" });
+                                        setDanhGiaMoi(null);
                                     }}                                    
-                                    className="bg-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-400"
+                                    className=" border border-gray-400 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-200 cursor-pointer"
                                 >
-                                    Hủy
+                                    Trở lại
                                 </button>
                                 <button 
                                     type="submit" 
-                                    className="bg-emerald-600 text-white px-4 py-2 rounded-lg hover:bg-emerald-700"
+                                    className="bg-emerald-600 text-white px-4 py-2 rounded-lg hover:bg-emerald-700 cursor-pointer"
                                     onClick={() => themDanhGia()}
                                 >
-                                    Gửi đánh giá
+                                    Hoàn thành
                                 </button>
                             </div>
                         </div>

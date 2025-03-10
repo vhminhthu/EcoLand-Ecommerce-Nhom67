@@ -5,7 +5,7 @@ const danhgiaSchema = new mongoose.Schema(
         soSao: { type: Number },
         noiDung: { type: String },
         idDonHang: { type: mongoose.Schema.Types.ObjectId, ref: "Donhang" },
-        // idSanPham: { type: mongoose.Schema.Types.ObjectId, ref: "Sanpham" },
+        idSanPham: { type: mongoose.Schema.Types.ObjectId, ref: "Sanpham" },
         khachHangId: { type: mongoose.Schema.Types.ObjectId, ref: "Nguoidung" },
         // hinhAnh: { type: String }
     },

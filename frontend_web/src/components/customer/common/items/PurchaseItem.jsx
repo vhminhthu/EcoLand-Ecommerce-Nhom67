@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 
 function PurchaseItem(props) {
-    const { _id, idDanhGia, cuaHangId, trangThai, dsSanPham, tongTienThanhToan, onCapNhatTrangThai, onDanhGia } = props;
+    const { _id, idDanhGia, cuaHangId, trangThai, dsSanPham, tongTienThanhToan, onCapNhatTrangThai, moDanhGia } = props;
 
     return (
         <div key={_id} className='border border-emerald-600 shadow rounded-xl p-3'>
@@ -41,16 +41,17 @@ function PurchaseItem(props) {
                         Đã nhận được hàng
                     </button>
                 )}
-                {trangThai === "Hoàn thành" && idDanhGia == null && (
+                {trangThai === "Hoàn thành" && (!idDanhGia || idDanhGia.length === 0) && (
                     <button 
-                        onClick={() => onDanhGia(_id)}
+                        onClick={() => moDanhGia(_id, dsSanPham)}
                         className='border border-emerald-600 text-emerald-600 font-medium px-5 py-2 rounded-xl'>
                         Đánh giá
                     </button>
                 )}
-                {idDanhGia != null && (
+                {idDanhGia && idDanhGia.length > 0 && (
                     <p>Đã đánh giá</p>
                 )}
+
             </span>
         </div>
     );
@@ -59,6 +60,7 @@ function PurchaseItem(props) {
 PurchaseItem.propTypes = {
     _id: PropTypes.string.isRequired,
     cuaHangId: PropTypes.string.isRequired,
+    idDanhGia: PropTypes.string.isRequired,
     trangThai: PropTypes.string.isRequired,
     dsSanPham: PropTypes.arrayOf(
         PropTypes.shape({
@@ -78,7 +80,7 @@ PurchaseItem.propTypes = {
     ).isRequired,
     tongTienThanhToan: PropTypes.number.isRequired,
     onCapNhatTrangThai: PropTypes.func.isRequired,
-    onDanhGia: PropTypes.func.isRequired,
+    moDanhGia: PropTypes.func.isRequired,
 };
 
 export default PurchaseItem;
