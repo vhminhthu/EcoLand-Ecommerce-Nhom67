@@ -1,9 +1,10 @@
 import Nguoidung from '../models/nguoidung.model.js'
 import jwt from "jsonwebtoken"
 
+
 export const protectRoute = async (req,res,next)=>{
     try{
-        const token = req.cookies.jwt
+        let token = req.cookies.jwt || req.headers.authorization?.split(" ")[1];
         if(!token){
             return res.status(401).json({error:"Bạn cần đăng nhập trước"})
         }
@@ -23,5 +24,3 @@ export const protectRoute = async (req,res,next)=>{
         return res.status(500).json({error:" Lỗi 500" })
     }
 }
-
-
