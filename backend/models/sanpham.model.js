@@ -33,7 +33,7 @@ const sanphamSchema = new mongoose.Schema(
         nguonGoc: { type: String },
         tongSoSao: { type: Number, default: 0 },
         tongSoDanhGia: { type: Number, default: 0 },
-        dsDanhGia: [{ type: mongoose.Schema.Types.ObjectId, ref: "Danhgia", default: [] }],
+        // dsDanhGia: [{ type: mongoose.Schema.Types.ObjectId, ref: "Danhgia", default: [] }],
         dsDonHang: [{ type: mongoose.Schema.Types.ObjectId, ref: "Donhang", default: [] }]
     },
     {

@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 
 const donhangSchema = new mongoose.Schema(
     {
+        maDonHang: { type: String },
         thongTinGiaoHang: {
             hoVaTen: { type: String, required: true },
             sdt: { type: String, required: true },
@@ -25,12 +26,13 @@ const donhangSchema = new mongoose.Schema(
         phuongThucThanhToan: { type: String, required: true },
         tongTienThanhToan: { type: Number, required: true },
         trangThai: { type: String, required: true, default: "Chờ xác nhận" },
-        cuaHangId: { type: mongoose.Schema.Types.ObjectId, ref: "Nguoidung", required: true },
+        cuaHangId: { type: mongoose.Schema.Types.ObjectId, ref: "Cuahang", required: true },
         khachHangId: { type: mongoose.Schema.Types.ObjectId, ref: "Nguoidung", required: true },
         ngayDat: { type: Date, default: Date.now },
         ngayHoanThanh: { type: Date },
         idGiaoDich: { type: mongoose.Schema.Types.ObjectId, ref: "Giaodich" },
         idVanChuyen: { type: mongoose.Schema.Types.ObjectId, ref: "Vanchuyen" },
+        idDanhGia: { type: mongoose.Schema.Types.ObjectId, ref: "Danhgia" },
     },
     {
         timestamps: true

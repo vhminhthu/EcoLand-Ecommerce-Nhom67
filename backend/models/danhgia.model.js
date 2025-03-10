@@ -2,12 +2,12 @@ import mongoose from "mongoose";
 
 const danhgiaSchema = new mongoose.Schema(
     {
-        soSao: { type: Number, required: true },
-        noiDung: { type: String, required: true },
-        idDonHang: { type: mongoose.Schema.Types.ObjectId, ref: "Donhang", required: true },
-        idSanPham: { type: mongoose.Schema.Types.ObjectId, ref: "Sanpham", required: true },
-        khachHangId: { type: mongoose.Schema.Types.ObjectId, ref: "Nguoidung", required: true },
-        hinhAnh: { type: String }
+        soSao: { type: Number },
+        noiDung: { type: String },
+        idDonHang: { type: mongoose.Schema.Types.ObjectId, ref: "Donhang" },
+        // idSanPham: { type: mongoose.Schema.Types.ObjectId, ref: "Sanpham" },
+        khachHangId: { type: mongoose.Schema.Types.ObjectId, ref: "Nguoidung" },
+        // hinhAnh: { type: String }
     },
     {
         timestamps: true

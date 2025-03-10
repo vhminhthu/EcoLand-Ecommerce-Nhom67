@@ -21,7 +21,7 @@ function CategoryPage() {
   const navigate = useNavigate();
 
   const query = new URLSearchParams(window.location.search); 
-  const page = parseInt(query.get('trang')) || 1;
+  const page = parseInt(query.get('page')) || 1;
   const sort = query.get('sort') || 'phobien';
   const limit = query.get('limit') || 1;
   const minStar = query.get('minStar') || 0;
@@ -108,7 +108,8 @@ function CategoryPage() {
 
   const handlePageChange = (newPage) => {
     const searchParams = new URLSearchParams(location.search);
-        searchParams.set("trang", newPage);
+        
+    searchParams.set("page", newPage);
   
     navigate(`${location.pathname}?${searchParams.toString()}`, {
       state: { id: id }

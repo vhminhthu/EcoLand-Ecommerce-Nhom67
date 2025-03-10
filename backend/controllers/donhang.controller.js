@@ -1,5 +1,24 @@
 import Donhang from "../models/donhang.model.js";
 import Giohang from "../models/giohang.model.js"; 
+import Cuahang from "../models/cuahang.model.js"; 
+import moment from "moment";
+
+export const taoMaDonHang = async () => {
+    const ngayHienTai = moment().format("YYYYMMDD");
+    
+    // Đếm số đơn hàng đã có trong ngày
+    const count = await Donhang.countDocuments({
+        ngayDat: { 
+            $gte: moment().startOf("day").toDate(), 
+            $lt: moment().endOf("day").toDate()
+        }
+    });
+
+    const soThuTu = String(count + 1).padStart(4, "0"); // Tăng số và định dạng (001, 002,...)
+    
+    const maDonHang = `DH${ngayHienTai}${soThuTu}`;
+    return maDonHang;
+};
 
 export const themDonHang = async (req, res) => {
     try {
@@ -25,7 +44,10 @@ export const themDonHang = async (req, res) => {
             return res.status(400).json({ message: "Danh sách sản phẩm không hợp lệ!" });
         }
 
+        const maDonHang = await taoMaDonHang();
+
         const newOrder = new Donhang({
+            maDonHang,
             thongTinGiaoHang,
             dsSanPham,
             tongTienHang,
@@ -69,5 +91,120 @@ export const themDonHang = async (req, res) => {
     } catch (error) {
         console.error("Lỗi khi thêm đơn hàng:", error);
         return res.status(500).json({ message: "Lỗi máy chủ!", error: error.message });
+    }
+};
+
+export const layDonHangTheoNguoiDung = async (req, res) => {
+    try {
+        const idND = req.nguoidung._id;
+
+        const donHangs = await Donhang.find({ khachHangId: idND })
+        .sort({ ngayDat: -1 })
+        .populate({
+            path: "cuaHangId",
+            select: "tenCH _id"
+        })
+        .populate({
+            path: "dsSanPham.idSP",
+            select: "_id tenSP dsAnhSP"
+        });
+
+
+        if (donHangs.length === 0) {
+            return res.status(404).json({ message: "Người dùng chưa có đơn hàng nào!" });
+        }
+
+        return res.status(200).json({
+            message: "Lấy danh sách đơn hàng thành công!",
+            donHangs
+        });
+    } catch (error) {
+        console.error("Lỗi khi lấy đơn hàng:", error);
+        return res.status(500).json({ message: "Lỗi máy chủ!", error: error.message });
+    }
+};
+
+export const layDonHangTheoCuaHang = async (req, res) => {
+    try {
+        const idND = req.nguoidung._id;
+        const { filter, page = 1, limit = 10 } = req.query;
+
+        const cuaHang = await Cuahang.findOne({ idNguoiDung: idND }).select("_id");
+        if (!cuaHang) {
+            return res.status(404).json({ message: "Người dùng không sở hữu cửa hàng nào!" });
+        }
+
+        const cuaHangId = cuaHang._id;
+
+        let filterStage = { cuaHangId };
+        if (filter) {
+            const trangThaiMap = {
+                choxacnhan: "Chờ xác nhận",
+                cholayhang: "Chờ lấy hàng",
+                chogiaohang: "Chờ giao hàng",
+                hoanthanh: "Hoàn thành",
+                dahuy: "Đã hủy"
+            };
+            if (trangThaiMap[filter]) {
+                filterStage.trangThai = trangThaiMap[filter];
+            }
+        }
+
+        const tong = await Donhang.countDocuments(filterStage);
+        const tongPage = Math.ceil(tong / limit);
+
+        const donHangs = await Donhang.find(filterStage)
+            .sort({ ngayDat: -1 })
+            .skip((page - 1) * limit)
+            .limit(parseInt(limit))
+            .select("_id maDonHang ngayDat thongTinGiaoHang.hoVaTen thongTinGiaoHang.sdt tongTienThanhToan trangThai");
+
+        return res.status(200).json({
+            message: "Lấy danh sách đơn hàng thành công!",
+            tongDonHang: tong,
+            tongPage,
+            donHangs
+        });
+    } catch (error) {
+        console.error("Lỗi khi lấy đơn hàng:", error);
+        return res.status(500).json({ message: "Lỗi máy chủ!", error: error.message });
+    }
+};
+
+export const layDonHangTheoId = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const donHang = await Donhang.findById(id).populate("dsSanPham.idSP", "tenSP")
+
+        if (!donHang) {
+            return res.status(404).json({ message: "Không tìm thấy đơn hàng!" });
+        }
+
+        return res.status(200).json(donHang);
+    } catch (error) {
+        console.error("Lỗi khi lấy đơn hàng:", error);
+        return res.status(500).json({ message: "Lỗi máy chủ!", error: error.message });
+    }
+};
+
+export const capNhatTrangThaiDonHang = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { trangThai } = req.body;
+
+        const donHang = await Donhang.findByIdAndUpdate(
+            id, 
+            { trangThai },
+            { new: true }
+        );
+
+        if (!donHang) {
+            return res.status(404).json({ message: "Không tìm thấy đơn hàng!" });
+        }
+
+        res.status(200).json({ message: "Cập nhật trạng thái thành công!", donHang });
+    } catch (error) {
+        res.status(500).json({ message: "Lỗi server!", error });
     }
 };

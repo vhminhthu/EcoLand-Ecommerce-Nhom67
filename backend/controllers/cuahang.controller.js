@@ -50,130 +50,66 @@ export const addCuaHang = async (req, res) => {
 
 export const getAllCuaHang = async (req, res) => {
     try {
-        const danhSachCuaHang = await CuaHang.aggregate([
-            {
-                $match: { trangThaiCH: "Mở cửa" }
-            },
-            {
-                $lookup: {
-                    from: "Sanpham", 
-                    localField: "_id",
-                    foreignField: "idCH",
-                    as: "sanPhams"
-                }
-            },
-            {
-                $addFields: {
-                    tongSanPhamCH: { $size: "$sanPhams" },
-                    tongSoDanhGiaCH: { $sum: "$sanPhams.tongSoDanhGia" },
-                    tongSoSaoCH: { $sum: "$sanPhams.tongSoSao" }
-                }
-            },
-            {
-                $addFields: {
-                    trungBinhSaoCH: {
-                        $cond: {
-                            if: { $gt: ["$tongSoDanhGiaCH", 0] },
-                            then: { $divide: ["$tongSoSaoCH", "$tongSoDanhGiaCH"] },  // Tính trung bình sao
-                            else: 0  
-                        }
-                    }
-                }
-            },
-            {
-                $project: { // Chỉ lấy các trường cần thiết
-                    _id: 1,
-                    tenCH: 1,
-                    dsQuangCao: 1,
-                    diaChiCH: 1,
-                    tongSanPhamCH: 1,
-                    tongSoDanhGiaCH: 1,
-                    tongSoSaoCH:1,
-                    trungBinhSaoCH: 1,
-                    idNguoiDung: 1 
-                }
-            }
-        ]);
+        const cuaHangs = await CuaHang.find({ trangThaiCH: 'Mở cửa' })
+            .select("tenCH dsQuangCao diaChiCH")
+            .populate({ path: "idNguoiDung", select: "dsNguoiTheoDoi" })
+            .lean();
 
-        const danhSachCuaHangPopulated = await CuaHang.populate(danhSachCuaHang, {
-            path: "idNguoiDung",
-            select: "dsNguoiTheoDoi"
-        });
+        for (let cuaHang of cuaHangs) {
+            const sanPhams = await SanPham.find({ idCH: cuaHang._id });
+            
+            let tongSoSao = 0;
+            let tongSoDanhGia = 0;
+            let tongSanPham = sanPhams.length;
+            
+            sanPhams.forEach(sp => {
+                tongSoSao += sp.tongSoSao;
+                tongSoDanhGia += sp.tongSoDanhGia;
+            });
+            
+            cuaHang.tongSanPham = tongSanPham;
+            cuaHang.tongSoDanhGia = tongSoDanhGia;
+            cuaHang.trungBinhSao = tongSoDanhGia > 0 ? (tongSoSao / tongSoDanhGia).toFixed(2) : 0;
+        }
 
-        console.log(danhSachCuaHangPopulated)
-
-        res.status(200).json(danhSachCuaHangPopulated);
+        res.status(200).json(cuaHangs);
     } catch (error) {
-        console.error("Lỗi khi lấy danh sách cửa hàng:", error);
-        res.status(500).json({ message: "Lỗi server!", error: error.message });
+        res.status(500).json({ success: false, message: "Lỗi server", error: error.message });
     }
 };
+
 
 export const getCuaHangById = async (req, res) => {
     try {
         const { id } = req.params;
 
-        const cuaHang = await CuaHang.aggregate([
-            {
-                $match: { 
-                    _id: new mongoose.Types.ObjectId(id),
-                    trangThaiCH: "Mở cửa"
-                }
-            },
-            {
-                $lookup: {
-                    from: "Sanpham",
-                    localField: "_id",
-                    foreignField: "idCH",
-                    as: "sanPhams"
-                }
-            },
-            {
-                $addFields: {
-                    tongSanPham: { $size: "$sanPhams" },
-                    tongSoDanhGiaCH: { $sum: "$sanPhams.tongSoDanhGia" },
-                    tongSoSaoCH: { $sum: "$sanPhams.tongSoSao" }
-                }
-            },
-            {
-                $addFields: {
-                    trungBinhSaoCH: {
-                        $cond: {
-                            if: { $gt: ["$tongSoDanhGiaCH", 0] },
-                            then: { $divide: ["$tongSoSaoCH", "$tongSoDanhGiaCH"] },
-                            else: 0
-                        }
-                    }
-                }
-            },
-            {
-                $project: {
-                    _id: 1,
-                    tenCH: 1,
-                    createdAt:1,
-                    dsQuangCao: 1,
-                    diaChiCH: 1,
-                    tongSanPham: 1,
-                    tongSoDanhGiaCH: 1,
-                    tongSoSaoCH: 1,
-                    trungBinhSaoCH: 1,
-                    idNguoiDung: 1,
-                }
-            }
-        ]);
+        const cuaHang = await CuaHang.findOne({ _id: id, trangThaiCH: 'Mở cửa' })
+            .select("tenCH dsQuangCao diaChiCH createdAt")
+            .populate({ path: "idNguoiDung", select: "dsNguoiTheoDoi" })
+            .lean();
 
-        if (!cuaHang || cuaHang.length === 0) {
-            return res.status(404).json({ message: "Không tìm thấy cửa hàng!" });
+        if (!cuaHang) {
+            return res.status(404).json({ success: false, message: "Cửa hàng không tồn tại hoặc đã đóng cửa." });
         }
 
-        const cuaHangPopulated = await CuaHang.populate(cuaHang, {
-            path: "idNguoiDung",
-            select: "dsNguoiTheoDoi"
+        const sanPhams = await SanPham.find({ idCH: cuaHang._id });
+
+        let tongSoSao = 0;
+        let tongSoDanhGia = 0;
+        let tongSanPham = sanPhams.length;
+
+        sanPhams.forEach(sp => {
+            tongSoSao += sp.tongSoSao;
+            tongSoDanhGia += sp.tongSoDanhGia;
         });
 
-        res.status(200).json(cuaHangPopulated[0]);
+        cuaHang.tongSanPham = tongSanPham;
+        cuaHang.tongSoDanhGia = tongSoDanhGia;
+        cuaHang.trungBinhSao = tongSoDanhGia > 0 ? (tongSoSao / tongSoDanhGia).toFixed(2) : 0;
+
+        res.status(200).json(cuaHang);
     } catch (error) {
         console.error("Lỗi khi lấy cửa hàng theo ID:", error);
-        res.status(500).json({ message: "Lỗi server!", error: error.message });
+        res.status(500).json({ success: false, message: "Lỗi server!", error: error.message });
     }
 };

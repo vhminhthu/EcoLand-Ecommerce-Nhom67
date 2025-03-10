@@ -2,15 +2,15 @@ import PropTypes from 'prop-types';
 import { FaStar } from "react-icons/fa6";
 import { useNavigate } from 'react-router-dom';
 function ShopCard(props) {
-    const { _id, dsQuangCao, tenCH, idNguoiDung, trungBinhSaoCH, tongSoDanhGiaCH} = props;
+    const { _id, dsQuangCao, tenCH, idNguoiDung, trungBinhSao, tongSoDanhGia} = props;
 
     ShopCard.propTypes = {
         _id: PropTypes.string,
         dsQuangCao: PropTypes.string,
         tenCH: PropTypes.string,
         idNguoiDung: PropTypes.number,
-        trungBinhSaoCH: PropTypes.number, 
-        tongSoDanhGiaCH: PropTypes.number,
+        trungBinhSao: PropTypes.number, 
+        tongSoDanhGia: PropTypes.number,
     };
 
     const navigate = useNavigate();
@@ -35,8 +35,8 @@ function ShopCard(props) {
                         <p className='text-sm'><span className='text-emerald-600'>{idNguoiDung.dsNguoiTheoDoi.length} </span> Người theo dõi</p>
                         <p>|</p>
                         <div className="rating flex items-center gap-1 text-yellow-500 text-sm">
-                            <FaStar/> <span className="font-bold">{trungBinhSaoCH || 0}</span> 
-                            <span className="text-gray-500">({tongSoDanhGiaCH || 0})</span>
+                            <FaStar/> <span className="font-bold">{trungBinhSao || 0}</span> 
+                            <span className="text-gray-500">({tongSoDanhGia || 0})</span>
                         </div>
                     </div>
                 </div>

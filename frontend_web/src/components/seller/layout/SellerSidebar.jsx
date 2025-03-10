@@ -13,7 +13,7 @@ function SellerSidebar() {
 
     const menuItems = [
         { to: "/seller/home", label: "Trang chủ", icon: <BiHome /> },
-        { to: "/seller/orders", label: "Đơn hàng", icon: <BiCopyAlt /> },
+        { to: "/seller/orders?filter=tatca&page=1&limit=7", label: "Đơn hàng", icon: <BiCopyAlt /> },
         { to: "/seller/reviews", label: "Đánh giá", icon: <IoChatboxEllipsesOutline /> },
         { to: "/seller/finance", label: "Tài chính", icon: <HiOutlineWallet /> },
         { to: "/seller/products", label: "Sản phẩm", icon: <AiOutlineProduct /> },
@@ -31,6 +31,10 @@ function SellerSidebar() {
         { to: "/", label: "Đăng xuất", icon: <MdOutlineLogout /> },
     ];
 
+    const isActive = (path) => {
+        return location.pathname === new URL(path, window.location.origin).pathname;
+    };
+    
     return (
         <div className='seller-sidebar bg-white h-fit shadow-xl !m-6 rounded-xl min-w-fit'>
             <div className='logo-seller h-40'></div>
@@ -40,7 +44,7 @@ function SellerSidebar() {
                     <li
                         key={item.to}
                         className={`flex items-center gap-2 text-medium !px-7 !py-4 cursor-pointer 
-                        ${location.pathname === item.to ? "text-emerald-600 font-bold bg-slate-100" : "hover:bg-slate-50 hover:text-emerald-600 hover:font-bold"}`}
+                        ${isActive(item.to) ?  "text-emerald-600 font-bold bg-slate-100" : "hover:bg-slate-50 hover:text-emerald-600 hover:font-bold"}`}
                         onClick={() => navigate(item.to)}
                     >
                         {item.icon} {item.label}
@@ -53,7 +57,7 @@ function SellerSidebar() {
                     <li
                         key={item.to}
                         className={`flex items-center gap-2 text-medium !px-7 !py-4 cursor-pointer 
-                        ${location.pathname === item.to ? "text-emerald-600 font-bold bg-slate-100" : "hover:bg-slate-50 hover:text-emerald-600 hover:font-bold"}`}
+                        ${isActive(item.to) ?  "text-emerald-600 font-bold bg-slate-100" : "hover:bg-slate-50 hover:text-emerald-600 hover:font-bold"}`}
                         onClick={() => navigate(item.to)}
                     >
                         {item.icon} {item.label}
@@ -66,7 +70,7 @@ function SellerSidebar() {
                     <li
                         key={item.to}
                         className={`flex items-center gap-2 text-medium !px-7 !py-4 cursor-pointer 
-                        ${location.pathname === item.to ? "text-emerald-600 font-bold bg-slate-100" : "hover:bg-slate-50 hover:text-emerald-600 hover:font-bold"}`}
+                        ${isActive(item.to) ? "text-emerald-600 font-bold bg-slate-100" : "hover:bg-slate-50 hover:text-emerald-600 hover:font-bold"}`}
                         onClick={() => navigate(item.to)}
                     >
                         {item.icon} {item.label}
