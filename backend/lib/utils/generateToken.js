@@ -1,5 +1,6 @@
 import jwt from "jsonwebtoken"
 
+
 export const generateTokenAndSetCookie = (idNguoidung,res)=>{
     const token=jwt.sign({idNguoidung},process.env.JWT_SECRET,{
         expiresIn: '15d'
@@ -10,4 +11,6 @@ export const generateTokenAndSetCookie = (idNguoidung,res)=>{
         sameSite:"strict",
         secure: process.env.NODE_ENV !=="development"
     })
+
+    return token
 }

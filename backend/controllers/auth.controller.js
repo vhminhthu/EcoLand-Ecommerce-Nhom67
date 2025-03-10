@@ -40,13 +40,14 @@ export const signUp = async (req, res) => {
         });
 
         if (nguoiDungMoi) {
-			generateTokenAndSetCookie(nguoiDungMoi._id, res);
+			const token = generateTokenAndSetCookie(nguoiDungMoi._id, res);
 			await nguoiDungMoi.save();
 
 			res.status(201).json({
 				_id: nguoiDungMoi._id,
                 tenNguoiDung: nguoiDungMoi.tenNguoiDung,
                 email: nguoiDungMoi.email,
+                token,
 			});
 		} else {
 			res.status(400).json({ error: "Invalid user data" });
@@ -70,13 +71,14 @@ export const login = async (req,res)=>{
          return res.status(400).json({ error: "Email hoặc mật khẩu không đúng" })
      }
 
-     generateTokenAndSetCookie(nguoidung._id,res)
+     const token =generateTokenAndSetCookie(nguoidung._id,res)
  
      res.status(200).json({
          email: nguoidung.email,
          tenNguoiDung: nguoidung.tenNguoiDung,
          _id: nguoidung._id,
-         anhDaiDienND : nguoidung.anhDaiDienND
+         anhDaiDienND : nguoidung.anhDaiDienND,
+         token,
      })
  
     } catch (error) {
