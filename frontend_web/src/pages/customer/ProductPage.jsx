@@ -34,6 +34,12 @@ function ProductPage() {
     ? sanPham?.tongSoSao / sanPham?.tongSoDanhGia 
     : 0;
 
+    const [isBaoCao, setIsBaoCao] = useState(false);
+    const [baoCao, setBaoCao] = useState({
+        loaiBaoCao: "",
+        noiDung: "",
+    });
+
     useEffect(() => {
         if (!id) return;
         const fetchProductDetails = async (id) => {
@@ -139,6 +145,25 @@ function ProductPage() {
             }
         });
     };
+
+    const themBaoCao = async (id) => {
+        if (!baoCao.loaiBaoCao || !baoCao.noiDung.trim()) {
+            alert("Vui lòng chọn lý do và nhập nội dung chi tiết!");
+            return;
+        }
+    
+        try {
+            await axios.post(`/api/baocao/them/${id}`, {
+                loaiBaoCao: baoCao.loaiBaoCao,
+                noiDung: baoCao.noiDung,
+            });
+            //console.log("Báo cáo thành công:", res.data);
+            setIsBaoCao(false);
+            setBaoCao({ loaiBaoCao: "", noiDung: "" });
+        } catch (error) {
+            console.error("Lỗi khi thêm báo cáo:", error);
+        }
+    };
     
     return (
         <MainLayout>
@@ -199,7 +224,7 @@ function ProductPage() {
                                 <p className='!mx-2'>{danhGiaTrungBinh}</p>
                                 <p>( {sanPham?.tongSoDanhGia} Đánh giá )</p>
                             </div>
-                            <span className='text-sm text-gray-400 cursor-pointer'>Tố cáo</span>
+                            <span className='text-sm text-gray-400 cursor-pointer' onClick={() => setIsBaoCao(true)}>Tố cáo</span>
                         </div>                    
                     </div>
                     <div className="flex gap-3 items-center !mb-3">
@@ -386,6 +411,67 @@ function ProductPage() {
                     Xem thêm
                 </button>
             )}
+
+           {/* Chọn loại báo cáo */}
+            {isBaoCao && (
+                <div className='fixed top-0 left-0 w-full h-screen bg-black/40 flex items-center justify-center z-50'>
+                    <div className='w-[430px] bg-white p-5 rounded-lg shadow-xl'>
+                        <span className='flex items-top justify-between'>
+                            <p className='text-xl font-semibold text-gray-800 mb-3'>Chọn lý do</p>
+                            <p 
+                                className='hover:text-red-500 cursor-pointer text-lg' 
+                                onClick={() => {
+                                    setIsBaoCao(false);
+                                    setBaoCao({ loaiBaoCao: "", noiDung: "" });
+                                }}
+                            >x</p>
+                        </span>
+                        <p className='text-sm text-gray-600 mb-4'>Vui lòng chọn lý do bạn muốn tố cáo nội dung này.</p>
+                        
+                        <ul className="space-y-2 max-h-50 overflow-y-auto p-2">
+                            {["Sản phẩm có dấu hiệu lừa đảo", "Hàng giả, hàng nhái", "Sản phẩm không rõ nguồn gốc, xuất xứ", "Hình ảnh sản phẩm không rõ ràng", "Tên sản phẩm không phù hợp với hình ảnh", "Sản phẩm bị cấm buôn bán"].map((item) => (
+                                <li 
+                                    key={item}
+                                    className={`p-2 rounded cursor-pointer transition ${
+                                        baoCao.loaiBaoCao === item ? "bg-emerald-200" : "bg-gray-100 hover:bg-gray-200"
+                                    }`} 
+                                    onClick={() => setBaoCao(prev => ({ ...prev, loaiBaoCao: item }))}
+                                >
+                                    {item}
+                                </li>
+                            ))}
+                        </ul>
+                        <p className="block text-xl font-medium text-gray-700 mb-1 pt-5 mt-5 border-t">Lý do chi tiết</p>
+                        <p className='text-sm text-gray-600 mb-4'>Vui lòng ghi chi tiết lý do bạn muốn tố cáo nội dung này.</p>
+                        <textarea 
+                            type="text" 
+                            name="noiDung" 
+                            value={baoCao.noiDung} 
+                            onChange={(e) => {
+                                if (e.target.value.length <= 200) {
+                                    setBaoCao(prev => ({ ...prev, noiDung: e.target.value }));
+                                }
+                            }} 
+                            placeholder="Nhập lý do chi tiết..."
+                            className="w-93 h-30 p-3 border border-gray-300 rounded mt-2 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+                        />
+                        <p className="text-sm text-gray-500 mt-1">
+                            {50 - baoCao.noiDung.length} ký tự còn lại
+                        </p>
+                        <p className='text-center text-sm text-emerald-600'>Vui lòng chọn lý do báo cáo và Nhập lý do chi tiết</p>
+                        <button
+                            className={`mt-4 w-full py-2 rounded-lg transition cursor-pointer ${
+                                baoCao.loaiBaoCao && baoCao.noiDung.trim() ? "bg-red-500 hover:bg-red-600 text-white" : "bg-gray-300 text-gray-500 cursor-not-allowed"
+                            }`}
+                            disabled={!baoCao.loaiBaoCao || !baoCao.noiDung.trim()}
+                            onClick={() => themBaoCao(id)}
+                        >
+                            Gửi báo cáo
+                        </button>
+                    </div>
+                </div>
+            )}
+
         </MainLayout>
     )
 }

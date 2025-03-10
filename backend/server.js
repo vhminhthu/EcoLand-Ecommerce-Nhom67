@@ -16,6 +16,7 @@ import donhangRoutes from "./routes/donhang.route.js"
 import vnpayRoutes from "./routes/vnpay.route.js";
 import giaodichRoutes from "./routes/giaodich.route.js";
 import danhgiaRoutes from "./routes/danhgia.route.js";
+import baocaoRoutes from "./routes/baocao.route.js";
 
 dotenv.config();
 
@@ -57,6 +58,7 @@ app.use("/api/donhang", donhangRoutes)
 app.use("/api/vnpay", vnpayRoutes);
 app.use("/api/giaodich", giaodichRoutes);
 app.use("/api/danhgia", danhgiaRoutes);
+app.use("/api/baocao", baocaoRoutes);
 
 app.get("/", (req, res) => {
     res.send("Xin chào bạn");

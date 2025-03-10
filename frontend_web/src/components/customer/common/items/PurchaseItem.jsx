@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 
 function PurchaseItem(props) {
-    const { _id, idDanhGia, cuaHangId, trangThai, dsSanPham, tongTienThanhToan, onCapNhatTrangThai, moDanhGia } = props;
+    const { _id, maDonHang, idDanhGia, cuaHangId, trangThai, dsSanPham, tongTienThanhToan, onCapNhatTrangThai, moDanhGia } = props;
 
     return (
         <div key={_id} className='border border-emerald-600 shadow rounded-xl p-3'>
@@ -26,7 +26,10 @@ function PurchaseItem(props) {
                 </div>
             ))}
             </div>
-            <p className='flex justify-end'>Tổng tiền: <span className='ml-2 text-2xl text-emerald-600 font-bold'>{tongTienThanhToan.toLocaleString()}đ</span></p>
+            <span className='flex justify-between items-center'>
+                <p className='text-sm text-gray-500'>MÃ ĐƠN HÀNG: {maDonHang}</p>
+                <p>Tổng tiền: <span className='ml-2 text-2xl text-emerald-600 font-bold'>{tongTienThanhToan.toLocaleString()}đ</span></p>
+            </span>
             <span className='flex justify-end mt-3'>
                 {/* <button 
                     disabled={orderReceived}
@@ -59,6 +62,7 @@ function PurchaseItem(props) {
 
 PurchaseItem.propTypes = {
     _id: PropTypes.string.isRequired,
+    maDonHang: PropTypes.string.isRequired,
     cuaHangId: PropTypes.string.isRequired,
     idDanhGia: PropTypes.string.isRequired,
     trangThai: PropTypes.string.isRequired,
