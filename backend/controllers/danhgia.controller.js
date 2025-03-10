@@ -30,6 +30,7 @@ export const themDanhGia = async (req, res) => {
                     idSanPham: sp.idSP._id,
                     soSao: sp.soSao || 5,
                     noiDung: sp.noiDung || "",
+                    tenLoai: sp.phanLoai.tenLoai,
                 });
                 const danhGiaLuu = await danhGia.save();
 

@@ -1,7 +1,6 @@
 import CustomerLayout from '../../layouts/customer/CustomerLayout'
 import MainLayout from '../../layouts/customer/MainLayout'
 import { useState, useEffect } from 'react';
-import { BiSearch } from "react-icons/bi";
 import PurchaseItem from '../../components/customer/common/items/PurchaseItem';
 import axios from 'axios';
 
@@ -16,7 +15,7 @@ function PurchasePage() {
     const fetchDonHang = async () => {
         try {
             const response = await axios.get(`/api/donhang/lay/theonguoidung`);
-            console.log(response.data.donHangs)
+            // console.log(response.data.donHangs)
             setDonHang(response.data.donHangs); 
         } catch (error) {
             console.error("Lỗi khi tải đơn hàng:", error);
@@ -65,7 +64,6 @@ function PurchasePage() {
 
     useEffect(() => {
         if (danhGiaMoi !== null) {
-            console.log("Dữ liệu sau khi set:", danhGiaMoi);
             setIsDanhGia(true);
         }
     }, [danhGiaMoi]); 

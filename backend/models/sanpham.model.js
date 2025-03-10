@@ -15,11 +15,11 @@ const sanphamSchema = new mongoose.Schema(
                 donVi: { type: String, required: true },
                 khuyenMai: { type: Number, default: 0 },
                 khoHang: { type: Number, default: 0 },
+                daBan: { type: Number, default: 0 },
             }
         ],
         trangThai: { type: String, default: "Chờ xác nhận"},
         luotXem: { type: Number, default: 0 },
-        daBan: { type: Number, default: 0 },
         dsAnhSP: { type: String },
         chungNhan: [
             {

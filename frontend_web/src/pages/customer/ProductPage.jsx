@@ -1,6 +1,5 @@
 import MainLayout from '../../layouts/customer/MainLayout'
 import { useNavigate } from 'react-router-dom'
-import {Reviews, product} from '../../data/product.js'
 import { FaStar, FaStarHalfAlt, FaRegStar } from "react-icons/fa";
 import { IoMdHeartEmpty  } from "react-icons/io";
 import { IoHeart } from "react-icons/io5";
@@ -14,6 +13,8 @@ import ReviewItem from '../../components/customer/common/items/ReviewItem.jsx';
 import axios from 'axios';
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
+import moment from "moment";
+import "moment/locale/vi";
 
 function ProductPage() {
     const navigate = useNavigate()
@@ -25,6 +26,13 @@ function ProductPage() {
     const [selectedSao, setSelectedSao] = useState('Tất cả');
     const [sanPham, setSanPham] = useState(null);
     const [selectedLoai, setSelectedLoai] = useState(null);
+
+    const tongDanhGiaCH = sanPham?.idCH?.dsSanPham?.reduce(
+        (sum, sp) => sum + (sp.dsDanhGia.length || 0), 0
+    );
+    const danhGiaTrungBinh = sanPham?.tongSoDanhGia > 0 
+    ? sanPham?.tongSoSao / sanPham?.tongSoDanhGia 
+    : 0;
 
     useEffect(() => {
         if (!id) return;
@@ -132,7 +140,6 @@ function ProductPage() {
         });
     };
     
-    
     return (
         <MainLayout>
             <span  
@@ -181,15 +188,15 @@ function ProductPage() {
                         <div className="flex justify-between items-center">
                             <div className='flex !my-2'>
                                 {[1,2,3,4,5].map((star) => {
-                                    if (star <= Math.floor(sanPham?.tongSoSao)) {
+                                    if (star <= Math.floor(danhGiaTrungBinh)) {
                                         return <FaStar key={star} size={20} className="text-yellow-500 !mr-1" />;
-                                    } else if (star <= Math.ceil(sanPham?.tongSoSao) && sanPham?.tongSoSao % 1 !== 0) {
+                                    } else if (star <= Math.ceil(danhGiaTrungBinh) && danhGiaTrungBinh % 1 !== 0) {
                                         return <FaStarHalfAlt key={star} size={20} className="text-yellow-500 !mr-1" />;
                                     } else {
                                         return <FaRegStar key={star} size={20} className="text-gray-300 !mr-1" />;
                                     }
                                 })}
-                                <p className='!mx-2'>{sanPham?.tongSoSao}</p>
+                                <p className='!mx-2'>{danhGiaTrungBinh}</p>
                                 <p>( {sanPham?.tongSoDanhGia} Đánh giá )</p>
                             </div>
                             <span className='text-sm text-gray-400 cursor-pointer'>Tố cáo</span>
@@ -218,7 +225,7 @@ function ProductPage() {
                         {sanPham?.phanLoai.map((loai) => (
                         <button
                             key={loai.tenLoai}
-                            onClick={() => setSelectedLoai(loai)} // Cập nhật loại được chọn
+                            onClick={() => setSelectedLoai(loai)}
                             className={`text-emerald-600 !py-2 w-26 !mr-2 rounded-full border border-emerald-600 cursor-pointer 
                                 ${selectedLoai?.tenLoai === loai.tenLoai 
                                     ? "bg-emerald-600 text-white cursor-default"
@@ -280,7 +287,7 @@ function ProductPage() {
                 
             </div>
             <div className='!mt-5 border border-emerald-600 rounded-xl !py-6 !px-8 flex items-center gap-10'>
-                <img className="w-20 h-20 object-cover rounded-full cursor-pointer hover:opacity-80" src={product.cuaHang.anhCH} alt={product.cuaHang.tenCH}  ></img>
+                <img className="w-20 h-20 object-cover rounded-full cursor-pointer hover:opacity-80" src={sanPham?.idCH?.anhCH} alt={sanPham?.idCH?.tenCH}  ></img>
                 <div>
                     <span className='text-xl font-bold'>{sanPham?.idCH?.tenCH}</span>
                     <div className='flex gap-2 !mt-3'>
@@ -288,9 +295,9 @@ function ProductPage() {
                         <button 
                         className='cursor-pointer flex items-center text-lg gap-2 border-1 border-emerald-600 text-emerald-600 !py-1 !px-2 rounded-lg hover:bg-gray-50'
                         onClick={() => {
-                            const nameShop = product.cuaHang.tenCH.replace(/\s+/g, '-');
-                            const idShop = product.cuaHang._id;
-                            navigate(`/shop/${nameShop}`, {
+                            const nameShop = sanPham?.idCH?.tenCH.replace(/\s+/g, '-');
+                            const idShop = sanPham?.idCH?._id;
+                            navigate(`/shop/${nameShop}?sort=phobien&page=1&limit=4`, {
                                 state: { id: idShop },
                             });
                         }}
@@ -298,12 +305,12 @@ function ProductPage() {
                     </div>
                 </div>
                 <span className='flex flex-col gap-2'>
-                    <span className='text-gray-500'>Đánh giá <span className='text-emerald-600 !ml-5'>50</span></span>
-                    <span className='text-gray-500'>Sản phẩm <span className='text-emerald-600 !ml-5'>100</span></span>
+                    <span className='text-gray-500'>Đánh giá <span className='text-emerald-600 !ml-5'>{tongDanhGiaCH}</span></span>
+                    <span className='text-gray-500'>Sản phẩm <span className='text-emerald-600 !ml-5'>{sanPham?.idCH?.dsSanPham?.length}</span></span>
                 </span>
                 <span className='flex flex-col gap-2'>
-                    <span className='text-gray-500'>Tham gia <span className='text-emerald-600 !ml-5'>1 năm trước</span></span>
-                    <span className='text-gray-500'>Người theo dõi <span className='text-emerald-600 !ml-5'>10</span></span>
+                    <span className='text-gray-500'>Tham gia <span className='text-emerald-600 !ml-5'>{moment(sanPham?.idCH?.createdAt).locale("vi").fromNow()}</span></span>
+                    <span className='text-gray-500'>Người theo dõi <span className='text-emerald-600 !ml-5'>{sanPham?.idCH?.idNguoiDung?.dsNguoiTheoDoi?.length}</span></span>
                 </span>
             </div>
             <div className='!mt-10 !mb-2 text-center border-b-2 border-emerald-600 text-emerald-600 font-bold text-xl'>MÔ TẢ SẢN PHẨM</div>
@@ -311,12 +318,12 @@ function ProductPage() {
             <div className='!mt-10 !mb-2 text-center border-b-2 border-emerald-600 text-emerald-600 font-bold text-xl'>ĐÁNH GIÁ SẢN PHẨM</div>
             <div className='!py-5 flex flex-col items-center'>
                 <div className='flex flex-col items-center w-full bg-gray-50 !py-5'>
-                    <span className='text-4xl'>{sanPham?.tongSoSao} trên 5</span>
+                    <span className='text-4xl'>{danhGiaTrungBinh} trên 5</span>
                     <div className='flex !my-2'>
                         {[1,2,3,4,5].map((star) => {
-                            if (star <= Math.floor(sanPham?.tongSoSao)) {
+                            if (star <= Math.floor(danhGiaTrungBinh)) {
                                 return <FaStar key={star} size={40} className="text-emerald-600 !mr-1" />;
-                            } else if (star <= Math.ceil(sanPham?.tongSoSao) && sanPham?.tongSoSao % 1 !== 0) {
+                            } else if (star <= Math.ceil(danhGiaTrungBinh) && danhGiaTrungBinh % 1 !== 0) {
                                 return <FaStarHalfAlt key={star} size={40} className="text-emerald-600 !mr-1" />;
                             } else {
                                 return <FaRegStar key={star} size={40} className="text-gray-300 !mr-1" />;
@@ -340,27 +347,39 @@ function ProductPage() {
                     </div>
                 </div>
                 <div className="w-full px-10 py-5 flex flex-col gap-5">
-                    {Reviews.filter(re => selectedSao === "Tất cả" || re.rating === selectedSao)
-                        .map(re => <ReviewItem key={re.id} {...re} />)}
+                    {sanPham?.dsDanhGia?.length > 0 ? (
+                        sanPham?.dsDanhGia?.some(re => selectedSao === "Tất cả" || re.soSao == selectedSao) ? (
+                            sanPham?.dsDanhGia.map(re =>
+                                (selectedSao === "Tất cả" || re.soSao == selectedSao) && (
+                                    <ReviewItem key={re._id} {...re} />
+                                )
+                            )
+                        ) : (
+                            <p className='text-center text-xl text-black'>Không có đánh giá {selectedSao} sao nào.</p>
+                        )
+                    ) : (
+                        <p className='text-black'>Chưa có đánh giá nào.</p>
+                    )}
                 </div>
-                <div className='bg-gray-50 w-full h-50'>
 
-                </div>
+                {/* <div className='bg-gray-50 w-full h-50'>
+
+                </div> */}
 
             </div>
             <div className='!mt-5 !mb-2 text-center border-b-2 border-emerald-600 text-emerald-600 font-bold text-xl'>CÁC SẢN PHẨM KHÁC CỦA SHOP</div>
             <div className="relative w-full flex gap-4 justify-center">
                 <button className="cursor-pointer absolute top-1/2 -translate-y-1/2 left-0.5 text-xl bg-emerald-600/50 text-white !p-2 rounded-full" onClick={prevSanPhamB}><FaArrowLeft/></button>
-                {sanPhamBHienTai.map((product) => (
+                {/* {sanPhamBHienTai.map((product) => (
                     <ProductCard key={product.id} {...product} />
-                ))}
+                ))} */}
                 <button className="cursor-pointer absolute top-1/2 -translate-y-1/2 right-0.5 text-xl bg-emerald-600/50 text-white !p-2 rounded-full" onClick={nextSanPhamB}><FaArrowRight /></button>
             </div>
             <div className='!mt-10 !mb-2 text-center border-b-2 border-emerald-600 text-emerald-600 font-bold text-xl'>CÓ THỂ BẠN CŨNG THÍCH</div>
             <div className="grid grid-cols-5 gap-4 justify-center">
-                {sanPhamGHienTai.map((product) => (
+                {/* {sanPhamGHienTai.map((product) => (
                     <ProductCard key={product.id} {...product} />
-                ))}
+                ))} */}
             </div>
             {sanPhamGIndex + soSanPhamGMoiSlide < products2.length && (
                 <button className="cursor-pointer text-xl bg-emerald-600/50 text-white !py-2 !px-5 rounded-xl mx-auto block mt-5" onClick={xemThemSanPhamG}>

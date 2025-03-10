@@ -1,6 +1,8 @@
 import Donhang from "../models/donhang.model.js";
 import Giohang from "../models/giohang.model.js"; 
 import Cuahang from "../models/cuahang.model.js"; 
+import Sanpham from "../models/sanpham.model.js"; 
+
 import moment from "moment";
 
 export const taoMaDonHang = async () => {
@@ -83,6 +85,15 @@ export const themDonHang = async (req, res) => {
         }).filter(cuaHang => cuaHang.sanPhamChiTiet.length > 0); // Xóa cửa hàng nếu không còn sản phẩm
 
         await giohang.save();
+
+        for (const item of dsSanPham) {
+            const sanPham = await Sanpham.findById(item.idSP);
+            if (!sanPham) {
+                return res.status(404).json({ message: "Sản phẩm không tồn tại!" });
+            }
+            sanPham.dsDonHang.push(savedOrder._id); // Thêm ID đơn hàng vào sản phẩm
+            await sanPham.save(); // Lưu lại thay đổi
+        }
 
         return res.status(201).json({
             message: "Đơn hàng đã được tạo thành công!",
@@ -193,15 +204,29 @@ export const capNhatTrangThaiDonHang = async (req, res) => {
         const { id } = req.params;
         const { trangThai } = req.body;
 
-        const donHang = await Donhang.findByIdAndUpdate(
-            id, 
-            { trangThai },
-            { new: true }
-        );
-
+        const donHang = await Donhang.findById(id);
         if (!donHang) {
             return res.status(404).json({ message: "Không tìm thấy đơn hàng!" });
         }
+
+        if (trangThai === "Hoàn thành" && donHang.trangThai !== "Hoàn thành") {
+            for (const item of donHang.dsSanPham) {
+                const sanPham = await Sanpham.findById(item.idSP);
+                if (!sanPham) continue;
+
+                sanPham.phanLoai.forEach((loai) => {
+                    if (loai.id === item.phanLoai.id) {
+                        loai.khoHang -= item.soLuong;
+                        loai.daBan = (loai.daBan || 0) + item.soLuong;
+                    }
+                });
+
+                await sanPham.save();
+            }
+        }
+
+        donHang.trangThai = trangThai;
+        await donHang.save();
 
         res.status(200).json({ message: "Cập nhật trạng thái thành công!", donHang });
     } catch (error) {

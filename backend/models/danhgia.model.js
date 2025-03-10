@@ -7,6 +7,7 @@ const danhgiaSchema = new mongoose.Schema(
         idDonHang: { type: mongoose.Schema.Types.ObjectId, ref: "Donhang" },
         idSanPham: { type: mongoose.Schema.Types.ObjectId, ref: "Sanpham" },
         khachHangId: { type: mongoose.Schema.Types.ObjectId, ref: "Nguoidung" },
+        tenLoai: { type: String },
         // hinhAnh: { type: String }
     },
     {
