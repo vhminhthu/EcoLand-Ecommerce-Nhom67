@@ -365,3 +365,107 @@ export const updateProduct = async (req, res) => {
     }
 };
 
+
+
+
+
+export const getPendingProduct = async (req, res) => {
+    try {
+        const sanPhams = await SanPham.find({ trangThai: "Chờ xác nhận" })
+            .populate({ path: "idCH", select: "tenCH idNguoiDung" })
+            .populate({ path: "idDM", select: "tenDM" })
+            .lean();
+
+            const formatDate = (date) => {
+                if (!date) return null;
+                return new Date(date).toLocaleDateString("vi-VN"); 
+            };
+
+        const results = await Promise.all(
+            sanPhams.map(async (sp) => {
+                const seller = sp.idCH?.idNguoiDung
+                    ? await NguoiDung.findById(sp.idCH.idNguoiDung).select("tenNguoiDung").lean()
+                    : null;
+
+                return {
+                    _id: sp._id.toString(), 
+                    tenNguoiDung: seller?.tenNguoiDung || "Không xác định",
+                    tenCuaHang: sp.idCH?.tenCH || "Không xác định",
+                    nguonGoc: sp.nguonGoc,
+                    trangThai: sp.trangThai,
+                    ngaySX: formatDate(sp.ngaySX),
+                    dsAnhSP: sp.dsAnhSP,
+                    ngayTH: formatDate(sp.ngayTH),
+                    VatTuHTCT: sp.VatTuHTCT,
+                    batchId: sp.batchId,
+                    tenDM: sp.idDM?.tenDM || "Không xác định",
+                    phanLoai: sp.phanLoai?.map(pl => ({
+                        idPL: pl.idPL,
+                        tenLoai: pl.tenLoai,
+                        giaLoai: pl.giaLoai,
+                        donVi: pl.donVi,
+                        khuyenMai: pl.khuyenMai,
+                        khoHang: pl.khoHang
+                    })) || []
+                };
+            })
+        );
+
+        res.status(200).json(results);
+    } catch (error) {
+        console.error("Lỗi lấy sản phẩm chờ duyệt:", error);
+        res.status(500).json({ message: "Lỗi máy chủ", error: error.message });
+    }
+};
+
+export const updateProductStatus = async (req, res) => {
+    try {
+        const { productId } = req.params; 
+        const { trangThai, nguyenNhanTC } = req.body;
+    
+       
+        const product = await SanPham.findById(productId);
+        if (!product) {
+          return res.status(404).json({ message: "Sản phẩm không tồn tại!" });
+        }
+    
+       
+        product.trangThai = trangThai;
+        if (trangThai === "Từ chối" && nguyenNhanTC) {
+          product.nguyenNhanTC = nguyenNhanTC;
+        }
+    
+        await product.save();
+    
+        res.json({ message: "Cập nhật trạng thái thành công!", product });
+      } catch (error) {
+        console.error("Lỗi khi cập nhật trạng thái:", error);
+        res.status(500).json({ message: "Lỗi server, vui lòng thử lại!" });
+      }
+};
+
+export const deleteProduct = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+       
+        const product = await SanPham.findById(id);
+        if (!product) {
+            return res.status(404).json({ message: "Sản phẩm không tồn tại!" });
+        }
+
+       
+        if (product.trangThai !== "Từ chối") {
+            return res.status(400).json({ message: "Chỉ có thể xoá sản phẩm bị từ chối!" });
+        }
+
+        await SanPham.findByIdAndDelete(id);
+        res.status(200).json({ message: "Xoá sản phẩm thành công!" });
+
+    } catch (error) {
+        console.error("Lỗi xoá sản phẩm:", error);
+        res.status(500).json({ message: "Lỗi máy chủ", error: error.message });
+    }
+};
+
+

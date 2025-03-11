@@ -1,7 +1,7 @@
 
 import { useState , useEffect} from "react";
 import MainLayout from "../../layouts/seller/MainLayout";
-import { FaEdit } from "react-icons/fa";
+import { FaEdit,FaTrash } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
@@ -123,6 +123,25 @@ function ProductsPage() {
         console.log("dsAnhSP:", selectedProduct?.dsAnhSP);
     }, [selectedProduct]);
     
+
+    const handleDeleteProduct = async (productId) => {
+        if (!window.confirm("Bạn có chắc muốn xoá sản phẩm này không?")) return;
+    
+        try {
+            const response = await axios.delete(`/api/sanpham/delete/${productId}`);
+            
+            if (response.status === 200) {
+                alert("Xoá sản phẩm thành công!");
+                setProducts((prevProducts) => prevProducts.filter(p => p._id !== productId));
+            } else {
+                alert("Lỗi khi xoá sản phẩm!");
+            }
+        } catch (error) {
+            console.error("Lỗi khi xoá sản phẩm:", error);
+            alert("Không thể xoá sản phẩm!");
+        }
+    };
+
     
 
     return (
@@ -228,16 +247,35 @@ function ProductsPage() {
                     ? "● Đang chờ xác nhận"
                     : product?.trangThai === "Đã duyệt"
                     ? "● Đã duyệt"
-                    : "● Không khả dụng"}
+                    : "● Từ chối"}
             </span>
         </td>
-        <td className="!py-3 !px-4 text-center">
-            <button
-                className="text-[#adadad]"
-                onClick={() => product && openEditDialog(product)}
-            >
-                <FaEdit size={22} />
-            </button>
+        <td className="!py-3 !px-4 text-center flex items-center justify-center gap-2">
+            {product?.trangThai === "Từ chối" ? (
+                <>
+                    <button 
+                        className="text-[#FF451B] font-semibold underline hover:text-[#d43b15]"
+                        onClick={() => alert(`Nguyên nhân từ chối: ${product?.nguyenNhanTC || "Không có thông tin"}`)}
+                    >
+                        Chi tiết
+                    </button>
+
+                    <button 
+                        className="text-red-500 hover:text-red-700"
+                        onClick={() => handleDeleteProduct(product?._id)}
+                    >
+                        <FaTrash size={22} />
+                    </button>
+                </>
+            ) : (
+                <button 
+                    className="text-[#adadad]"
+                    onClick={() => product && openEditDialog(product)}
+                >
+                    <FaEdit size={22} />
+                </button>
+            )}
+
         </td>
     </tr>
 ))}

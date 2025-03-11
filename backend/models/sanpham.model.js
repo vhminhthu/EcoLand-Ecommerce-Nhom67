@@ -21,15 +21,6 @@ const sanphamSchema = new mongoose.Schema(
         trangThai: { type: String, default: "Chờ xác nhận" },
         luotXem: { type: Number, default: 0 },
         dsAnhSP: { type: String },
-        chungNhan: [
-            {
-                id: { type: Number },
-                tenCN: { type: String },
-                anhCN: { type: String },
-                ngayNhanCN: { type: String },
-                noiCapCN: { type: String }
-            }
-        ],
         nguonGoc: { type: String },
         tongSoSao: { type: Number, default: 0 },
         tongSoDanhGia: { type: Number, default: 0 },
@@ -41,6 +32,8 @@ const sanphamSchema = new mongoose.Schema(
         ngayTH: { type: Date, required: true }, 
         VatTuHTCT: { type: String, required: true }, 
         batchId: { type: String, required: true },
+        nguyenNhanTC:{type: String}
+
     },
     {
         timestamps: true
