@@ -3,7 +3,7 @@ import { FiPlus } from "react-icons/fi";
 import { CiChat1 } from "react-icons/ci";
 import { useState, useEffect } from "react";
 // import { ads } from "../../data/home";
-import { FaChevronLeft, FaChevronRight  } from "react-icons/fa";
+// import { FaChevronLeft, FaChevronRight  } from "react-icons/fa";
 import ProductCard from '../../components/customer/common/cards/ProductCard';
 import axios from 'axios';
 import { useLocation, useNavigate } from "react-router-dom";
@@ -19,7 +19,7 @@ function ShopPage() {
     const [thoiGianThamGia, setThoiGianThamGia] = useState("");
 
     const query = new URLSearchParams(window.location.search); 
-    const page = parseInt(query.get('trang')) || 1;
+    const page = parseInt(query.get('page')) || 1;
     const sort = query.get('sort') || 'phobien';
     const limit = query.get('limit') || 1;
 
@@ -60,21 +60,21 @@ function ShopPage() {
         fetchProducts();
     }, [id, sort, page, limit]);
 
-    //Quảng cáo
-    const [quangCaoIndex, setQuangCaoIndex] = useState(0);
-    const nextQuangCao = () => {
-        setQuangCaoIndex((prevIndex) => (prevIndex + 1) % shop?.dsQuangCao?.length  || 0);
-    };
-    const prevQuangCao = () => {
-        setQuangCaoIndex((prevIndex) =>
-            prevIndex === 0 ? (shop?.dsQuangCao?.length  || 0) - 1 : prevIndex - 1
-        );
-    };
+    // //Quảng cáo
+    // const [quangCaoIndex, setQuangCaoIndex] = useState(0);
+    // const nextQuangCao = () => {
+    //     setQuangCaoIndex((prevIndex) => (prevIndex + 1) % shop?.dsQuangCao?.length  || 0);
+    // };
+    // const prevQuangCao = () => {
+    //     setQuangCaoIndex((prevIndex) =>
+    //         prevIndex === 0 ? (shop?.dsQuangCao?.length  || 0) - 1 : prevIndex - 1
+    //     );
+    // };
     
-    useEffect(() => {
-        const interval = setInterval(nextQuangCao, 3000);
-        return () => clearInterval(interval);
-    }, []);
+    // useEffect(() => {
+    //     const interval = setInterval(nextQuangCao, 3000);
+    //     return () => clearInterval(interval);
+    // }, []);
 
     const filterOptions = [
         { label: "Phổ biến", value: "phobien" },
@@ -94,7 +94,8 @@ function ShopPage() {
 
     const handlePageChange = (newPage) => {
         const searchParams = new URLSearchParams(location.search);
-            searchParams.set("trang", newPage);
+        
+        searchParams.set("page", newPage);
         
         navigate(`${location.pathname}?${searchParams.toString()}`, {
             state: { id: id }
@@ -125,7 +126,7 @@ function ShopPage() {
                 <div className='bg-emerald-600 shadow w-3/5 rounded-r-2xl grid grid-cols-2 grid-rows-2 p-10'>
                     <span className='row-span-1 col-start-1 col-end-2'>
                         <span className='mr-5 text-xl text-emerald-300'>Số lượng đánh giá</span>
-                        <span className='text-xl text-white'>{shop?.tongSoDanhGiaCH}</span>
+                        <span className='text-xl text-white'>{shop?.tongSoDanhGia}</span>
                     </span>
                     <span className='row-span-1 col-start-2 col-end-3'>
                         <span className='mr-5 text-xl text-emerald-300'>Tham gia</span>
@@ -142,7 +143,7 @@ function ShopPage() {
                 </div>
             </div>
             <div className="relative mt-5 bg-gray-200 h-100 rounded-2xl overflow-hidden">
-                <img
+                {/* <img
                     src={shop?.dsQuangCao[quangCaoIndex]}
                     alt="Quảng cáo"
                     className="w-full h-full object-cover transition-all duration-500"
@@ -156,7 +157,7 @@ function ShopPage() {
                     <button className="text-xl cursor-pointer hover:text-gray-200" onClick={nextQuangCao}>
                         <FaChevronRight />
                     </button>
-                </div>
+                </div> */}
             </div>
             <div className='bg-emerald-600 shadow w-full rounded-2xl py-5 px-5 mt-5'>
                 <div className='pb-3 border-b border-white'>

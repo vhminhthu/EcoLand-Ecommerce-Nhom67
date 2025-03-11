@@ -38,7 +38,7 @@ function Header({ thongBaoList }) {
 
     const handleKeyPress = (e) => {
         if (e.key === 'Enter' && danhSachGoiY.length > 0) {
-            navigate(`/search/sp?search=${timKiem}&sort=phobien&page=1&limit=1`, {state: { id: danhMucChon }});
+            navigate(`/search/sp?search=${timKiem}&sort=phobien&page=1&limit=12`, {state: { id: danhMucChon }});
         }
     };
 
@@ -273,7 +273,7 @@ function Header({ thongBaoList }) {
                                     <li key={category._id} className="hover:bg-gray-100 !p-2 cursor-pointer" 
                                         onClick={() => {
                                             const nameCategory = category?.tenDM.replace(/\s+/g, '-');
-                                            navigate(`/category/${nameCategory}?sort=phobien&page=1&limit=1`, {
+                                            navigate(`/category/${nameCategory}?sort=phobien&page=1&limit=12`, {
                                                 state: { id: category?._id },
                                             });
                                         }}

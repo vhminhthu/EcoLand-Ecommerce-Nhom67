@@ -21,9 +21,9 @@ function CategoryPage() {
   const navigate = useNavigate();
 
   const query = new URLSearchParams(window.location.search); 
-  const page = parseInt(query.get('trang')) || 1;
+  const page = parseInt(query.get('page')) || 1;
   const sort = query.get('sort') || 'phobien';
-  const limit = query.get('limit') || 1;
+  const limit = query.get('limit') || 12;
   const minStar = query.get('minStar') || 0;
   const maxStar = query.get('maxStar') || 0;
   const locations = query.get('locations') || '';
@@ -72,7 +72,7 @@ function CategoryPage() {
   };
 
   const handleSortChange = (newSort) => {
-    navigate(`?sort=${newSort}&page=1&limit=1`, {
+    navigate(`?sort=${newSort}&page=1&limit=12`, {
         state: {
             id: id,
         }
@@ -81,7 +81,7 @@ function CategoryPage() {
 
   const handleCategoryChange = (newCate) => {
     const nameCategory = newCate.tenDM.replace(/\s+/g, '-');
-    navigate(`/category/${nameCategory}?sort=phobien&page=1&limit=1`, {
+    navigate(`/category/${nameCategory}?sort=phobien&page=1&limit=12`, {
       state: { id: newCate._id }
     });
   };
@@ -108,7 +108,8 @@ function CategoryPage() {
 
   const handlePageChange = (newPage) => {
     const searchParams = new URLSearchParams(location.search);
-        searchParams.set("trang", newPage);
+        
+    searchParams.set("page", newPage);
   
     navigate(`${location.pathname}?${searchParams.toString()}`, {
       state: { id: id }

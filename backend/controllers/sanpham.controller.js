@@ -101,7 +101,34 @@ export const getSanPhamById = async (req, res) => {
     try {
         const { id } = req.params;
         const idND = req.nguoidung._id; 
-        const product = await SanPham.findById(id).populate("idDM").populate("idCH");
+        const product = await SanPham.findById(id)
+        .populate("idDM")
+        .populate({
+            path: "idCH",
+            select: "_id tenCH anhCH dsSanPham createdAt idNguoiDung",
+            populate: [
+                {
+                    path: "idNguoiDung",
+                    select: "dsNguoiTheoDoi"
+                },
+                {
+                    path: "dsSanPham",
+                    select: "dsDanhGia",
+                    populate: {
+                        path: "dsDanhGia",
+                        select: "_id"
+                    }
+                }
+            ]
+        })
+        .populate({
+            path: "dsDanhGia",
+            select: "soSao noiDung createdAt tenLoai khachHangId",
+            populate: {
+                path: "khachHangId",
+                select: "tenNguoiDung anhND"
+            },
+        });
         //console.log(product);
         if (!product) {
             return res.status(404).json({ message: "Không tìm thấy sản phẩm!" });
