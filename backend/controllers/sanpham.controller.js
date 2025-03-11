@@ -368,6 +368,7 @@ export const updateProduct = async (req, res) => {
 
 
 
+
 export const getPendingProduct = async (req, res) => {
     try {
         const sanPhams = await SanPham.find({ trangThai: "Chờ xác nhận" })
@@ -466,4 +467,5 @@ export const deleteProduct = async (req, res) => {
         res.status(500).json({ message: "Lỗi máy chủ", error: error.message });
     }
 };
+
 

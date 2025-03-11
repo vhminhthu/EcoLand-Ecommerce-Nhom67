@@ -123,6 +123,7 @@ function ProductsPage() {
         console.log("dsAnhSP:", selectedProduct?.dsAnhSP);
     }, [selectedProduct]);
     
+
     const handleDeleteProduct = async (productId) => {
         if (!window.confirm("Bạn có chắc muốn xoá sản phẩm này không?")) return;
     
@@ -140,6 +141,7 @@ function ProductsPage() {
             alert("Không thể xoá sản phẩm!");
         }
     };
+
     
 
     return (
@@ -273,6 +275,7 @@ function ProductsPage() {
                     <FaEdit size={22} />
                 </button>
             )}
+
         </td>
     </tr>
 ))}
