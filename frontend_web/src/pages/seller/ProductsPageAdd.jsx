@@ -12,11 +12,12 @@ function ProductsPageAdd() {
         idDM: null,
         nguonGoc: '',
         image: null,
+        ngaySX: '',       
+        ngayTH: '',       
+        VatTuHTCT: '',    
+        batchId: '',      
         phanLoai: [
-            { id: Date.now(), tenLoai: "", giaLoai: "", donVi: "", khuyenMai: "", khoHang: "" }
-        ],
-        chungNhan: [
-            { id: Date.now(), tenCN: "", ngayNhanCN: "", noiCapCN: "", anhCN: null }
+            { idPL: "", tenLoai: "", giaLoai: "", donVi: "", khuyenMai: "", khoHang: "" }
         ],
     });
     const [tenDanhMuc, setTenDanhMuc] = useState('Chọn loại');
@@ -64,71 +65,40 @@ function ProductsPageAdd() {
         setChonLoai(false);
     };
 
-    // Chứng nhận
-    const xulyThaydoiChungnhan = (id, field, value) => {
-        setFormData(prev => ({
-            ...prev,
-            chungNhan: prev.chungNhan.map(cert => cert.id === id ? { ...cert, [field]: value } : cert)
-        }));
-    };
+ 
 
-    const xulyThaydoiFileChungnhan = (id, event) => {
-        const file = event.target.files[0];  
-        if (file) {
-            const reader = new FileReader(); 
-            reader.onloadend = () => {
-                setFormData(prev => ({
-                    ...prev,
-                    chungNhan: prev.chungNhan.map(cert =>
-                        cert.id === id ? { ...cert, anhCN: reader.result } : cert 
-                    )
-                }));
-            };
-            reader.readAsDataURL(file);  
-            }
-    };
 
-    const themChungNhan = () => {
-        setFormData(prev => ({
-            ...prev,
-            chungNhan: [
-                ...prev.chungNhan,
-                { id: Date.now(), tenCN: "", ngayNhanCN: "", noiCapCN: "", anhCN: null }
-            ]
-        }));
-    };
 
-    const xoaChungNhan = (id) => {
-        setFormData(prev => ({
-            ...prev,
-            chungNhan: prev.chungNhan.filter(cert => cert.id !== id)
-        }));
-    };
 
     // Phân loại
-    const xulyThaydoiPhanLoai = (id, field, value) => {
+    const xulyThaydoiPhanLoai = (index, field, value) => {
         setFormData(prev => ({
             ...prev,
-            phanLoai: prev.phanLoai.map(cert => cert.id === id ? { ...cert, [field]: value } : cert)
+            phanLoai: prev.phanLoai.map((item, i) =>
+                i === index ? { ...item, [field]: value } : item
+            )
         }));
     };
+    
 
     const themPhanLoai = () => {
         setFormData(prev => ({
             ...prev,
             phanLoai: [
                 ...prev.phanLoai,
-                { id: Date.now(), tenLoai: "", giaLoai: "", donVi: "", khuyenMai: "", khoHang: "" }
+                { idPL: "", tenLoai: "", giaLoai: "", donVi: "", khuyenMai: "", khoHang: "" }
             ]
         }));
     };
+    
 
-    const xoaPhanLoai = (id) => {
+    const xoaPhanLoai = (index) => {
         setFormData(prev => ({
             ...prev,
-            phanLoai: prev.phanLoai.filter(cert => cert.id !== id)
+            phanLoai: prev.phanLoai.filter((_, i) => i !== index)
         }));
     };
+    
 
     // Thêm ảnh
     const xulyChonFile = (event) => {
@@ -217,54 +187,62 @@ function ProductsPageAdd() {
                         </div>
                         <p>Phân loại</p>
                         {/* Danh sách phân loại */}
-                        {formData.phanLoai.map((cert) => (
-                            <div key={cert.id} className="mt-3 border p-4 rounded-lg mb-4 shadow-sm bg-gray-50">
-                                <p className="text-lg font-semibold mb-2">Phân loại {formData.phanLoai.indexOf(cert) + 1}</p>
-                                <div className="flex items-center gap-3">
-                                    <input
-                                        type="text"
-                                        placeholder="Tên Phân Loại"
-                                        value={cert.tenLoai}
-                                        onChange={(e) => xulyThaydoiPhanLoai(cert.id, "tenLoai", e.target.value)}
-                                        className=" bg-gray-100 w-full p-2 rounded-lg outline-none"
-                                    />
-                                    <input
-                                        type="text"
-                                        placeholder="Giá Loại (đ)"
-                                        value={cert.giaLoai}
-                                        onChange={(e) => xulyThaydoiPhanLoai(cert.id, "giaLoai", e.target.value)}
-                                        className=" bg-gray-100 w-full p-2 rounded-lg outline-none"
-                                    />
-                                    <input
-                                        type="text"
-                                        placeholder="Đơn Vị"
-                                        value={cert.donVi}
-                                        onChange={(e) => xulyThaydoiPhanLoai(cert.id, "donVi", e.target.value)}
-                                        className=" bg-gray-100 w-full p-2 rounded-lg outline-none"
-                                    />
-                                    <input
-                                        type="text"
-                                        placeholder="% Khuyến Mãi"
-                                        value={cert.khuyenMai}
-                                        onChange={(e) => xulyThaydoiPhanLoai(cert.id, "khuyenMai", e.target.value)}
-                                        className=" bg-gray-100 w-full p-2 rounded-lg outline-none"
-                                    />
-                                    <input
-                                        type="text"
-                                        placeholder="Kho Hàng"
-                                        value={cert.khoHang}
-                                        onChange={(e) => xulyThaydoiPhanLoai(cert.id, "khoHang", e.target.value)}
-                                        className=" bg-gray-100 w-full p-2 rounded-lg outline-none"
-                                    />
-                                    <button
-                                        onClick={() => xoaPhanLoai(cert.id)}
-                                        className="text-red-600 hover:underline text-sm"
-                                    >
-                                        Xóa
-                                    </button>
+                        {formData.phanLoai.map((cert, index) => (
+                                <div key={index} className="mt-3 border p-4 rounded-lg mb-4 shadow-sm bg-gray-50">
+                                    <p className="text-lg font-semibold mb-2">Phân loại {index + 1}</p>
+                                    <div className="flex items-center gap-3">
+                                        <input
+                                            type="text"
+                                            placeholder="Tên Phân Loại"
+                                            value={cert.tenLoai}
+                                            onChange={(e) => xulyThaydoiPhanLoai(index, "tenLoai", e.target.value)}
+                                            className="bg-gray-100 w-full p-2 rounded-lg outline-none"
+                                        />
+                                        <input
+                                            type="text"
+                                            placeholder="ID Phân Loại"
+                                            value={cert.idPL}
+                                            onChange={(e) => xulyThaydoiPhanLoai(index, "idPL", e.target.value)}
+                                            className="bg-gray-100 w-full p-2 rounded-lg outline-none"
+                                        />
+                                        <input
+                                            type="text"
+                                            placeholder="Giá Loại (đ)"
+                                            value={cert.giaLoai}
+                                            onChange={(e) => xulyThaydoiPhanLoai(index, "giaLoai", e.target.value)}
+                                            className="bg-gray-100 w-full p-2 rounded-lg outline-none"
+                                        />
+                                        <input
+                                            type="text"
+                                            placeholder="Đơn Vị"
+                                            value={cert.donVi}
+                                            onChange={(e) => xulyThaydoiPhanLoai(index, "donVi", e.target.value)}
+                                            className="bg-gray-100 w-full p-2 rounded-lg outline-none"
+                                        />
+                                        <input
+                                            type="text"
+                                            placeholder="% Khuyến Mãi"
+                                            value={cert.khuyenMai}
+                                            onChange={(e) => xulyThaydoiPhanLoai(index, "khuyenMai", e.target.value)}
+                                            className="bg-gray-100 w-full p-2 rounded-lg outline-none"
+                                        />
+                                        <input
+                                            type="text"
+                                            placeholder="Kho Hàng"
+                                            value={cert.khoHang}
+                                            onChange={(e) => xulyThaydoiPhanLoai(index, "khoHang", e.target.value)}
+                                            className="bg-gray-100 w-full p-2 rounded-lg outline-none"
+                                        />
+                                        <button
+                                            onClick={() => xoaPhanLoai(index)}
+                                            className="text-red-600 hover:underline text-sm"
+                                        >
+                                            Xóa
+                                        </button>
+                                    </div>
                                 </div>
-                            </div>
                             ))}
+
                         <button
                             onClick={themPhanLoai}
                             className="mt-3 w-full bg-green-500 text-white py-2 rounded-lg hover:bg-green-600"
@@ -288,7 +266,15 @@ function ProductsPageAdd() {
                         </div>
                         <div className="bg-slate-50 p-5 mt-5">
                             <p className="font-medium text-xl mb-3">Thông tin chi tiết</p>
-                            <p>Nguồn gốc</p>
+                            <input
+                                type="text"
+                                name="batchId"
+                                placeholder="BatchID (Mã lô hàng)"
+                                required
+                                className="mt-2 mb-5 bg-gray-100 w-full p-2 rounded-lg outline-none"
+                                value={formData.batchId}
+                                onChange={(e) => setFormData(prev => ({ ...prev, batchId: e.target.value }))}
+                            />
                             <input
                                 type="text"
                                 name="nguonGoc"
@@ -298,64 +284,35 @@ function ProductsPageAdd() {
                                 value={formData.nguonGoc}
                                 onChange={(e) => setFormData(prev => ({ ...prev, nguonGoc: e.target.value }))}
                             />
-                            <p>Danh sách chứng nhận</p>
-                            {/* Danh sách chứng nhận */}
-                            {formData.chungNhan.map((cert) => (
-                                <div key={cert.id} className="mt-3 border p-4 rounded-lg mb-4 shadow-sm bg-gray-50">
-                                    <p className="text-lg font-semibold mb-2">Chứng nhận {formData.chungNhan.indexOf(cert) + 1}</p>
-                                    <input
-                                        type="text"
-                                        placeholder="Tên Chứng Nhận"
-                                        value={cert.tenCN}
-                                        onChange={(e) => xulyThaydoiChungnhan(cert.id, "tenCN", e.target.value)}
-                                        className="mt-2 bg-gray-100 w-full p-2 rounded-lg outline-none"
-                                    />
-                                    <input
-                                        type="text"
-                                        placeholder="Ngày Nhận Chứng Nhận"
-                                        value={cert.ngayNhanCN}
-                                        onChange={(e) => xulyThaydoiChungnhan(cert.id, "ngayNhanCN", e.target.value)}
-                                        className="mt-2 bg-gray-100 w-full p-2 rounded-lg outline-none"
-                                    />
-                                    <input
-                                        type="text"
-                                        placeholder="Nơi Cấp Chứng Nhận"
-                                        value={cert.noiCapCN}
-                                        onChange={(e) => xulyThaydoiChungnhan(cert.id, "noiCapCN", e.target.value)}
-                                        className="mt-2 mb-2 bg-gray-100 w-full p-2 rounded-lg outline-none"
-                                    />
-                                    <div className="relative w-full mb-2">
-                                        <input
-                                            type="file"
-                                            accept="image/*"
-                                            id={`file-upload-${cert.id}`}
-                                            className="hidden"
-                                            onChange={(e) => xulyThaydoiFileChungnhan(cert.id, e)}
-                                        />
-                                        <label
-                                            htmlFor={`file-upload-${cert.id}`}
-                                            className="w-full px-4 py-2 bg-pink-500 text-white text-center rounded-lg cursor-pointer hover:bg-pink-600"
-                                        >
-                                            Thêm Minh Chứng
-                                        </label>
-                                        {cert.anhCN && <p className="text-gray-700 text-sm mt-2">{cert.anhCN.name}</p>}
-                                    </div>
-                                    <button
-                                        onClick={() => xoaChungNhan(cert.id)}
-                                        className="text-red-600 hover:underline text-sm"
-                                    >
-                                        Xóa chứng nhận
-                                    </button>
-                                </div>
-                            ))}
-
-                            <button
-                                onClick={themChungNhan}
-                                className="mt-3 w-full bg-green-500 text-white py-2 rounded-lg hover:bg-green-600"
-                            >
-                                + Thêm Chứng Nhận
-                            </button>
+                              <input
+                                type="text"
+                                name="ngaySX"
+                                placeholder="Ngày sản xuất  vd: 01/01/2025"
+                                required
+                                className="mt-2 mb-5 bg-gray-100 w-full p-2 rounded-lg outline-none"
+                                value={formData.ngaySX}
+                                onChange={(e) => setFormData(prev => ({ ...prev, ngaySX: e.target.value }))}
+                            />
+                               <input
+                                type="text"
+                                name="ngayTH"
+                                placeholder="Ngày thu hoạch vd: 01/05/2025"
+                                required
+                                className="mt-2 mb-5 bg-gray-100 w-full p-2 rounded-lg outline-none"
+                                value={formData.ngayTH}
+                                onChange={(e) => setFormData(prev => ({ ...prev, ngayTH: e.target.value }))}
+                            />
+                               <input
+                                type="text"
+                                name="VatTuHTCT"
+                                placeholder="Vật tư hỗ trợ canh tác vd: Thuốc-KL01"
+                                required
+                                className="mt-2 mb-5 bg-gray-100 w-full p-2 rounded-lg outline-none"
+                                value={formData.VatTuHTCT}
+                                onChange={(e) => setFormData(prev => ({ ...prev, VatTuHTCT: e.target.value }))}
+                            />
                         </div>
+                        
                     </div>
                 </div>
             </div>

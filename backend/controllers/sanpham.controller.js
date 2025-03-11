@@ -8,14 +8,19 @@ import mongoose from "mongoose";
 export const addSanPham = async (req, res) => {
     try {
         const idND = req.nguoidung._id.toString();
-        const { tenSP, moTaSP, idDM, nguonGoc, phanLoai, chungNhan, image } = req.body;
-        if (!tenSP || !moTaSP || !idDM || !nguonGoc || !phanLoai || !chungNhan) {
+        const { 
+            tenSP, moTaSP, idDM, nguonGoc, phanLoai, image, 
+            ngaySX, ngayTH, VatTuHTCT, batchId,
+        } = req.body;
+
+      
+        if (!tenSP || !moTaSP || !idDM || !nguonGoc || !phanLoai || !ngaySX || !ngayTH || !VatTuHTCT || !batchId) {
             return res.status(400).json({ error: "Vui lòng nhập đầy đủ thông tin!" });
         }
 
-        let anhSPUrl = image; // URL ảnh sản phẩm
-        let anhCNUrl = chungNhan.anhCN; // URL ảnh chứng nhận
+        let anhSPUrl = image;
 
+    
         if (image) {
             try {
                 const uploadResult = await cloudinary.uploader.upload(image);
@@ -26,21 +31,12 @@ export const addSanPham = async (req, res) => {
             }
         }
 
-        if (chungNhan && chungNhan.anhCN) {
-            try {
-                const uploadResultCN = await cloudinary.uploader.upload(chungNhan.anhCN);
-                anhCNUrl = uploadResultCN.secure_url;
-            } catch (uploadError) {
-                console.log("Lỗi upload ảnh chứng nhận:", uploadError.message);
-                return res.status(500).json({ error: "Lỗi khi upload ảnh chứng nhận lên Cloudinary" });
-            }
-        }
-
+      
         const cuaHang = await CuaHang.findOne({ idNguoiDung: idND });
-
         if (!cuaHang) {
-            return console.log("Không tìm thấy cửa hàng!");
+            return res.status(404).json({ error: "Không tìm thấy cửa hàng!" });
         }
+
         
         const sanPhamMoi = new SanPham({
             tenSP,
@@ -48,27 +44,27 @@ export const addSanPham = async (req, res) => {
             idDM,
             idCH: cuaHang._id,
             nguonGoc,
-            phanLoai: phanLoai,
-            chungNhan: chungNhan,
+            phanLoai,
             dsAnhSP: anhSPUrl,
+            ngaySX,
+            ngayTH,
+            VatTuHTCT,
+            batchId,
         });
 
+       
         const danhMuc = await DanhMuc.findById(idDM);
         if (!danhMuc) {
-            return res.status(404).json({ message: "Không tìm thấy danh mục" });
+            return res.status(404).json({ error: "Không tìm thấy danh mục" });
         }
-
         danhMuc.dsSanPham.push(sanPhamMoi._id); 
         await danhMuc.save();
 
-        const nguoiDung = await NguoiDung.findById(idND);
-        if (!nguoiDung) {
-            return res.status(404).json({ message: "nguoiDung không tồn tại." });
-        }
-
+       
         cuaHang.dsSanPham.push(sanPhamMoi._id); 
         await cuaHang.save();
 
+    
         await sanPhamMoi.save();
         res.status(201).json({ message: "Thêm sản phẩm thành công!", sanPham: sanPhamMoi });
 
@@ -77,6 +73,7 @@ export const addSanPham = async (req, res) => {
         res.status(500).json({ message: "Lỗi server!", error: error.message });
     }
 };
+
 
 export const getTatCaSanPham = async (req, res) => {
     try {
@@ -302,6 +299,69 @@ export const capNhatLuotXem = async (req, res) => {
     } catch (error) {
         console.error("Lỗi cập nhật lượt xem controller:", error.message);
         res.status(500).json({ error: "Lỗi 500" });
+    }
+};
+
+
+export const laySanPhamvoiIdCuaHang = async (req, res) => {
+    try {
+        const idND = req.nguoidung?._id?.toString();
+        if (!idND) return res.status(401).json({ error: "Không xác thực được người dùng!" });
+
+        const cuaHang = await CuaHang.findOne({ idNguoiDung: idND });
+        console.log("Cửa hàng tìm thấy:", cuaHang);
+
+        if (!cuaHang) return res.status(404).json({ error: "Không tìm thấy cửa hàng!" });
+
+      
+        const danhSachSanPham = await SanPham.find({ idCH: cuaHang._id });
+        console.log("Sản phẩm tìm thấy:", danhSachSanPham);
+
+        res.status(200).json({ products: danhSachSanPham });
+    } catch (error) {
+        console.error("Lỗi khi lấy sản phẩm:", error);
+        res.status(500).json({ error: "Lỗi server, vui lòng thử lại sau!" });
+    }
+};
+
+export const updateProduct = async (req, res) => {
+    const { id } = req.params; 
+    const { tenSP, phanLoai, batchId, trangThai, dsAnhSP } = req.body;
+
+    try {
+        let product = await SanPham.findById(id); 
+
+        if (!product) {
+            return res.status(404).json({ message: "Sản phẩm không tồn tại" });
+        }
+
+      
+        if (tenSP !== undefined) product.tenSP = tenSP;
+        if (phanLoai !== undefined) product.phanLoai = phanLoai;
+        if (batchId !== undefined) product.batchId = batchId;
+        if (trangThai !== undefined) product.trangThai = trangThai;
+
+      
+        if (dsAnhSP) {
+            try {
+              
+                const uploadResult = await cloudinary.uploader.upload(dsAnhSP);
+                product.dsAnhSP = uploadResult.secure_url; 
+            } catch (uploadError) {
+                console.log("Lỗi upload ảnh:", uploadError.message);
+                return res.status(500).json({ error: "Lỗi khi upload ảnh lên Cloudinary" });
+            }
+        }
+
+      
+        await product.save();
+
+        const allProducts = await SanPham.find();
+
+        return res.status(200).json({ products: allProducts });
+    } catch (error) {
+        console.log("Lỗi khi cập nhật sản phẩm", error.message);
+        return res.status(500).json({ error: error.message });
     }
 };
 
