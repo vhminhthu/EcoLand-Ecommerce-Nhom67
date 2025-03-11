@@ -1,5 +1,5 @@
 import express from "express"
-import  { updateProduct,addSanPham, capNhatLuotXem, getSanPhamById, getSanPhamByIdCH, getSanPhamByIdDM, getTatCaSanPham, getTatCaSanPhamDM, goiYTimKiem, laySanPhamvoiIdCuaHang, timKiem } from "../controllers/sanpham.controller.js"
+import  { updateProduct,addSanPham, capNhatLuotXem, getSanPhamById, getSanPhamByIdCH, getSanPhamByIdDM, getTatCaSanPham, getTatCaSanPhamDM, goiYTimKiem, laySanPhamvoiIdCuaHang, timKiem, getPendingProduct, updateProductStatus, deleteProduct } from "../controllers/sanpham.controller.js"
 import { protectRoute } from "../middleware/protectRoute.js"
 const router = express.Router()
 
@@ -24,6 +24,12 @@ router.get("/lay/danhmuc/sp",getSanPhamByIdDM)
 router.get("/lay/cuahang/sp", getSanPhamByIdCH)
 
 router.patch("/sua/:id", updateProduct);
+
+
+router.get("/get/pending", getPendingProduct);
+router.patch("/update-status/:productId", updateProductStatus);
+
+router.delete("/delete/:id", deleteProduct);
 
 
 
