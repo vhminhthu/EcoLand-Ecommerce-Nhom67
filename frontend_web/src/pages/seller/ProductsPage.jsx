@@ -317,83 +317,111 @@ function ProductsPage() {
             </div>
 
             {isEditing && selectedProduct && (
-                 <div className="fixed inset-0 flex items-center justify-center bg-gray-950/50">
-      <div className="bg-white p-6 rounded-lg shadow-lg w-[600px] flex gap-6">
-                <div className="w-1/2">
-                <h2 className="text-lg font-semibold !mb-4">Edit Product</h2>
-                
-                <label className="block text-sm font-medium">Sản Phẩm</label>
-                <input
-                    type="text"
-                    className="w-full border !p-2 rounded !mb-3"
-                    value={selectedProduct.tenSP || ""}
-                    onChange={(e) => setSelectedProduct({ ...selectedProduct, tenSP: e.target.value })}
+    <div className="fixed inset-0 flex items-center justify-center bg-gray-900/50 backdrop-blur-sm p-4">
+        <div className="bg-white p-6 rounded-lg shadow-lg w-[700px] max-w-full flex gap-6">
+            {/* Bên trái: Hình ảnh sản phẩm */}
+            <div className="w-1/3 flex flex-col items-center gap-4">
+                {/* Hiển thị ảnh sản phẩm (placeholder nếu không có ảnh) */}
+                <img 
+                    src={image || selectedProduct.dsAnhSP || "https://via.placeholder.com/150"} 
+                    alt="Ảnh sản phẩm" 
+                    className="w-32 h-32 object-cover rounded-md shadow-md border"
                 />
+                <p className="text-xs text-gray-500">{image ? "Ảnh mới" : "Ảnh hiện tại"}</p>
 
-                
-                <label className="block text-sm font-medium">Phân Loại</label>
-                <select
-                    className="w-full border !p-2 rounded !mb-3"
-                    value={selectedPhanLoai?.tenLoai || ''}
-                    onChange={(e) => {
-                    const selected = selectedProduct.phanLoai.find(pl => pl.tenLoai === e.target.value);
-                    setSelectedPhanLoai(selected);
-                    }}
-                >
-                    {selectedProduct.phanLoai.map((phanLoai, index) => (
-                    <option key={index} value={phanLoai.tenLoai}>{phanLoai.tenLoai}</option>
-                    ))}
-                </select>
-                
-             
-                 {selectedProduct.dsAnhSP && (
-                    <div className="mb-2">
-                        <img 
-                            src={selectedProduct.dsAnhSP} 
-                            alt="Current product image" 
-                            className="w-full max-w-xs object-cover mb-2" 
-                        />
-                        <p className="text-sm text-gray-500">Ảnh hiện tại</p>
-                    </div>
-                )}
-
-               
-                <label className="block text-sm font-medium">Ảnh Sản Phẩm</label>
+                {/* Upload ảnh mới */}
                 <input 
                     type="file" 
                     accept="image/*" 
-                    className="w-full border !p-2 rounded !mb-3" 
+                    className="w-full border rounded-md p-2 focus:ring focus:ring-emerald-400 text-sm"
                     onChange={handleImageChange} 
                 />
-                {image && <img src={image} alt="Preview" className="w-full mt-2" />}
-                
-                <label className="block text-sm font-medium">Mã</label>
-                <input type="text" className="w-full border !p-2 rounded !mb-3" value={selectedPhanLoai?.idPL || ''} onChange={(e) => setSelectedPhanLoai({ ...selectedPhanLoai, idPL: e.target.value })} />
-                
-                <label className="block text-sm font-medium">Giá</label>
-                <input type="text" className="w-full border !p-2 rounded !mb-3" value={selectedPhanLoai?.giaLoai || ''} onChange={(e) => setSelectedPhanLoai({ ...selectedPhanLoai, giaLoai: e.target.value })} />
-                
-                <label className="block text-sm font-medium">Giảm (%)</label>
-                <input type="number" className="w-full border !p-2 rounded !mb-3" value={selectedPhanLoai?.khuyenMai || ''} onChange={(e) => setSelectedPhanLoai({ ...selectedPhanLoai, khuyenMai: e.target.value })} />
-                
-                <label className="block text-sm font-medium">BatchID</label>
-                <input type="text" className="w-full border !p-2 rounded !mb-3" defaultValue={selectedProduct.batchId} />
-                
-                <label className="block text-sm font-medium">Trạng thái</label>
-                <select className="w-full border !p-2 rounded mb-3" defaultValue={selectedProduct.trangThai}>
-                    <option value="available">Available</option>
-                    <option value="not-available">Not Available</option>
-                </select>
-                
-                <div className="flex justify-end !gap-2 !mt-4">
-                    <button className="!px-4 !py-2 bg-gray-300 rounded-lg" onClick={() => setIsEditing(false)}>Cancel</button>
-                    <button className="!px-4 !py-2 bg-[#224B35] text-white rounded-lg hover:bg-green-700" onClick={handleSave}>Save</button>
+            </div>
+
+            {/* Bên phải: Form chỉnh sửa sản phẩm */}
+            <div className="w-2/3 flex flex-col gap-3">
+                <h2 className="text-xl font-semibold text-gray-800 border-b pb-2">Chỉnh sửa sản phẩm</h2>
+
+                {/* Tên sản phẩm */}
+                <div>
+                    <label className="block text-sm font-medium text-gray-600">Tên sản phẩm</label>
+                    <input
+                        type="text"
+                        className="w-full border rounded-md p-2 focus:ring focus:ring-emerald-400"
+                        value={selectedProduct.tenSP || ""}
+                        onChange={(e) => setSelectedProduct({ ...selectedProduct, tenSP: e.target.value })}
+                    />
                 </div>
+
+                {/* Phân loại */}
+                <div>
+                    <label className="block text-sm font-medium text-gray-600">Phân loại</label>
+                    <select
+                        className="w-full border rounded-md p-2 focus:ring focus:ring-emerald-400"
+                        value={selectedPhanLoai?.tenLoai || ''}
+                        onChange={(e) => {
+                            const selected = selectedProduct.phanLoai.find(pl => pl.tenLoai === e.target.value);
+                            setSelectedPhanLoai(selected);
+                        }}
+                    >
+                        {selectedProduct.phanLoai.map((phanLoai, index) => (
+                            <option key={index} value={phanLoai.tenLoai}>{phanLoai.tenLoai}</option>
+                        ))}
+                    </select>
                 </div>
-                </div>
-                </div>
+
+                {/* Thông tin khác */}
+                <div className="grid grid-cols-2 gap-4">
+                    <div>
+                        <label className="block text-sm font-medium text-gray-600">Mã</label>
+                        <input type="text" className="w-full border rounded-md p-2 focus:ring focus:ring-emerald-400" value={selectedPhanLoai?.idPL || ''} onChange={(e) => setSelectedPhanLoai({ ...selectedPhanLoai, idPL: e.target.value })} />
+                    </div>
                     
+                    <div>
+                        <label className="block text-sm font-medium text-gray-600">Giá</label>
+                        <input type="text" className="w-full border rounded-md p-2 focus:ring focus:ring-emerald-400" value={selectedPhanLoai?.giaLoai || ''} onChange={(e) => setSelectedPhanLoai({ ...selectedPhanLoai, giaLoai: e.target.value })} />
+                    </div>
+
+                    <div>
+                        <label className="block text-sm font-medium text-gray-600">Giảm giá (%)</label>
+                        <input type="number" className="w-full border rounded-md p-2 focus:ring focus:ring-emerald-400" value={selectedPhanLoai?.khuyenMai || ''} onChange={(e) => setSelectedPhanLoai({ ...selectedPhanLoai, khuyenMai: e.target.value })} />
+                    </div>
+
+                    <div>
+                        <label className="block text-sm font-medium text-gray-600">Batch ID</label>
+                        <input type="text" className="w-full border rounded-md p-2 focus:ring focus:ring-emerald-400" defaultValue={selectedProduct.batchId} />
+                    </div>
+                </div>
+
+                {/* Trạng thái sản phẩm */}
+                <div>
+                    <label className="block text-sm font-medium text-gray-600">Trạng thái</label>
+                    <select className="w-full border rounded-md p-2 focus:ring focus:ring-emerald-400" defaultValue={selectedProduct.trangThai}>
+                        <option value="available">Còn hàng</option>
+                        <option value="not-available">Hết hàng</option>
+                    </select>
+                </div>
+
+                {/* Nút hành động */}
+                <div className="flex justify-end gap-2 mt-4">
+                    <button 
+                        className="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400"
+                        onClick={() => setIsEditing(false)}
+                    >
+                        Hủy
+                    </button>
+                    <button 
+                        className="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700"
+                        onClick={handleSave}
+                    >
+                        Lưu
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 )}
+
 
         </MainLayout>
     );
