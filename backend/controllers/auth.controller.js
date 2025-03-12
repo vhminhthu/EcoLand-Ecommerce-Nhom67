@@ -77,7 +77,7 @@ export const login = async (req,res)=>{
          email: nguoidung.email,
          tenNguoiDung: nguoidung.tenNguoiDung,
          _id: nguoidung._id,
-         anhDaiDienND : nguoidung.anhDaiDienND,
+         anhND : nguoidung.anhND,
          token,
      })
  

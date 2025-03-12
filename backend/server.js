@@ -17,6 +17,8 @@ import vnpayRoutes from "./routes/vnpay.route.js";
 import giaodichRoutes from "./routes/giaodich.route.js";
 import danhgiaRoutes from "./routes/danhgia.route.js";
 import baocaoRoutes from "./routes/baocao.route.js";
+import tinnhanRoutes from "./routes/tinnhan.route.js";
+import { app, server } from './socket/socket.js'
 
 dotenv.config();
 
@@ -26,8 +28,7 @@ cloudinary.config({
     api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-const app = express();
-app.use(express.json());
+
 const PORT = process.env.PORT || 5000;
 
 cloudinary.config({
@@ -59,6 +60,7 @@ app.use("/api/vnpay", vnpayRoutes);
 app.use("/api/giaodich", giaodichRoutes);
 app.use("/api/danhgia", danhgiaRoutes);
 app.use("/api/baocao", baocaoRoutes);
+app.use("/api/tinnhan", tinnhanRoutes);
 
 app.get("/", (req, res) => {
     res.send("Xin chào bạn");
@@ -67,7 +69,7 @@ app.get("/", (req, res) => {
 console.log("Giá trị JWT_SECRET_ADMIN:", process.env.JWT_SECRET_ADMIN);
 
 
-app.listen(5000, () => {
-    console.log(`Server is running on port ${PORT}`);
-    connectMongoDB();
-});
+server.listen(5000, ()=>{
+    console.log(`Server is running on port ${PORT}`)
+    connectMongoDB()
+})

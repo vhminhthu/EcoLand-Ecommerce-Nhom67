@@ -3,11 +3,15 @@ import MainLayout from '../../layouts/customer/MainLayout'
 import { useState, useEffect } from 'react';
 import PurchaseItem from '../../components/customer/common/items/PurchaseItem';
 import axios from 'axios';
+import { FiMessageCircle } from "react-icons/fi"; 
+import ChatPage from "../seller/ChatPage.jsx"; 
 
 function PurchasePage() {
     const [selected, setSelected] = useState('Tất cả');
     const [donhang, setDonHang] = useState([]);
     const [danhGiaMoi, setDanhGiaMoi] = useState(null);
+    const [showChat, setShowChat] = useState(false);
+    
 
     const [isDanhGia, setIsDanhGia] = useState(false);
 
@@ -168,6 +172,27 @@ function PurchasePage() {
                                     Hoàn thành
                                 </button>
                             </div>
+                        </div>
+                    </div>
+                )}
+                   <button 
+                    className="fixed bottom-5 right-5 bg-emerald-600 text-white p-4 rounded-full shadow-lg hover:bg-emerald-700"
+                    onClick={() => setShowChat(true)}
+                >
+                    <FiMessageCircle size={24} />
+                </button>
+
+                {/* Hiển thị ChatPage khi bấm vào icon */}
+                {showChat && (
+                    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-60">
+                        <div className="bg-white p-4 rounded-lg shadow-lg w-[950px] relative">
+                            <ChatPage />
+                            <button 
+                                className="absolute top-2 right-2 text-gray-600 hover:text-gray-800"
+                                onClick={() => setShowChat(false)}
+                            >
+                                ✖
+                            </button>
                         </div>
                     </div>
                 )}

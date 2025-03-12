@@ -28,7 +28,7 @@ const Login = () => {
 
       setThongBao('Đăng nhập thành công!');
       console.log(response.data);
-
+      localStorage.setItem('chat-user', JSON.stringify(response.data));
       queryClient.invalidateQueries({ queryKey: ['authUser'] });
     } catch (error) {
       if (error.response) {
