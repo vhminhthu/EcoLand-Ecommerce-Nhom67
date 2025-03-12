@@ -11,8 +11,11 @@ export const AuthProvider = ({ children }) => {
     useEffect(() => {
         const fetchUser = async () => {
         try {
-            const response = await axios.get("/api/auth/getme");
-            // console.log("Thông tin người dùng", response.data);
+            const response = await axios.get("/api/auth/getme",{
+                withCredentials: true,
+              });
+            localStorage.setItem("chat-user", JSON.stringify(response.data));
+            console.log("Thông tin người dùng", response.data);
             setUser(response.data);
         } catch (error) {
             console.error("Lỗi khi lấy thông tin người dùng", error);

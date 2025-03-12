@@ -1,8 +1,9 @@
 import { FaFacebook } from "react-icons/fa";
 import axios from "axios";
 import { useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+
 
 const Signup = () => {
   const [tenNguoiDung, setUsername] = useState('');
@@ -10,6 +11,30 @@ const Signup = () => {
   const [matKhau, setMatKhau] = useState('');
   const [thongBao, setThongBao] = useState('');
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const checkUser = async () => {
+      try {
+        const res = await axios.get("/api/auth/getme", {
+          withCredentials: true,
+        });
+
+     
+          localStorage.setItem("chat-user", JSON.stringify(res.data));
+          navigate("/"); 
+     
+
+         console.log("hello",res)
+      } catch (error) {
+        console.log("Chưa đăng nhập", error);
+      }
+    };
+
+    checkUser();
+  }, []);
+
+  
 
   const handleDangKy = async (e) => {
     e.preventDefault();
@@ -28,9 +53,9 @@ const Signup = () => {
 
       setThongBao('Đăng ký thành công!');
       queryClient.invalidateQueries({ queryKey: ['authUser'] });
-      console.log(response.data)
       localStorage.setItem('chat-user', JSON.stringify(response.data));
-      
+
+      navigate("/"); // Chuyển hướng sau khi đăng ký thành công
     } catch (error) {
       if (error.response) {
         setThongBao(error.response.data.message || 'Lỗi đăng ký. Vui lòng thử lại!');
@@ -40,9 +65,14 @@ const Signup = () => {
     }
   };
 
+  const handleGoogleSignup = () => {
+    window.location.href = "/api/auth/google";
+  };
+
   return (
     <div className="flex h-screen w-screen justify-center items-center bg-gray-100">
       <div className="bg-white shadow-lg rounded-xl flex w-full h-[95vh] max-w-6xl">
+        
         {/* Left Image Section */}
         <div className="w-4/10 hidden md:block">
           <img src="../../../../src/pages/auth/Signup/green.jpg" alt="Scenic Landscape" className="h-full w-full object-cover rounded-l-xl" />
@@ -54,7 +84,7 @@ const Signup = () => {
 
           {/* Google & Facebook Signup */}
           <div className="flex gap-3 !mb-6">
-            <button className="flex items-center justify-center w-full !py-2 bg-green-900 text-white rounded-full font-bold">
+            <button onClick={handleGoogleSignup} className="flex items-center justify-center w-full !py-2 bg-green-900 text-white rounded-full font-bold">
               <span className="!mr-2">G</span> Sign up with Google
             </button>
             <button className="flex items-center justify-center w-full !py-2 bg-gray-200 text-black rounded-full font-bold">

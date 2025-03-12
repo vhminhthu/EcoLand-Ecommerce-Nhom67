@@ -30,6 +30,7 @@ function CustomerRoutes() {
         queryFn: async () => {
           try {
             const response = await axios.get('/api/auth/getme');
+            localStorage.setItem("chat-user", JSON.stringify(response.data));
             if (response.data.error) {
               throw new Error(response.data.error);
             }

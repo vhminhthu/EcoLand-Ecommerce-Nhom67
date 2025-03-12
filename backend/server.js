@@ -1,6 +1,10 @@
 import express from "express";
 import morgan from "morgan";
-import dotenv from "dotenv";
+import * as dotenv from "dotenv";
+dotenv.config();
+
+import session from "express-session";
+
 import cookieParser from "cookie-parser";
 import connectMongoDB from "./db/connectMongoDB.js";
 import cors from "cors";
@@ -18,9 +22,9 @@ import giaodichRoutes from "./routes/giaodich.route.js";
 import danhgiaRoutes from "./routes/danhgia.route.js";
 import baocaoRoutes from "./routes/baocao.route.js";
 import tinnhanRoutes from "./routes/tinnhan.route.js";
+import passport from "./config/passport.js";
 import { app, server } from './socket/socket.js'
 
-dotenv.config();
 
 cloudinary.config({
     cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -36,6 +40,16 @@ cloudinary.config({
     api_key: process.env.CLOUDINARY_API_KEY,
     api_secret: process.env.CLOUDINARY_API_SECRET,
 });
+
+
+app.use(session({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: false,
+}));
+app.use(passport.initialize());
+app.use(passport.session());
+
 
 app.use(morgan("tiny"));
 app.use(express.json({ limit: "500mb" }));
@@ -67,6 +81,8 @@ app.get("/", (req, res) => {
 });
 
 console.log("Giá trị JWT_SECRET_ADMIN:", process.env.JWT_SECRET_ADMIN);
+
+console.log("GOOGLE_CLIENT_ID:", process.env.GOOGLE_CLIENT_ID);
 
 
 server.listen(5000, ()=>{

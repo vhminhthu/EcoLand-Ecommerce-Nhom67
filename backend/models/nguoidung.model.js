@@ -4,9 +4,10 @@ const nguoidungSchema = new mongoose.Schema(
     {
         tenNguoiDung: { type: String, required: true },
         email: { type: String, required: true, unique: true },
-        matKhau: { type: String, required: true },
+        matKhau: { type: String},
         // diaChi: { type: String },
         // soDienThoai: { type: String },
+        googleId: { type: String, unique: true, sparse: true }, 
         vaiTro: { type: String, default: "customer" },
         trangThai: { type: String },
         anhND: { type: String },
