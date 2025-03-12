@@ -78,11 +78,11 @@ const Signup = () => {
           <img src="../../../../src/pages/auth/Signup/green.jpg" alt="Scenic Landscape" className="h-full w-full object-cover rounded-l-xl" />
         </div>
 
-        {/* Right Signup Form */}
+       
         <div className="w-6/10 flex flex-col justify-center !p-20">
           <h2 className="text-3xl font-bold !mb-3 text-green-900">Create Account</h2>
 
-          {/* Google & Facebook Signup */}
+       
           <div className="flex gap-3 !mb-6">
             <button onClick={handleGoogleSignup} className="flex items-center justify-center w-full !py-2 bg-green-900 text-white rounded-full font-bold">
               <span className="!mr-2">G</span> Sign up with Google
