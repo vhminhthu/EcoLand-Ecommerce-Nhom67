@@ -96,7 +96,7 @@ const Product = () => {
                 >
                   <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
                     <input type="checkbox" className="!w-4 !h-4" />
-                    <span className="text-[#003EB2] font-semibold">{product.name}</span>
+                    <span className="text-[#003EB2] font-semibold">{product.tenSP}</span>
                   </div>
                   <span className="font-bold">{product.tenNguoiDung}</span>
                   <span>{product.nguonGoc}</span>

@@ -391,6 +391,7 @@ export const getPendingProduct = async (req, res) => {
                     _id: sp._id.toString(), 
                     tenNguoiDung: seller?.tenNguoiDung || "Không xác định",
                     tenCuaHang: sp.idCH?.tenCH || "Không xác định",
+                    tenSP: sp.tenSP,
                     nguonGoc: sp.nguonGoc,
                     trangThai: sp.trangThai,
                     ngaySX: formatDate(sp.ngaySX),

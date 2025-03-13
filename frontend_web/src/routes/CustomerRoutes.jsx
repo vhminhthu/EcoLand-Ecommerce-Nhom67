@@ -21,6 +21,9 @@ import { Routes ,Route} from "react-router-dom";
 import CategoryPageSearch from '../pages/customer/CategoryPageSearch';
 import CheckoutPage from '../pages/customer/CheckoutPage';
 import PaymentResult from '../pages/customer/PaymentResult';
+import GuidePage from '../pages/support/GuidePage';
+import AboutPage from '../pages/support/AboutPage';
+import FAQPage from '../pages/support/FAQPage';
 
 function CustomerRoutes() {
 
@@ -70,6 +73,9 @@ function CustomerRoutes() {
             <Route path="/shop/:nameShop" element={<ShopPage/>} />
 
             <Route path="/customer/support" element={<SupportPage/>} /> 
+            <Route path="/customer/support/guide" element={<GuidePage />} />
+            <Route path="/customer/support/about" element={<AboutPage />} />
+            <Route path="/customer/support/faq" element={<FAQPage />} />
             <Route path="/payment-result" element={<PaymentResult />} />
         </Routes>
     )

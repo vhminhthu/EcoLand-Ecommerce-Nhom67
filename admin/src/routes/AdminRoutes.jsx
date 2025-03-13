@@ -4,7 +4,7 @@ import Dashboard from "../pages/Dashboard";
 import { User } from "../pages/User";
 
 import { Blockchain } from "../pages/Blockchain";
-import { Report } from "../pages/Report";
+import Report from "../pages/Report";
 import { Roles } from "../pages/Roles";
 import Product from "../pages/Product";
 import { Category } from "../pages/Category";
