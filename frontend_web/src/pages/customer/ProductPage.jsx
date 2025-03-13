@@ -15,6 +15,8 @@ import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import moment from "moment";
 import "moment/locale/vi";
+import { FaQrcode } from 'react-icons/fa'; // Icon QR
+import QRCode from 'react-qr-code'; 
 
 function ProductPage() {
     const navigate = useNavigate()
@@ -26,6 +28,8 @@ function ProductPage() {
     const [selectedSao, setSelectedSao] = useState('Tất cả');
     const [sanPham, setSanPham] = useState(null);
     const [selectedLoai, setSelectedLoai] = useState(null);
+
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
     const tongDanhGiaCH = sanPham?.idCH?.dsSanPham?.reduce(
         (sum, sp) => sum + (sp.dsDanhGia.length || 0), 0
@@ -39,6 +43,14 @@ function ProductPage() {
         loaiBaoCao: "",
         noiDung: "",
     });
+
+    const openQRDialog = () => {
+        setIsModalOpen(true);
+      };
+    
+      const closeQRDialog = () => {
+        setIsModalOpen(false);
+      };
 
     useEffect(() => {
         if (!id) return;
@@ -166,6 +178,7 @@ function ProductPage() {
     };
     
     return (
+       <>
         <MainLayout>
             <span  
                 className='hover:text-emerald-600 cursor-pointer' 
@@ -306,11 +319,16 @@ function ProductPage() {
                             )}
                             <span>Đã thích {sanPham?.yeuThich}</span>
                         </span>
+                        <FaQrcode
+                                size={30}
+                                className="cursor-pointer text-green-500 hover:text-green-600"
+                                onClick={openQRDialog}
+                        />
                     </div>
-
-                </div>
-                
+                </div>             
             </div>
+
+
             <div className='!mt-5 border border-emerald-600 rounded-xl !py-6 !px-8 flex items-center gap-10'>
                 <img className="w-20 h-20 object-cover rounded-full cursor-pointer hover:opacity-80" src={sanPham?.idCH?.anhCH} alt={sanPham?.idCH?.tenCH}  ></img>
                 <div>
@@ -412,6 +430,27 @@ function ProductPage() {
                 </button>
             )}
 
+            {isModalOpen && (
+            <div className="fixed top-0 left-0 w-full h-screen bg-black/40 flex items-center justify-center z-50" onClick={closeQRDialog}>
+                <div className="w-[430px] bg-white p-5 rounded-lg shadow-xl text-center" onClick={(e) => e.stopPropagation()}>
+                <h2 className="text-2xl font-semibold text-gray-800 mb-4">Quét để xem nguồn gốc</h2>
+                <QRCode
+                    value={`http://localhost:3000/product/detail/${id}`}
+                    size={256}
+                    fgColor="#000000"
+                    bgColor="#ffffff"
+                    className="mx-auto"
+                />
+                <button
+                    onClick={closeQRDialog}
+                    className="mt-4 py-2 px-4 w-full bg-green-600 text-white rounded-xl hover:bg-green-500"
+                >
+                    Đóng
+                </button>
+                </div>
+            </div>
+            )}
+
            {/* Chọn loại báo cáo */}
             {isBaoCao && (
                 <div className='fixed top-0 left-0 w-full h-screen bg-black/40 flex items-center justify-center z-50'>
@@ -473,7 +512,12 @@ function ProductPage() {
             )}
 
         </MainLayout>
+
+
+       </> 
     )
 }
 
 export default ProductPage
+
+

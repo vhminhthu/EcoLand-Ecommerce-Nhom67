@@ -73,7 +73,7 @@ function CustomerRoutes() {
             <Route path="/:nameProduct" element={<ProductPage/>} />
             <Route path="/shop/:nameShop" element={<ShopPage/>} />
 
-            <Route path="/product/detail" element={<DetailPage/>} />
+            <Route path="/product/detail/:id" element={<DetailPage/>} />
 
             <Route path="/customer/support" element={<SupportPage/>} /> 
             <Route path="/customer/support/guide" element={<GuidePage />} />

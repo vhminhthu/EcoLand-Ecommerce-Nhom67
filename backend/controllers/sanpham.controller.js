@@ -4,7 +4,6 @@ import DanhMuc from "../models/danhmuc.model.js";
 import NguoiDung from "../models/nguoidung.model.js";
 import CuaHang from "../models/cuahang.model.js";
 import mongoose from "mongoose";
-import { v4 as uuidv4 } from 'uuid'
 
 export const addSanPham = async (req, res) => {
     try {
@@ -431,12 +430,6 @@ export const updateProductStatus = async (req, res) => {
         const product = await SanPham.findById(productId);
         if (!product) {
           return res.status(404).json({ message: "Sản phẩm không tồn tại!" });
-        }
-
-       
-        if (!product.serialNumber) {
-            const uuid = uuidv4(); 
-            product.serial = uuid; 
         }
 
       
