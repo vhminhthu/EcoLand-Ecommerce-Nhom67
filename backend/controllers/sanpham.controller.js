@@ -4,6 +4,7 @@ import DanhMuc from "../models/danhmuc.model.js";
 import NguoiDung from "../models/nguoidung.model.js";
 import CuaHang from "../models/cuahang.model.js";
 import mongoose from "mongoose";
+import { v4 as uuidv4 } from 'uuid'
 
 export const addSanPham = async (req, res) => {
     try {
@@ -419,31 +420,41 @@ export const getPendingProduct = async (req, res) => {
     }
 };
 
+
+
 export const updateProductStatus = async (req, res) => {
     try {
         const { productId } = req.params; 
         const { trangThai, nguyenNhanTC } = req.body;
-    
-       
+
+        // Tìm sản phẩm trong cơ sở dữ liệu
         const product = await SanPham.findById(productId);
         if (!product) {
           return res.status(404).json({ message: "Sản phẩm không tồn tại!" });
         }
-    
+
        
+        if (!product.serialNumber) {
+            const uuid = uuidv4(); 
+            product.serial = uuid; 
+        }
+
+      
         product.trangThai = trangThai;
         if (trangThai === "Từ chối" && nguyenNhanTC) {
           product.nguyenNhanTC = nguyenNhanTC;
         }
-    
+
+      
         await product.save();
-    
+
         res.json({ message: "Cập nhật trạng thái thành công!", product });
       } catch (error) {
         console.error("Lỗi khi cập nhật trạng thái:", error);
         res.status(500).json({ message: "Lỗi server, vui lòng thử lại!" });
       }
 };
+
 
 export const deleteProduct = async (req, res) => {
     try {
@@ -468,5 +479,55 @@ export const deleteProduct = async (req, res) => {
         res.status(500).json({ message: "Lỗi máy chủ", error: error.message });
     }
 };
+
+
+
+
+export const getProductInfo = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+       
+        const product = await SanPham.findById(id)
+            .populate('idDM idCH')
+            .select('tenSP moTaSP batchId idDM ngaySX ngayTH VatTuHTCT serial nguonGoc phanLoai'); 
+
+        if (!product) {
+            return res.status(404).json({ message: "Sản phẩm không tìm thấy!" });
+        }
+
+       
+        const productInfo = {
+            tenSP: product.tenSP,
+            moTaSP: product.moTaSP,
+            batchId: product.batchId,
+            idDM: product.idDM, 
+            ngaySX: product.ngaySX,
+            ngayTH: product.ngayTH,
+            VatTuHTCT: product.VatTuHTCT,
+            nguonGoc: product.nguonGoc,
+            serial: product.serial,
+            idCH: {
+                tenCH: product.idCH?.tenCH, 
+                anhCH: product.idCH?.anhCH,
+            },
+            phanLoai: product.phanLoai.map(loai => ({
+                idPL: loai.idPL,
+                tenLoai: loai.tenLoai,
+                giaLoai: loai.giaLoai,
+                donVi: loai.donVi,
+                khuyenMai: loai.khuyenMai, 
+                khoHang: loai.khoHang,
+                daBan: loai.daBan,
+            }))
+        };
+
+        res.json({ product: productInfo });
+    } catch (error) {
+        console.error("Lỗi khi lấy sản phẩm:", error);
+        res.status(500).json({ message: "Lỗi server, vui lòng thử lại!" });
+    }
+};
+
 
 

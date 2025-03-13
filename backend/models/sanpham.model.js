@@ -32,7 +32,7 @@ const sanphamSchema = new mongoose.Schema(
         ngayTH: { type: Date, required: true }, 
         VatTuHTCT: { type: String, required: true }, 
         batchId: { type: String, required: true },
-        nguyenNhanTC:{type: String}
+        nguyenNhanTC:{type: String},
 
     },
     {

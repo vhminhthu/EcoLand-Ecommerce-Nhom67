@@ -1,6 +1,6 @@
 import express from "express"
 
-import  { updateProduct,addSanPham, capNhatLuotXem, getSanPhamById, getSanPhamByIdCH, getSanPhamByIdDM, getTatCaSanPham, getTatCaSanPhamDM, goiYTimKiem, laySanPhamvoiIdCuaHang, timKiem, getPendingProduct, updateProductStatus, deleteProduct } from "../controllers/sanpham.controller.js"
+import  { updateProduct,addSanPham, capNhatLuotXem, getSanPhamById, getSanPhamByIdCH, getSanPhamByIdDM, getTatCaSanPham, getTatCaSanPhamDM, goiYTimKiem, laySanPhamvoiIdCuaHang, timKiem, getPendingProduct, updateProductStatus, deleteProduct, getProductInfo } from "../controllers/sanpham.controller.js"
 
 
 import { protectRoute } from "../middleware/protectRoute.js"
@@ -37,7 +37,7 @@ router.delete("/delete/:id", deleteProduct);
 
 
 
-
+router.get("/lay/serial/:id", getProductInfo)
 
 
 export default router

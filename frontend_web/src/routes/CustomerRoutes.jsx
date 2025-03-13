@@ -24,6 +24,7 @@ import PaymentResult from '../pages/customer/PaymentResult';
 import GuidePage from '../pages/support/GuidePage';
 import AboutPage from '../pages/support/AboutPage';
 import FAQPage from '../pages/support/FAQPage';
+import { DetailPage } from '../pages/customer/DetailPage';
 
 function CustomerRoutes() {
 
@@ -71,6 +72,8 @@ function CustomerRoutes() {
             <Route path="/search/sp" element={<CategoryPageSearch/>} />
             <Route path="/:nameProduct" element={<ProductPage/>} />
             <Route path="/shop/:nameShop" element={<ShopPage/>} />
+
+            <Route path="/product/detail" element={<DetailPage/>} />
 
             <Route path="/customer/support" element={<SupportPage/>} /> 
             <Route path="/customer/support/guide" element={<GuidePage />} />
