@@ -80,9 +80,6 @@ app.get("/", (req, res) => {
     res.send("Xin chào bạn");
 });
 
-console.log("Giá trị JWT_SECRET_ADMIN:", process.env.JWT_SECRET_ADMIN);
-
-console.log("GOOGLE_CLIENT_ID:", process.env.GOOGLE_CLIENT_ID);
 
 
 server.listen(5000, ()=>{

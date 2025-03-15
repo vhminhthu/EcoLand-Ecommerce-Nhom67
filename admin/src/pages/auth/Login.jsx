@@ -20,10 +20,12 @@ const Login = () => {
     }
 
     try {
-      const response = await axios.post("/api/admin/login", {
-        tenAdmin,
-        matKhau,
-      });
+      const response = await axios.post("/api/admin/login",
+        { tenAdmin,
+          matKhau},{
+                 withCredentials: true
+          }
+      );
 
       setThongBao("Đăng nhập thành công!");
       console.log(response.data);
@@ -41,7 +43,7 @@ const Login = () => {
   return (
     <div className="flex items-center justify-center min-h-screen relative">
       <img
-        src="https://c.wallhere.com/photos/b1/08/nature_forest_waterfall-2304284.jpg!d"
+        src="https://4kwallpapers.com/images/walls/thumbs_3t/14776.jpg"
         alt="Background"
         className="!absolute !inset-0 !w-full !h-full !object-cover"
       />
