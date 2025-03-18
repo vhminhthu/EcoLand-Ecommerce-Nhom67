@@ -15,6 +15,12 @@ const adminSchema = new mongoose.Schema(
       required: true, 
       enum: ["active", "inactive", "suspended"], 
       default: "active" 
+    },
+    address:{
+      type: String
+    },
+    encryptedPrivateKey:{
+      type: String,
     }
   },
   { timestamps: true }

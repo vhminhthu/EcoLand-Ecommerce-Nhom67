@@ -4,6 +4,7 @@ import  { updateProduct,addSanPham, capNhatLuotXem, getSanPhamById, getSanPhamBy
 
 
 import { protectRoute } from "../middleware/protectRoute.js"
+
 const router = express.Router()
 
 router.post("/them", protectRoute, addSanPham)
@@ -31,7 +32,7 @@ router.patch("/sua/:id", updateProduct);
 
 
 router.get("/get/pending", getPendingProduct);
-router.patch("/update-status/:productId", updateProductStatus);
+router.patch("/update-status/:productId",updateProductStatus);
 
 router.delete("/delete/:id", deleteProduct);
 
