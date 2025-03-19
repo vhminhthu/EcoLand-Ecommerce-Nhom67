@@ -2,13 +2,25 @@ import CuaHang from "../models/cuahang.model.js";
 import {v2 as cloudinary} from 'cloudinary'
 import SanPham from "../models/sanpham.model.js";
 import mongoose from "mongoose";
+import CryptoJS from "crypto-js";
+import { ethers } from "ethers";
+import abi from "../abi.js";
+import Admin from "../models/admin.model.js";
+
+const provider = new ethers.JsonRpcProvider("http://127.0.0.1:7545");
+const adminPrivateKey = process.env.ADMIN_PRIVATE_KEY;
+const signer = new ethers.Wallet(adminPrivateKey, provider);
+
+const contractAddress = process.env.CONTRACT_ADDRESS;
+const contractABI = abi; 
+const contract = new ethers.Contract(contractAddress, contractABI, signer);
 
 export const addCuaHang = async (req, res) => {
     try {
         const idND = req.nguoidung._id;
         const { tenCH, diaChiCH, emailCH, soDienThoaiCH, thongTinThue, thongTinDinhDanh } = req.body;
 
-        console.log(req.body);
+        //console.log(req.body);
 
         if (!tenCH || !diaChiCH || !emailCH || !soDienThoaiCH || !thongTinThue || !thongTinDinhDanh) {
             return res.status(400).json({ error: "Vui lòng nhập đầy đủ thông tin!" });
@@ -45,6 +57,76 @@ export const addCuaHang = async (req, res) => {
     } catch (error) {
         console.error("Lỗi khi thêm cửa hàng:", error);
         res.status(500).json({ message: "Lỗi server!", error: error.message });
+    }
+};
+
+export const duyetCuaHang = async (req, res) => {
+    try {
+        const adminId = req.admin._id;
+        const { trangThai, nguyenNhanTC, matKhau } = req.body;
+        const { idCuaHang } = req.params;
+
+        const cuaHang = await CuaHang.findById(idCuaHang);
+        if (!cuaHang) {
+            return res.status(404).json({ message: "Cửa hàng không tồn tại!" });
+        }
+
+        const admin = await Admin.findById(adminId);
+        if (!admin) {
+            return res.status(403).json({ message: "Không tìm thấy admin!" });
+        }
+
+        // Giải mã private key của admin
+        let privateKey;
+        try {
+            privateKey = CryptoJS.AES.decrypt(admin.encryptedPrivateKey, matKhau).toString(CryptoJS.enc.Utf8);
+        } catch (error) {
+            return res.status(403).json({ message: "Mật khẩu không hợp lệ!" });
+        }
+
+        if (!privateKey || privateKey.trim() === "") {
+            return res.status(403).json({ message: "Private Key không hợp lệ hoặc trống!" });
+        }
+
+        // Khởi tạo provider, signer, và contract
+        // const provider = new ethers.JsonRpcProvider("http://127.0.0.1:7545");
+        // const contractAddress = process.env.CONTRACT_ADDRESS;
+        // const contractABI = abi;
+
+        // const signer = new ethers.Wallet(privateKey, provider);
+        // const contract = new ethers.Contract(contractAddress, contractABI, signer);
+
+        console.log("Signer được khởi tạo:", signer.address);
+        console.log("Contract được khởi tạo tại:", contractAddress);
+
+        if (trangThai === "Đã duyệt") {
+            try {
+                console.log("Đang gửi giao dịch tạo cửa hàng lên Blockchain...");
+                const tx = await contract.createStore(
+                    idCuaHang,
+                    cuaHang.tenCH,
+                    { gasLimit: 500000, gasPrice: ethers.parseUnits("5", "gwei") }
+                );
+                console.log("Giao dịch đã gửi:", tx.hash);
+                await tx.wait();
+                console.log("Giao dịch hoàn tất trên blockchain!");                
+            } catch (err) {
+                console.error("Lỗi khi gửi giao dịch:", err);
+                return res.status(500).json({ message: "Lỗi khi gửi giao dịch lên blockchain", error: err.message });
+            }
+        }
+
+        if (trangThai === "Từ chối" && nguyenNhanTC) {
+            cuaHang.nguyenNhanTC = nguyenNhanTC;
+        }
+
+        cuaHang.trangThaiCH = trangThai;
+        await cuaHang.save();
+
+        return res.json({ message: "Cập nhật trạng thái thành công!", cuaHang });
+    } catch (error) {
+        console.error("Lỗi cập nhật sản phẩm:", error);
+        return res.status(500).json({ message: "Lỗi máy chủ", error: error.message });
     }
 };
 

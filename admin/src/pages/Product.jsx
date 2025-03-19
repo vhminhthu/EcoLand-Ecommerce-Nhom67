@@ -36,29 +36,37 @@ const Product = () => {
   };
 
  
-  const handleUpdateStatus = async (productId, trangThai, nguyenNhanTC = "") => {
+  const handleUpdateStatus = async (productId, trangThai, nguyenNhanTC = "Không") => {
     try {
-      const response = await axios.patch(`/api/sanpham/update-status/${productId}`, {
-        trangThai,
-        nguyenNhanTC,
-      });
-      alert(response.data.message);
+        const matKhau = prompt("Vui lòng nhập mật khẩu để xác nhận:");
 
-      
-      setProducts((prevProducts) =>
-        prevProducts.map((product) =>
-          product._id === productId ? { ...product, trangThai, nguyenNhanTC } : product
-        )
-      );
+        if (!matKhau) {
+            alert("Bạn phải nhập mật khẩu để cập nhật trạng thái!");
+            return;
+        }
 
-    
-      setShowRejectDialog(false);
-      setRejectReason("");
+        const response = await axios.patch(`/api/sanpham/update-status/${productId}`, {
+            trangThai,
+            nguyenNhanTC,
+            matKhau,
+        });
+
+        alert(response.data.message);
+
+        setProducts((prevProducts) =>
+            prevProducts.map((product) =>
+                product._id === productId ? { ...product, trangThai, nguyenNhanTC } : product
+            )
+        );
+
+        setShowRejectDialog(false);
+        setRejectReason("");
     } catch (error) {
-      console.error("Lỗi cập nhật trạng thái:", error);
-      alert("Có lỗi xảy ra, vui lòng thử lại.");
+        console.error("Lỗi cập nhật trạng thái:", error);
+        alert("Có lỗi xảy ra, vui lòng thử lại.");
     }
   };
+
 
  
   const handleRejectClick = (productId) => {
@@ -131,7 +139,7 @@ const Product = () => {
                       </button>
                       <button 
                         className="!px-6 !py-2 bg-green-600 text-white rounded-md"
-                        onClick={() => handleUpdateStatus(product._id, "Đã duyệt")}
+                        onClick={() => handleUpdateStatus(product._id, "Chờ duyệt")}
                       >
                         DUYỆT
                       </button>
@@ -144,7 +152,6 @@ const Product = () => {
         </div>
       </div>
 
-     
       {showRejectDialog && (
         <div className="fixed inset-0 flex justify-center items-center">
           <div className="bg-white !p-6 rounded-md shadow-lg !w-96">

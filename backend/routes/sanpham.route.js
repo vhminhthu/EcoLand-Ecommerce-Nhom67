@@ -1,9 +1,10 @@
 import express from "express"
 
-import  { updateProduct,addSanPham, capNhatLuotXem, getSanPhamById, getSanPhamByIdCH, getSanPhamByIdDM, getTatCaSanPham, getTatCaSanPhamDM, goiYTimKiem, laySanPhamvoiIdCuaHang, timKiem, getPendingProduct, updateProductStatus, deleteProduct, getProductInfo } from "../controllers/sanpham.controller.js"
+import  { updateProduct,addSanPham, capNhatLuotXem, getSanPhamById, getSanPhamByIdCH, getSanPhamByIdDM, getTatCaSanPham, getTatCaSanPhamDM, goiYTimKiem, laySanPhamvoiIdCuaHang, timKiem, getPendingProduct, updateProductStatus, deleteProduct, getProductInfo, themSanPhamVaoBlockChain, capNhatTrangThaiSanPham, themQuyenDuyetSP } from "../controllers/sanpham.controller.js"
 
 
 import { protectRoute } from "../middleware/protectRoute.js"
+import { protectAdmin } from "../middleware/protectAdmin.js"
 
 const router = express.Router()
 
@@ -32,7 +33,9 @@ router.patch("/sua/:id", updateProduct);
 
 
 router.get("/get/pending", getPendingProduct);
-router.patch("/update-status/:productId",updateProductStatus);
+router.patch("/update-status/:productId",protectAdmin, themSanPhamVaoBlockChain);
+router.patch("/update-status-2/:productId",protectAdmin, capNhatTrangThaiSanPham);
+router.patch("/themQuyenDuyet/:productId",protectAdmin, themQuyenDuyetSP);
 
 router.delete("/delete/:id", deleteProduct);
 

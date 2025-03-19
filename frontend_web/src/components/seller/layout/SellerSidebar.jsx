@@ -14,14 +14,14 @@ function SellerSidebar() {
     const menuItems = [
         { to: "/seller/home", label: "Trang chủ", icon: <BiHome /> },
         { to: "/seller/orders?filter=tatca&page=1&limit=7", label: "Đơn hàng", icon: <BiCopyAlt /> },
-        { to: "/seller/reviews", label: "Đánh giá", icon: <IoChatboxEllipsesOutline /> },
+        // { to: "/seller/reviews", label: "Đánh giá", icon: <IoChatboxEllipsesOutline /> },
         { to: "/seller/finance", label: "Tài chính", icon: <HiOutlineWallet /> },
         { to: "/seller/products", label: "Sản phẩm", icon: <AiOutlineProduct /> },
     ];
 
     const menuExtras = [
         { to: "/seller/store", label: "Cửa hàng", icon: <BsShopWindow /> },
-        { to: "/seller/promotions", label: "Khuyến mãi", icon: <MdOutlineDiscount /> },
+        // { to: "/seller/promotions", label: "Khuyến mãi", icon: <MdOutlineDiscount /> },
         { to: "/seller/shipping", label: "Vận chuyển", icon: <MdOutlineLocalShipping /> },
     ];
 

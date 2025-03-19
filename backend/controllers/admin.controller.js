@@ -6,7 +6,6 @@ import CryptoJS from "crypto-js";
 import { ethers } from "ethers";
 import abi from "../abi.js";
 
-
 const provider = new ethers.JsonRpcProvider("http://127.0.0.1:7545");
 const adminPrivateKey = process.env.ADMIN_PRIVATE_KEY;
 const signer = new ethers.Wallet(adminPrivateKey, provider);
@@ -16,33 +15,37 @@ const contractABI = abi;
 const contract = new ethers.Contract(contractAddress, contractABI, signer);
 export const createAdmin = async (req, res) => {
   try {
-      const { tenAdmin, email, phanQuyen } = req.body;
-
-  
-      const validRoles = ["SUPER_AM", "AM1", "AM2", "CERTIFY"];
-      if (!validRoles.includes(phanQuyen)) {
-          return res.status(400).json({ message: "Quyền hạn không hợp lệ!" });
-      }
-
-
-      const existingAdmin = await Admin.findOne({ email });
-      if (existingAdmin) {
-          return res.status(400).json({ message: "Email này đã tồn tại!" });
-      }
-
-
-      const wallet = ethers.Wallet.createRandom();
-      const address = wallet.address;
-      const privateKey = wallet.privateKey;
-
-
-      const rawPassword = CryptoJS.lib.WordArray.random(8).toString();
-      const hashedPassword = await bcrypt.hash(rawPassword, 10);
-
-
-      const encryptedPrivateKey = CryptoJS.AES.encrypt(privateKey, rawPassword).toString();
-
+    const { tenAdmin, email, phanQuyen } = req.body;
+    console.log("body nhận được", req.body)
       
+    console.log("Kiểm tra quyền hạn:", phanQuyen);
+    const validRoles = ["SUPER_AM", "AM1", "AM2", "CERTIFY"];
+    if (!validRoles.includes(phanQuyen)) {
+        console.log("Quyền hạn không hợp lệ");
+        return res.status(400).json({ message: "Quyền hạn không hợp lệ!" });
+    }
+
+    const existingAdmin = await Admin.findOne({ email });
+    console.log("Kiểm tra email đã tồn tại:", existingAdmin);
+    if (existingAdmin) {
+        console.log("Email này đã tồn tại!");
+        return res.status(400).json({ message: "Email này đã tồn tại!" });
+    }
+
+    // Tạo ví Ethereum mới
+    const wallet = ethers.Wallet.createRandom();
+    const address = wallet.address;
+    const privateKey = wallet.privateKey;
+    console.log("Địa chỉ ví Ethereum:", address);
+    console.log("Khóa riêng của ví:", privateKey);
+
+    // Tạo mật khẩu ngẫu nhiên và mã hóa nó
+    const rawPassword = CryptoJS.lib.WordArray.random(8).toString();
+    console.log("Mật khẩu ngẫu nhiên:", rawPassword);
+    const hashedPassword = await bcrypt.hash(rawPassword, 10);
+    const encryptedPrivateKey = CryptoJS.AES.encrypt(privateKey, rawPassword).toString();
+    console.log("Khóa riêng đã mã hóa:", encryptedPrivateKey);
+
         const emailTemplate = `
         <!DOCTYPE html>
         <html>
@@ -123,33 +126,41 @@ export const createAdmin = async (req, res) => {
         </body>
         </html>`;
 
-  
       const newAdmin = new Admin({
-          tenAdmin,
-          email,
-          matKhau: hashedPassword,
-          phanQuyen: [phanQuyen],
-          address,
-          encryptedPrivateKey,
-      });
-      await newAdmin.save();
+        tenAdmin,
+        email,
+        matKhau: hashedPassword,
+        phanQuyen: [phanQuyen],
+        address,
+        encryptedPrivateKey,
+    });
+    await newAdmin.save();
+    console.log("Admin mới đã được lưu vào cơ sở dữ liệu.");
 
-  
-      const tx = await signer.sendTransaction({
-          to: address,
-          value: ethers.parseEther("2.0")
-      });
-      await tx.wait();
+    // Gửi giao dịch Ether tới địa chỉ ví của admin
+    const tx = await signer.sendTransaction({
+        to: address,
+        value: ethers.parseEther("2.0")
+    });
+    console.log("Gửi 2 ETH tới ví admin:", tx);
+    await tx.wait();
 
+    if (phanQuyen === "CERTIFY") {
+        console.log(`Gọi hàm themInspector với tham số address: ${address}, tenAdmin: ${tenAdmin}`);
+        const tx2 = await contract.connect(signer).themInspector(address, tenAdmin);
+        console.log("Gọi hàm themInspector: ", tx2);
+        await tx2.wait();
+    } else {
+        console.log(`Gọi hàm themAdmin với tham số address: ${address}`);
+        const tx2 = await contract.connect(signer).themAdmin(address);
+        console.log("Gọi hàm themAdmin: ", tx2);
+        await tx2.wait();
+    }
     
-      const tx2 = await contract.connect(signer).themAdmin(address);
-      await tx2.wait();
+    await sendEmail(email, "Tài khoản quản trị viên Ecoland", emailTemplate);
+    console.log("Email đã được gửi.");
 
-
-      await sendEmail(email, "Tài khoản quản trị viên Ecoland", emailTemplate);
-
-      res.status(201).json({ message: `Admin ${tenAdmin} đã được tạo, nhận 2 ETH và ghi vào blockchain.` });
-
+    res.status(201).json({ message: `Admin ${tenAdmin} đã được tạo, nhận 2 ETH và ghi vào blockchain.` });
   } catch (error) {
       res.status(500).json({ message: "Đã có lỗi xảy ra.", error: error.message });
   }

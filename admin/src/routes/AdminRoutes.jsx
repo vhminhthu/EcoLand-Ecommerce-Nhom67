@@ -44,13 +44,13 @@ function AdminRoutes() {
 
     return (
         <Routes>
-             <Route path="/" element={!authUser ? <Login /> : <Dashboard/> } />
-             <Route path="/user" element={<User />} />
-             <Route path="/category" element={<Category />} />
-             <Route path="/product" element={<Product />} />
-             <Route path="/blockchain" element={<Blockchain />} />
-             <Route path="/report" element={<Report />} />
-             <Route path="/roles" element={<Roles />} />     
+              <Route path="/" element={!authUser ? <Login /> : <Dashboard/> } />
+              <Route path="/user" element={<User />} />
+              <Route path="/category" element={<Category />} />
+              <Route path="/product" element={<Product />} />
+              <Route path="/blockchain" element={<Blockchain />}/>
+              <Route path="/report" element={<Report />} />
+              <Route path="/roles" element={<Roles />} />     
         </Routes>
     )
 }

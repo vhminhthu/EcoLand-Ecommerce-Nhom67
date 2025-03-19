@@ -10,6 +10,7 @@ const cuahangSchema = new mongoose.Schema(
         dsSanPham: [{ type: mongoose.Schema.Types.ObjectId, ref: "Sanpham", default: [] }],
         diaChiCH: { type: String, required: true },
         trangThaiCH: { type: String, default: "Chờ xác nhận" },
+        nguyenNhanTC: { type: String },
         emailCH: { type: String, required: true },
         soDienThoaiCH: { type: String, required: true },
         thongTinThue: {

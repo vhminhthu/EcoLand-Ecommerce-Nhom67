@@ -26,12 +26,19 @@ const sanphamSchema = new mongoose.Schema(
         tongSoDanhGia: { type: Number, default: 0 },
         dsDanhGia: [{ type: mongoose.Schema.Types.ObjectId, ref: "Danhgia", default: [] }],
         dsDonHang: [{ type: mongoose.Schema.Types.ObjectId, ref: "Donhang", default: [] }],
+        addressNguoiDuyet:{type: String},
+        idNguoiDuyet: { type: mongoose.Schema.Types.ObjectId, ref: "Admin"},
 
-        
-        ngaySX: { type: Date, required: true }, 
-        ngayTH: { type: Date, required: true }, 
-        VatTuHTCT: { type: String, required: true }, 
-        batchId: { type: String, required: true },
+        ngaySX: { type: Date }, 
+        loaiTrong: { type: String },  //
+
+        ngayTH: { type: Date}, 
+        VatTuHTCT: { type: String}, 
+
+        ngayDG: { type: Date}, 
+        hanSX: { type: Date}, 
+
+        batchId: { type: String },
         nguyenNhanTC:{type: String},
 
     },
