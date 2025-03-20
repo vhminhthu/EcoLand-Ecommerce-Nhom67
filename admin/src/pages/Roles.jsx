@@ -44,7 +44,7 @@ export const Roles = () => {
           )}
           <form
             onSubmit={handleSubmit}
-            className="bg-white !p-6 rounded-lg max-w-md border-2 border-green-700 shadow-lg"
+            className="bg-white min-h-[500px] !p-6 rounded-lg max-w-md border-2 border-green-700 shadow-lg"
           >
             <div className="!mb-4">
               <label className="block text-sm font-medium text-gray-700">Tên</label>
