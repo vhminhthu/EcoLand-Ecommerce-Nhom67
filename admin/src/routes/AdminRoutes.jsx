@@ -12,6 +12,7 @@ import Login from "../pages/auth/Login";
 
 import {useQuery} from '@tanstack/react-query'
 import axios from 'axios'
+import Ads from "../pages/Ads";
 
 function AdminRoutes() {
 
@@ -51,6 +52,7 @@ function AdminRoutes() {
               <Route path="/blockchain" element={<Blockchain />}/>
               <Route path="/report" element={<Report />} />
               <Route path="/roles" element={<Roles />} />     
+              <Route path="/ads" element={<Ads />} />     
         </Routes>
     )
 }

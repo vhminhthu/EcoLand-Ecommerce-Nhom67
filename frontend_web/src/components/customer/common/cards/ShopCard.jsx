@@ -21,7 +21,7 @@ function ShopCard(props) {
                 className="cursor-pointer category-card border-1 border-emerald-600 rounded-xl flex items-center gap-5 !px-5 !py-5 shadow-lg"
                 onClick={() => {
                     const nameShop = tenCH.replace(/\s+/g, '-');
-                    navigate(`/shop/${nameShop}?sort=phobien&page=1&limit=4`, {
+                    navigate(`/shop/${nameShop}?sort=phobien&page=1&limit=15`, {
                         state: { id: _id },
                     });
                 }}

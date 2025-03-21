@@ -333,19 +333,16 @@ function ProductPage() {
                 <img className="w-20 h-20 object-cover rounded-full cursor-pointer hover:opacity-80" src={sanPham?.idCH?.anhCH} alt={sanPham?.idCH?.tenCH}  ></img>
                 <div>
                     <span className='text-xl font-bold'>{sanPham?.idCH?.tenCH}</span>
-                    <div className='flex gap-2 !mt-3'>
-                        <button className='cursor-pointer flex items-center text-lg gap-2 border-1 border-emerald-600 text-emerald-600 !py-1 !px-2 rounded-lg hover:bg-gray-50'><HiOutlineChatBubbleLeftRight/>Chat Ngay</button>
-                        <button 
-                        className='cursor-pointer flex items-center text-lg gap-2 border-1 border-emerald-600 text-emerald-600 !py-1 !px-2 rounded-lg hover:bg-gray-50'
-                        onClick={() => {
-                            const nameShop = sanPham?.idCH?.tenCH.replace(/\s+/g, '-');
-                            const idShop = sanPham?.idCH?._id;
-                            navigate(`/shop/${nameShop}?sort=phobien&page=1&limit=4`, {
-                                state: { id: idShop },
-                            });
-                        }}
-                        ><CiShop/>Xem Shop</button>
-                    </div>
+                    <button 
+                    className='mt-3 cursor-pointer flex items-center text-lg gap-2 border-1 border-emerald-600 text-emerald-600 !py-1 !px-2 rounded-lg hover:bg-gray-50'
+                    onClick={() => {
+                        const nameShop = sanPham?.idCH?.tenCH.replace(/\s+/g, '-');
+                        const idShop = sanPham?.idCH?._id;
+                        navigate(`/shop/${nameShop}?sort=phobien&page=1&limit=15`, {
+                            state: { id: idShop },
+                        });
+                    }}
+                    ><CiShop/>Xem Shop</button>
                 </div>
                 <span className='flex flex-col gap-2'>
                     <span className='text-gray-500'>Đánh giá <span className='text-emerald-600 !ml-5'>{tongDanhGiaCH}</span></span>

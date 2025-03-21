@@ -6,6 +6,7 @@ import CryptoJS from "crypto-js";
 import { ethers } from "ethers";
 import abi from "../abi.js";
 import Admin from "../models/admin.model.js";
+import Nguoidung from "../models/nguoidung.model.js";
 
 const provider = new ethers.JsonRpcProvider("http://127.0.0.1:7545");
 const adminPrivateKey = process.env.ADMIN_PRIVATE_KEY;
@@ -164,9 +165,10 @@ export const getAllCuaHang = async (req, res) => {
 export const getCuaHangById = async (req, res) => {
     try {
         const { id } = req.params;
+        const idND = req.nguoidung._id;
 
-        const cuaHang = await CuaHang.findOne({ _id: id, trangThaiCH: 'Mở cửa' })
-            .select("tenCH dsQuangCao diaChiCH createdAt")
+        const cuaHang = await CuaHang.findOne({ _id: id })
+            .select("tenCH dsQuangCao diaChiCH createdAt anhCH")
             .populate({ path: "idNguoiDung", select: "dsNguoiTheoDoi" })
             .lean();
 
@@ -189,7 +191,105 @@ export const getCuaHangById = async (req, res) => {
         cuaHang.tongSoDanhGia = tongSoDanhGia;
         cuaHang.trungBinhSao = tongSoDanhGia > 0 ? (tongSoSao / tongSoDanhGia).toFixed(2) : 0;
 
-        res.status(200).json(cuaHang);
+        let daTheoDoi = false;
+        const nguoiDung = await Nguoidung.findById(cuaHang.idNguoiDung).select("dsNguoiTheoDoi");
+        if (nguoiDung) {
+            daTheoDoi = nguoiDung.dsNguoiTheoDoi.includes(idND.toString());
+        }
+
+        res.status(200).json({ ...cuaHang, daTheoDoi });
+    } catch (error) {
+        console.error("Lỗi khi lấy cửa hàng theo ID:", error);
+        res.status(500).json({ success: false, message: "Lỗi server!", error: error.message });
+    }
+};
+
+export const theoDoi = async (req, res) => {
+    try {
+        const { id } = req.params; 
+        const idND = req.nguoidung._id;
+
+        const cuaHang = await CuaHang.findById(id);
+        if (!cuaHang) {
+            return res.status(404).json({ success: false, message: "Cửa hàng không tồn tại hoặc đã đóng cửa." });
+        }
+
+        const nguoiDungCH = await Nguoidung.findById(cuaHang.idNguoiDung);
+        if (!nguoiDungCH) {
+            return res.status(404).json({ success: false, message: "Không tìm thấy chủ cửa hàng." });
+        }
+
+        const nguoiDung = await Nguoidung.findById(idND);
+        if (!nguoiDung) {
+            return res.status(404).json({ success: false, message: "Không tìm thấy người dùng." });
+        }
+
+        if (!nguoiDungCH.dsNguoiTheoDoi) nguoiDungCH.dsNguoiTheoDoi = [];
+        if (!nguoiDung.dsTheoDoi) nguoiDung.dsTheoDoi = [];
+
+        const daTheoDoi = nguoiDung.dsTheoDoi.includes(cuaHang.idNguoiDung);
+
+        if (daTheoDoi) {
+            nguoiDungCH.dsNguoiTheoDoi = nguoiDungCH.dsNguoiTheoDoi.filter(userId => userId.toString() !== idND.toString());
+            nguoiDung.dsTheoDoi = nguoiDung.dsTheoDoi.filter(shopId => shopId.toString() !== cuaHang.idNguoiDung.toString());
+        } else {
+            nguoiDungCH.dsNguoiTheoDoi.push(idND);
+            nguoiDung.dsTheoDoi.push(cuaHang.idNguoiDung);
+        }
+
+        await nguoiDungCH.save();
+        await nguoiDung.save();
+
+        res.status(200).json({ 
+            success: true, 
+            message: daTheoDoi ? "Đã bỏ theo dõi" : "Đã theo dõi", 
+            nguoiDung
+        });
+    } catch (error) {
+        console.error("Lỗi khi theo dõi cửa hàng:", error);
+        res.status(500).json({ success: false, message: "Lỗi server!", error: error.message });
+    }
+};
+
+export const capNhat = async (req, res) => {
+    let {anhCH} = req.body; 
+    const id = req.nguoidung._id;
+    try {
+        let cuaHang = await CuaHang.findOne({idNguoiDung: id});
+        if (!cuaHang) return res.status(404).json({ message: "Không tìm thấy cửa hàng" });
+
+        if (anhCH) {
+        
+            if (cuaHang.anhCH) {
+                await cloudinary.uploader.destroy(cuaHang.anhCH.split("/").pop().split(".")[0]);
+            }
+        
+            const uploadedResponse = await cloudinary.uploader.upload(anhCH);
+            anhCH = uploadedResponse.secure_url;
+        }
+
+        cuaHang.anhCH = anhCH|| cuaHang.anhCH;
+
+        cuaHang = await cuaHang.save();
+
+        return res.status(200).json(cuaHang.anhCH);
+    } catch (error) {
+        console.log("Lỗi capNhat controller:", error.message);
+        res.status(500).json({ error: error.message });
+    }
+};
+
+export const getAnhCH = async (req, res) => {
+    try {
+        const idND = req.nguoidung._id;
+
+        const cuaHang = await CuaHang.findOne({ idNguoiDung: idND });
+
+        if (!cuaHang) {
+            return res.status(404).json({ success: false, message: "Cửa hàng không tồn tại hoặc đã đóng cửa." });
+        }
+
+        res.status(200).json(cuaHang.anhCH);
     } catch (error) {
         console.error("Lỗi khi lấy cửa hàng theo ID:", error);
         res.status(500).json({ success: false, message: "Lỗi server!", error: error.message });

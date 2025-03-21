@@ -6,9 +6,6 @@ const contractAddress = process.env.CONTRACT_ADDRESS;
 const contractABI = abi;
 const contract = new ethers.Contract(contractAddress, contractABI, provider);
 
-// Kiểm tra đối tượng contract
-console.log(contract);
-
 export const getAllAdmin = async (req, res) => {
     try {
         const admins = await contract.getAdmins();

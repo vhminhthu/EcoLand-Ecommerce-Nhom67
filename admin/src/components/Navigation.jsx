@@ -7,6 +7,7 @@ import { IoMdSettings } from "react-icons/io";
 import { TbLogout2 } from "react-icons/tb";
 import { TbCategoryFilled } from "react-icons/tb";
 import { useState } from "react";
+import { LiaAdSolid } from "react-icons/lia";
 
 import PropTypes from "prop-types";
 import { Link } from "react-router-dom";
@@ -21,6 +22,7 @@ const Navigation = ({ children }) => {
     { name: "Product Management", icon: <BsFillBoxSeamFill size={20} /> , path: "/product"  },
     { name: "Blockchain", icon: <SiBlockchaindotcom size={22} /> , path: "/blockchain" },
     { name: "Report Management", icon: <FaFileAlt size={24} /> , path: "/report" },
+    { name: "Ads Management", icon: <LiaAdSolid size={24} /> , path: "/ads" },
     { name: "Roles", icon: <IoMdSettings size={25} />, path: "/roles"  },
     { name: "Logout", icon: <TbLogout2 size={25} /> },
   ];

@@ -14,7 +14,7 @@ function AuthRoutes() {
             const response = await axios.get('/api/auth/getme',{
               withCredentials: true,
             });
-            console.log("Thông tin người dùng", response.data);
+            //console.log("Thông tin người dùng", response.data);
             localStorage.setItem("chat-user", JSON.stringify(response.data));
             if (response.data.error) {
               throw new Error(response.data.error);

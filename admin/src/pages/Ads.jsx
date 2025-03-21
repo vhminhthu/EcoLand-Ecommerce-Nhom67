@@ -1,31 +1,28 @@
+import Navigation from '../components/Navigation'
+import Header from '../components/Header'
 import { useState, useEffect } from 'react'
-import MainLayout from '../../layouts/seller/MainLayout'
 import { MdClose } from "react-icons/md";
 import axios from "axios";
 import moment from "moment";
 
-function StorePage() {
+function Ads() {
     const [moThem, setMoThem] = useState(false);
     const [moSua, setMoSua] = useState(false);
     const [quangCaoList, setQuangCaoList] = useState([]);
     const [quangCao, setQuangCao] = useState({
-        loaiQuangCao: "Cửa Hàng",
+        loaiQuangCao: "Hệ Thống",
         hinhAnh: "",
         tieuDe: "",
         noiDung: "",
         ngayBatDau: "",
         ngayKetThuc: "",
     });
-    const [selectedImage, setSelectedImage] = useState(null);
-    const [anhCH, setAnhCH] = useState(null);
 
     useEffect(() => {
         const fetchQuangCao = async () => {
             try {
-                const response = await axios.get("/api/quangcao/lay");
+                const response = await axios.get("/api/quangcao/admin/lay");
                 setQuangCaoList(response.data);
-                const response2 = await axios.get("/api/cuahang/lay");
-                setAnhCH(response2.data);
             } catch (err) {
                 console.error("Lỗi API:", err);
             }
@@ -55,7 +52,7 @@ function StorePage() {
         e.preventDefault();
 
         try {
-            const response = await axios.post("/api/quangcao/them", quangCao);
+            const response = await axios.post("/api/quangcao/admin/them", quangCao);
 
             if (response.status === 200 || response.status === 201) {
                 alert("Thêm quảng cáo thành công!");
@@ -103,84 +100,32 @@ function StorePage() {
             alert("Lỗi khi kết nối đến server!");
         }
     };
-    
-    const handleImageChange2 = (e) => {
-        const file = e.target.files[0];
-        setSelectedImage(file);
-    };
 
-    const handleUpload = async () => {
-        if (!selectedImage) {
-            alert("Vui lòng chọn một ảnh!");
-            return;
-        }
-    
-        const reader = new FileReader();
-        reader.readAsDataURL(selectedImage);
-        reader.onloadend = async () => {
-                try {
-                const response = await axios.patch("/api/cuahang/update",{ anhCH: reader.result }, 
-                );
-
-                if (response.data) {
-                    alert("Cập nhật ảnh thành công!");
-                    setAnhCH(response.data);
-                }
-            } catch (error) {
-                console.error("Lỗi khi cập nhật ảnh:", error);
-                alert("Không thể cập nhật ảnh, vui lòng thử lại!");
-            }
-        };
-    }
     return (
-        <MainLayout>
-            <div className='bg-white rounded-xl shadow-xl !px-5 !py-4 w-auto h-fit'>
-                <div className="flex flex-col items-center">
-                    <div className="relative w-40 h-40 rounded-full overflow-hidden border-4 border-emerald-600 shadow-lg">
-                        <img
-                            src={anhCH || "/default-avatar.png"}
-                            alt="Avatar"
-                            className="w-full h-full object-cover transition duration-300 hover:scale-105"
-                        />
-                    </div>
-                    <p className="text-sm text-gray-500 mt-2">Ảnh cửa hàng</p>
-
-                    <div className="mt-3 flex flex-col items-center">
-                        <input
-                            type="file"
-                            accept="image/*"
-                            onChange={handleImageChange2}
-                            className="mt-2 text-sm file:bg-emerald-600 file:text-white file:px-4 file:py-2 file:rounded file:border-none cursor-pointer"
-                        />
-                        <button
-                            onClick={handleUpload}
-                            className="mt-3 bg-green-600 text-white px-5 py-2 rounded-lg shadow-md hover:bg-green-700 transition duration-200"
-                        >
-                            Cập nhật ảnh
-                        </button>
-                    </div>
-                </div>
+        <Navigation>
+            <Header title="Quản lý quảng cáo" />
+            <div className='bg-white rounded-xl shadow-xl !px-5 !py-2 w-auto h-fit !mt-16'>
                 <div className='flex justify-between items-center'>
                     <h1 className='text-2xl font-black uppercase text-emerald-900'>Dách sách quảng cáo của cửa hàng</h1>
                     <button 
-                        className='bg-emerald-700 text-white text-lg rounded-md px-5 py-2 hover:bg-emerald-800'
+                        className='bg-emerald-700 text-white text-lg rounded-md !px-5 !py-2 hover:bg-emerald-800'
                         onClick={() => setMoThem(true)}
                         >Thêm quảng cáo</button>
                 </div>
 
-                <div className='mt-5'>
+                <div className='!mt-5'>
                     <div className='w-full rounded-md bg-emerald-900 text-white grid grid-cols-23 items-center font-semibold'>
-                        <div className='col-span-1 text-center border-r py-4 uppercase'>#</div>
-                        <div className='col-span-4 border-r py-4 text-center uppercase'>hình ảnh</div>
-                        <div className='col-span-4 border-r py-4 text-center uppercase'>tiêu đề</div>
-                        <div className='col-span-4 border-r py-4 text-center uppercase'>nội dung</div>
-                        <div className='col-span-3 border-r py-4 text-center uppercase'>ngày bắt đầu</div>
-                        <div className='col-span-3 border-r py-4 text-center uppercase'>ngày kết thúc</div>
-                        <div className='col-span-2 border-r py-4 text-center uppercase'>trạng thái</div>
-                        <div className='col-span-2 py-4 text-center uppercase'>hành động</div>
+                        <div className='col-span-1 text-center border-r !py-2 uppercase'>#</div>
+                        <div className='col-span-4 border-r !py-2 text-center uppercase'>hình ảnh</div>
+                        <div className='col-span-4 border-r !py-2 text-center uppercase'>tiêu đề</div>
+                        <div className='col-span-4 border-r !py-2 text-center uppercase'>nội dung</div>
+                        <div className='col-span-3 border-r !py-2 text-center uppercase'>ngày bắt đầu</div>
+                        <div className='col-span-3 border-r !py-2 text-center uppercase'>ngày kết thúc</div>
+                        <div className='col-span-2 border-r !py-2 text-center uppercase'>trạng thái</div>
+                        <div className='col-span-2 !py-2 text-center uppercase'>hành động</div>
                     </div>
                     {quangCaoList.map((qc, index) => (
-                        <div key={index} className='w-full bg-gray-100 grid grid-cols-23 text-lg items-center border-b py-4'>
+                        <div key={index} className='w-full bg-gray-100 grid grid-cols-23 text-lg items-center border-b !py-2'>
                             <div className='col-span-1 text-center border-r'>{index + 1}</div>
                             <div className='col-span-4 border-r text-center'>
                                 <img src={qc.linkAnh} alt="Hình ảnh QC" className="h-30 w-30 object-cover mx-auto rounded" />
@@ -192,13 +137,13 @@ function StorePage() {
                             <div className='col-span-2 border-r text-center'>{qc.trangThai}</div>
                             <div className='col-span-2 text-center flex justify-center gap-2'>
                                 <button 
-                                    className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-700"
+                                    className="bg-blue-500 text-white !px-3 !py-1 rounded hover:bg-blue-700"
                                     onClick={() => handleEdit(qc)}
                                 >
                                     Sửa
                                 </button>
                                 <button 
-                                    className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-700"
+                                    className="bg-red-500 text-white !px-3 !py-1 rounded hover:bg-red-700"
                                     onClick={() => handleDelete(qc._id)}
                                 >
                                     Xóa
@@ -207,13 +152,12 @@ function StorePage() {
                         </div>
                     ))}
                 </div>
-
             </div>
             {moThem && (
                 <div className="fixed top-0 left-0 w-full h-full bg-black/50 flex items-center justify-center">
-                    <div className="bg-white w-96 md:w-[500px] p-7 rounded-lg shadow-lg relative">
+                    <div className="bg-white w-96 md:w-[500px] !p-7 rounded-lg shadow-lg relative">
                         <button
-                            className="cursor-pointer absolute top-3 right-3 text-lg p-2 rounded-full bg-gray-200 hover:bg-red-500 hover:text-white transition"
+                            className="cursor-pointer absolute top-3 right-3 text-lg !p-2 rounded-full bg-gray-200 hover:bg-red-500 hover:text-white transition"
                             onClick={() => {
                                 setMoThem(false);
                                 setQuangCao({
@@ -228,67 +172,67 @@ function StorePage() {
                         >
                             <MdClose />
                         </button>
-                        <h1 className="text-2xl font-bold text-emerald-900 text-center mb-5">THÊM QUẢNG CÁO MỚI</h1>
+                        <h1 className="text-2xl font-bold text-emerald-900 text-center !mb-5">THÊM QUẢNG CÁO MỚI</h1>
                         <form onSubmit={handleSubmit} className="space-y-4">
                             <div>
-                                <label className="block font-medium mb-2">Hình ảnh:</label>
+                                <label className="block font-medium !mb-2">Hình ảnh:</label>
                                 {quangCao.hinhAnh && (
-                                    <img src={quangCao.hinhAnh} alt="Hình ảnh QC" className="w-full h-60 mb-5 object-cover rounded-lg" />
+                                    <img src={quangCao.hinhAnh} alt="Hình ảnh QC" className="w-full h-60 !mb-5 object-cover rounded-lg" />
                                 )}
                                 <input 
                                     type="file" 
                                     accept="image/*" 
-                                    className="w-full border rounded-md p-2 focus:ring focus:ring-emerald-400 text-sm"
+                                    className="w-full border rounded-md !p-2 focus:ring focus:ring-emerald-400 text-sm"
                                     onChange={handleImageChange} 
                                     />
                             </div>
                             <div>
-                                <label className="block font-medium mb-2">Tiêu đề:</label>
+                                <label className="block font-medium !mb-2">Tiêu đề:</label>
                                 <input
                                     type="text"
                                     name="tieuDe"
                                     value={quangCao.tieuDe}
                                     onChange={handleChange}
-                                    className="w-full border rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    className="w-full border rounded-lg !p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                     required
                                 />
                             </div>
                             <div>
-                                <label className="block font-medium mb-2">Nội dung:</label>
+                                <label className="block font-medium !mb-2">Nội dung:</label>
                                 <input
                                     type="text"
                                     name="noiDung"
                                     value={quangCao.noiDung}
                                     onChange={handleChange}
-                                    className="w-full border rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    className="w-full border rounded-lg !p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                     required
                                 />
                             </div>
                             <div>
-                                <label className="block font-medium mb-2">Ngày bắt đầu:</label>
+                                <label className="block font-medium !mb-2">Ngày bắt đầu:</label>
                                 <input
                                     type="datetime-local"
                                     name="ngayBatDau"
                                     value={quangCao.ngayBatDau}
                                     onChange={handleChange}
-                                    className="w-full border rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    className="w-full border rounded-lg !p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                     required
                                 />
                             </div>
                             <div>
-                                <label className="block font-medium mb-2">Ngày kết thúc:</label>
+                                <label className="block font-medium !mb-2">Ngày kết thúc:</label>
                                 <input
                                     type="datetime-local"
                                     name="ngayKetThuc"
                                     value={quangCao.ngayKetThuc}
                                     onChange={handleChange}
-                                    className="w-full border rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    className="w-full border rounded-lg !p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                     required
                                 />
                             </div>
                             <button
                                 type="submit"
-                                className="w-full bg-blue-800 text-white py-2 rounded-lg cursor-pointer hover:bg-blue-900 transition"
+                                className="w-full bg-blue-800 text-white !py-2 rounded-lg cursor-pointer hover:bg-blue-900 transition"
                             >
                                 Thêm quảng cáo
                             </button>
@@ -299,9 +243,9 @@ function StorePage() {
 
             {moSua && (
                 <div className="fixed top-0 left-0 w-full h-full bg-black/50 flex items-center justify-center">
-                    <div className="bg-white w-96 md:w-[500px] p-7 rounded-lg shadow-lg relative">
+                    <div className="bg-white w-96 md:w-[500px] !p-7 rounded-lg shadow-lg relative">
                         <button
-                            className="cursor-pointer absolute top-3 right-3 text-lg p-2 rounded-full bg-gray-200 hover:bg-red-500 hover:text-white transition"
+                            className="cursor-pointer absolute top-3 right-3 text-lg !p-2 rounded-full bg-gray-200 hover:bg-red-500 hover:text-white transition"
                             onClick={() => {
                                 setMoSua(false);
                                 setQuangCao({
@@ -316,36 +260,35 @@ function StorePage() {
                         >
                             <MdClose />
                         </button>
-                        <h1 className="text-2xl font-bold text-emerald-900 text-center mb-5">CHỈNH SỬA QUẢNG CÁO</h1>
-                        <form onSubmit={handleUpdate} className="space-y-4">
+                        <h1 className="text-2xl font-bold text-emerald-900 text-center !mb-5">CHỈNH SỬA QUẢNG CÁO</h1>
+                        <form onSubmit={handleUpdate} className="!space-y-4">
                             {(quangCao.hinhAnh ? quangCao.hinhAnh : quangCao.linkAnh) && (
                                 <img
                                     src={quangCao.hinhAnh ? quangCao.hinhAnh : quangCao.linkAnh}
                                     alt="Hình ảnh QC"
-                                    className="w-full h-60 mb-5 object-cover rounded-lg"
+                                    className="w-full h-60 !mb-5 object-cover rounded-lg"
                                 />
                             )}
-                            <input type="file" accept="image/*" onChange={handleImageChange} className="w-full  border rounded-lg p-2" />
-                            <input type="text" name="tieuDe" value={quangCao.tieuDe} onChange={handleChange} className="w-full border rounded-lg p-2" placeholder="Tiêu đề" required />
-                            <textarea name="noiDung" value={quangCao.noiDung} onChange={handleChange} className="w-full border rounded-lg p-2" placeholder="Nội dung" required></textarea>
-                            <input type="datetime-local" name="ngayBatDau" value={quangCao.ngayBatDau ? moment(quangCao.ngayBatDau).format("YYYY-MM-DD HH:mm") : ''} onChange={handleChange} className="w-full border rounded-lg p-2" required />
-                            <input type="datetime-local" name="ngayKetThuc" value={quangCao.ngayKetThuc ? moment(quangCao.ngayKetThuc).format("YYYY-MM-DD HH:mm") : ''} onChange={handleChange} className="w-full border rounded-lg p-2" required />
-                            <select name="trangThai" value={quangCao.trangThai} onChange={handleChange} className="w-full border rounded-lg p-2" required>
+                            <input type="file" accept="image/*" onChange={handleImageChange} className="w-full border rounded-lg !p-2" />
+                            <input type="text" name="tieuDe" value={quangCao.tieuDe} onChange={handleChange} className="w-full border rounded-lg !p-2" placeholder="Tiêu đề" required />
+                            <textarea name="noiDung" value={quangCao.noiDung} onChange={handleChange} className="w-full border rounded-lg !p-2" placeholder="Nội dung" required></textarea>
+                            <input type="datetime-local" name="ngayBatDau" value={quangCao.ngayBatDau ? moment(quangCao.ngayBatDau).format("YYYY-MM-DD HH:mm") : ''} onChange={handleChange} className="w-full border rounded-lg !p-2" required />
+                            <input type="datetime-local" name="ngayKetThuc" value={quangCao.ngayKetThuc ? moment(quangCao.ngayKetThuc).format("YYYY-MM-DD HH:mm") : ''} onChange={handleChange} className="w-full border rounded-lg !p-2" required />
+                            <select name="trangThai" value={quangCao.trangThai} onChange={handleChange} className="w-full border rounded-lg !p-2" required>
                                 <option value={quangCao.trangThai}>{quangCao.trangThai}</option>
                                 <option value="Đang diễn ra">Đang diễn ra</option>
                                 <option value="Tạm dừng">Tạm dừng</option>
                                 <option value="Đã kết thúc">Đã kết thúc</option>
                             </select>
-                            <button type="submit" className="w-full bg-blue-800 text-white py-2 rounded-lg hover:bg-blue-900 transition">
+                            <button type="submit" className="w-full bg-blue-800 text-white !py-2 rounded-lg hover:bg-blue-900 transition">
                                 Cập nhật
                             </button>
                         </form>
                     </div>
                 </div>
             )}
-
-        </MainLayout>
+        </Navigation>
     )
-};
+}
 
-export default StorePage
+export default Ads

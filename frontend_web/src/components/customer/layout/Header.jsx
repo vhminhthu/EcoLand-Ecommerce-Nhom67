@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import {BiBell , BiHeart , BiCart, BiUser, BiMenu,BiSearch    } from "react-icons/bi";
+import {BiHeart , BiCart, BiUser, BiMenu,BiSearch    } from "react-icons/bi";
 import { useState } from "react";
 import PropTypes from 'prop-types';
 import { useNavigate } from "react-router-dom";
@@ -7,10 +7,9 @@ import { IoIosArrowDown } from "react-icons/io";
 import { useEffect } from "react";
 import axios from "axios";
 
-function Header({ thongBaoList }) {
+function Header() {
     const navigate = useNavigate();
 
-    const [isOpenBell, setIsOpenBell] = useState(false);
     const [isOpenUser, setIsOpenUser] = useState(false);
     const [isOpenCategory, setIsOpenCategory] = useState(false); 
     const [isOpenCategorySearch, setIsOpenCategorySearch] = useState(false); 
@@ -38,7 +37,7 @@ function Header({ thongBaoList }) {
 
     const handleKeyPress = (e) => {
         if (e.key === 'Enter' && danhSachGoiY.length > 0) {
-            navigate(`/search/sp?search=${timKiem}&sort=phobien&page=1&limit=12`, {state: { id: danhMucChon }});
+            navigate(`/search/sp?search=${timKiem}&sort=phobien&page=1&limit=20`, {state: { id: danhMucChon }});
         }
     };
 
@@ -159,40 +158,6 @@ function Header({ thongBaoList }) {
                     </div>
                 </div>
                 <div className="flex gap-4">
-                    <div className="relative">
-                        <button
-                            className="cursor-pointer relative text-white hover:bg-emerald-500 w-12 h-12 rounded-full flex items-center justify-center"
-                            onMouseEnter={() => setIsOpenBell(true)}
-                            onMouseLeave={() => setIsOpenBell(false)}
-                        >
-                            <BiBell className="text-xl" />
-                        </button>
-
-                        {isOpenBell && (
-                            <div 
-                                className="absolute right-0 w-64 bg-white shadow-lg rounded-lg !p-2 z-50"
-                                onMouseEnter={() => setIsOpenBell(true)}
-                                onMouseLeave={() => setIsOpenBell(false)}
-                            >
-                                <h3 className="text-base font-semibold text-emerald-800 border-b !pb-2">Thông Báo Mới Nhận</h3>
-                                <ul className="max-h-60 overflow-y-auto">
-                                    {thongBaoList.slice(0, 10).map((sp) => (
-                                        <li key={sp.id} className="flex items-center gap-3 !p-2 hover:bg-gray-100">
-                                            <img src={sp.img} alt={sp.ten} className="w-10 h-10 rounded-md" />
-                                            <div className="flex flex-col">
-                                                <span className="text-sm font-medium">{sp.ten}</span>
-                                                <span className="text-xs text-gray-500">{sp.gia}</span>
-                                            </div>
-                                        </li>
-                                    ))}
-                                </ul>
-                                <Link to="/customer/notification" className="block text-center text-gray-400 hover:text-emerald-700 text-sm !mt-2">
-                                    Xem tất cả
-                                </Link>
-                            </div>
-                        )}
-                    </div>
-
                     <button
                         className="cursor-pointer relative text-white hover:bg-emerald-500 w-12 h-12 rounded-full flex items-center justify-center"
                         onClick={() => navigate("/customer/wishlist")}
@@ -273,7 +238,7 @@ function Header({ thongBaoList }) {
                                     <li key={category._id} className="hover:bg-gray-100 !p-2 cursor-pointer" 
                                         onClick={() => {
                                             const nameCategory = category?.tenDM.replace(/\s+/g, '-');
-                                            navigate(`/category/${nameCategory}?sort=phobien&page=1&limit=12`, {
+                                            navigate(`/category/${nameCategory}?sort=phobien&page=1&limit=20`, {
                                                 state: { id: category?._id },
                                             });
                                         }}

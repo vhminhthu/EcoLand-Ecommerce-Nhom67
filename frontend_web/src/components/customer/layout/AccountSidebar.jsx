@@ -54,8 +54,6 @@ function AccountSidebar() {
                     <ul>
                         {[
                             { label: "Hồ sơ", path: "/customer/account/profile" },
-                            { label: "Ngân hàng", path: "/customer/account/payment" },
-                            { label: "Địa chỉ", path: "/customer/account/address" },
                             { label: "Đổi mật khẩu", path: "/customer/account/password" },
                         ].map((item) => (
                             <li
@@ -71,7 +69,6 @@ function AccountSidebar() {
 
                     {[
                         { label: "Đơn mua", path: "/customer/purchase", icon: <BiCopyAlt /> },
-                        { label: "Thông báo", path: "/customer/notification", icon: <BiBell /> },
                         { label: "Yêu thích", path: "/customer/wishlist", icon: <BiHeart /> },
                     ].map((item) => (
                         <li

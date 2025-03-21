@@ -8,8 +8,6 @@ import NotificationPage from '../pages/customer/NotificationPage';
 import CategoryPage from '../pages/customer/CategoryPage';
 import ProductPage from '../pages/customer/ProductPage';
 import ShopPage from '../pages/customer/ShopPage';
-import PaymentPage from '../pages/customer/PaymentPage';
-import AddressPage from '../pages/customer/AddressPage';
 import PasswordPage from '../pages/customer/PasswordPage';
 import SupportPage from '../pages/customer/SupportPage';
 import Signup from '../pages/auth/Signup/Signup';
@@ -64,8 +62,6 @@ function CustomerRoutes() {
             <Route path="/customer/account/profile" element={<ProfilePage />} />
             <Route path="/customer/purchase" element={<PurchasePage />} />
 
-            <Route path="/customer/account/payment" element={<PaymentPage/>} />
-            <Route path="/customer/account/address" element={<AddressPage/>} />
             <Route path="/customer/account/password" element={<PasswordPage/>} />
 
             <Route path="/category/:nameCategory" element={<CategoryPage/>} />

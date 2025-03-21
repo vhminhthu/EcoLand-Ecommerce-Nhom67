@@ -2,7 +2,7 @@ import CategoryCard from "../../components/customer/common/cards/CategoryCard"
 import ProductCard from "../../components/customer/common/cards/ProductCard";
 import ShopCard from "../../components/customer/common/cards/ShopCard";
 import MainLayout from "../../layouts/customer/MainLayout"
-import { ads, products2 } from "../../data/home";
+import { products2 } from "../../data/home";
 
 import { BiChevronRight } from "react-icons/bi";
 import { FaChevronLeft, FaChevronRight  } from "react-icons/fa";
@@ -11,62 +11,52 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 
 function HomePage() {
+    const [ads, setAds] = useState([]);
     const [categories, setCategories] = useState([]);
     const [products, setProducts] = useState([]);
     const [shops, setShops] = useState([]);
-
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
     useEffect(() => {
-        const fetchCategories = async () => {
+        const fetchData = async () => {
             try {
-                const response = await axios.get('/api/danhmuc/lay');
-                setCategories(response.data); 
-            } catch (error) {
-                console.error("Có lỗi xảy ra khi lấy danh mục:", error);
+                const [res0, res1, res2, res3] = await Promise.all([
+                    axios.get('/api/quangcao/admin/lay/dangdienra'),
+                    axios.get('/api/danhmuc/lay'),
+                    axios.get('/api/sanpham/lay/tatca'),
+                    axios.get('/api/cuahang/laytatca'),
+                ]);
+                setAds(res0.data);
+                setCategories(res1.data);
+                setProducts(res2.data);
+                setShops(res3.data);
+            } catch (err) {
+                setError(err);
+            } finally {
+                setLoading(false);
             }
         };
 
-        fetchCategories();
-    }, []);
-
-    useEffect(() => {
-        const fetchProducts = async () => {
-            try {
-                const response = await axios.get('/api/sanpham/lay/tatca');
-                setProducts(response.data); 
-            } catch (error) {
-                console.error("Có lỗi xảy ra khi lấy sản phẩm:", error);
-            }
-        };
-        fetchProducts();
-    }, []);
-
-    useEffect(() => {
-        const fetchShop = async () => {
-            try {
-                const response = await axios.get('/api/cuahang/laytatca');
-                //console.log("shop",response.data);
-                setShops(response.data); 
-            } catch (error) {
-                console.error("Có lỗi xảy ra khi lấy cửa hàng:", error);
-            }
-        };
-        fetchShop();
+        fetchData();
     }, []);
 
     //Quảng cáo
     const [quangCaoIndex, setQuangCaoIndex] = useState(0);
     const nextQuangCao = () => {
+        if (ads.length === 0) return;
         setQuangCaoIndex((prevIndex) => (prevIndex + 1) % ads.length);
     };
     const prevQuangCao = () => {
+        if (ads.length === 0) return;
         setQuangCaoIndex((prevIndex) =>
             prevIndex === 0 ? ads.length - 1 : prevIndex - 1
         );
     };
     useEffect(() => {
+        if (ads.length === 0) return;
         const interval = setInterval(nextQuangCao, 3000);
         return () => clearInterval(interval);
-    }, []);
+    }, [ads.length]);
 
     //Danh mục
     const [danhMucIndex, setDanhMucIndex] = useState(0);
@@ -122,22 +112,39 @@ function HomePage() {
         }
     };    
     const sanPhamGHienTai = products.slice(0, sanPhamGIndex + soSanPhamGMoiSlide);
-
+    if (loading) return <p>Đang tải dữ liệu...</p>;
+    if (error) return <p>Lỗi: {error.message}</p>;
     return (
         <MainLayout>
             <div className="relative bg-gray-200 h-150 rounded-2xl overflow-hidden">
-                <img
-                    src={ads[quangCaoIndex]}
-                    alt="Quảng cáo"
-                    className="w-full h-full object-cover transition-all duration-500"
-                />
+                {ads.length > 0 && (
+                    <img
+                        src={ads[quangCaoIndex]?.linkAnh || "/default-image.jpg"}
+                        alt="Quảng cáo"
+                        className="w-full h-full object-cover transition-all duration-500"
+                    />
+                )}
 
                 <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2 bg-emerald-600 text-white rounded-full px-4 py-2 w-fit">
-                    <button className="text-xl cursor-pointer hover:text-gray-200" onClick={prevQuangCao}>
+                    <button
+                        className={`text-xl cursor-pointer hover:text-gray-200 ${
+                            ads.length <= 1 ? "opacity-50 cursor-not-allowed" : ""
+                        }`}
+                        onClick={prevQuangCao}
+                        disabled={ads.length <= 1}
+                    >
                         <FaChevronLeft />
                     </button>
+
                     <span>{quangCaoIndex + 1}/{ads.length}</span>
-                    <button className="text-xl cursor-pointer hover:text-gray-200" onClick={nextQuangCao}>
+
+                    <button
+                        className={`text-xl cursor-pointer hover:text-gray-200 ${
+                            ads.length <= 1 ? "opacity-50 cursor-not-allowed" : ""
+                        }`}
+                        onClick={nextQuangCao}
+                        disabled={ads.length <= 1}
+                    >
                         <FaChevronRight />
                     </button>
                 </div>

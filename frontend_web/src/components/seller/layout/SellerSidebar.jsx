@@ -14,20 +14,12 @@ function SellerSidebar() {
     const menuItems = [
         { to: "/seller/home", label: "Trang chủ", icon: <BiHome /> },
         { to: "/seller/orders?filter=tatca&page=1&limit=7", label: "Đơn hàng", icon: <BiCopyAlt /> },
-        // { to: "/seller/reviews", label: "Đánh giá", icon: <IoChatboxEllipsesOutline /> },
         { to: "/seller/finance", label: "Tài chính", icon: <HiOutlineWallet /> },
         { to: "/seller/products", label: "Sản phẩm", icon: <AiOutlineProduct /> },
-    ];
-
-    const menuExtras = [
         { to: "/seller/store", label: "Cửa hàng", icon: <BsShopWindow /> },
-        // { to: "/seller/promotions", label: "Khuyến mãi", icon: <MdOutlineDiscount /> },
-        { to: "/seller/shipping", label: "Vận chuyển", icon: <MdOutlineLocalShipping /> },
     ];
 
     const menuSettings = [
-        { to: "/seller/support", label: "Hỗ trợ", icon: <BiHelpCircle /> },
-        { to: "/seller/settings", label: "Cài đặt", icon: <AiOutlineSetting /> },
         { to: "/", label: "Đăng xuất", icon: <MdOutlineLogout /> },
     ];
 
@@ -52,20 +44,7 @@ function SellerSidebar() {
                 ))}
             </ul>
 
-            <ul className="!mt-8">
-                {menuExtras.map((item) => (
-                    <li
-                        key={item.to}
-                        className={`flex items-center gap-2 text-medium !px-7 !py-4 cursor-pointer 
-                        ${isActive(item.to) ?  "text-emerald-600 font-bold bg-slate-100" : "hover:bg-slate-50 hover:text-emerald-600 hover:font-bold"}`}
-                        onClick={() => navigate(item.to)}
-                    >
-                        {item.icon} {item.label}
-                    </li>
-                ))}
-            </ul>
-
-            <ul className="!mt-8">
+            <ul className="!mt-80">
                 {menuSettings.map((item) => (
                     <li
                         key={item.to}

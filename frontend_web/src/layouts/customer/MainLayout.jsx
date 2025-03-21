@@ -3,13 +3,9 @@ import Header from '../../components/customer/layout/Header';
 import Footer from '../../components/customer/layout/footer';
 
 const MainLayout = ({ children }) => {
-    const thongBaoList = [
-        { id: 1, message: 'Bạn có đơn hàng mới!' },
-        { id: 2, message: 'Cập nhật dịch vụ thành công.' },
-    ]; 
     return (
         <div className='main-layout flex flex-col overflow-x-auto min-h-screen'>
-            <Header thongBaoList={thongBaoList}/>
+            <Header/>
             <div className="content !mx-auto min-w-7xl max-w-7xl !my-8">{children}</div>
             <Footer />
         </div>

@@ -18,7 +18,7 @@ function CategoryCard(props) {
                 className="cursor-pointer category-card bg-emerald-600 w-fit h-auto !px-2 !py-2 rounded-xl flex flex-col gap-2"
                 onClick={() => {
                     const nameCategory = tenDM.replace(/\s+/g, '-');
-                    navigate(`/category/${nameCategory}?sort=phobien&page=1&limit=12`, {
+                    navigate(`/category/${nameCategory}?sort=phobien&page=1&limit=20`, {
                         state: { id: _id },
                     });
                 }}
