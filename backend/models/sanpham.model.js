@@ -21,6 +21,7 @@ const sanphamSchema = new mongoose.Schema(
         trangThai: { type: String, default: "Chờ xác nhận" },
         luotXem: { type: Number, default: 0 },
         dsAnhSP: { type: String },
+        certify_image:{type: String},
         nguonGoc: { type: String },
         tongSoSao: { type: Number, default: 0 },
         tongSoDanhGia: { type: Number, default: 0 },

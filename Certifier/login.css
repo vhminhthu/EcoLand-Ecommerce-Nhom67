@@ -1,0 +1,87 @@
+/* Reset mặc định */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Poppins', sans-serif;
+}
+
+body {
+    background: #f4f7fc;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+/* Khung đăng nhập lớn hơn */
+.login-container {
+    background: white;
+    padding: 40px; /* Tăng padding */
+    border-radius: 15px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+    width: 450px; /* Tăng chiều rộng */
+    text-align: center;
+}
+
+/* Tiêu đề */
+h2 {
+    font-size: 30px; /* Tăng kích thước tiêu đề */
+    color: #1065a2;
+    margin-bottom: 25px;
+}
+
+/* Nhãn */
+label {
+    display: block;
+    text-align: left;
+    font-weight: 600;
+    margin: 14px 0 6px;
+    color: #444;
+    font-size: 16px; /* Tăng size chữ */
+    margin-bottom: 15px;
+}
+
+/* Ô nhập liệu */
+input {
+    width: 100%;
+    padding: 14px; /* Tăng kích thước ô nhập */
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    font-size: 18px; /* Chữ to hơn */
+    transition: all 0.3s ease-in-out;
+    margin-bottom: 15px;
+}
+
+/* Hiệu ứng khi nhập */
+input:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 8px rgba(0, 123, 255, 0.3);
+    outline: none;
+}
+
+/* Nút đăng nhập */
+button {
+    width: 100%;
+    padding: 14px;
+    margin-top: 20px;
+    background: linear-gradient(135deg, #007bff, #0056b3);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 20px; /* Nút to hơn */
+    font-weight: 700;
+    transition: all 0.3s ease;
+}
+
+/* Hiệu ứng hover */
+button:hover {
+    background: linear-gradient(135deg, #0056b3, #003f7f);
+    transform: scale(1.06);
+}
+
+/* Hiệu ứng khi click */
+button:active {
+    transform: scale(0.98);
+}

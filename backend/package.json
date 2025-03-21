@@ -14,7 +14,7 @@
   "description": "",
   "dependencies": {
     "@reduxjs/toolkit": "^2.5.1",
-    "axios": "^1.7.9",
+    "axios": "^1.8.4",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.20.3",
     "cloudinary": "^2.5.1",
@@ -27,6 +27,7 @@
     "ethers": "^6.13.5",
     "express": "^4.21.2",
     "express-session": "^1.18.1",
+    "form-data": "^4.0.2",
     "jsonwebtoken": "^9.0.2",
     "md5": "^2.3.0",
     "moment": "^2.30.1",

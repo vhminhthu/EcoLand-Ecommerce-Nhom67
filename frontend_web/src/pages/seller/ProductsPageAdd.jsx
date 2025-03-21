@@ -12,10 +12,14 @@ function ProductsPageAdd() {
         idDM: null,
         nguonGoc: '',
         image: null,
+        certify_image:null,
         ngaySX: '',       
         ngayTH: '',       
         VatTuHTCT: '',    
-        batchId: '',      
+        batchId: '', 
+        ngayDG:'',
+        hanSX:''  ,
+        loaiTrong: '',
         phanLoai: [
             { idPL: "", tenLoai: "", giaLoai: "", donVi: "", khuyenMai: "", khoHang: "" }
         ],
@@ -119,6 +123,27 @@ function ProductsPageAdd() {
         setFormData(prev => ({ ...prev, image: null }));
     };
 
+    const xulyChonFileCertify = (event) => {
+        const file2 = event.target.files[0];
+        if (file2) {
+            const reader = new FileReader();
+            reader.readAsDataURL(file2);
+            reader.onloadend = () => {
+                setFormData((prevData) => ({
+                    ...prevData,
+                    certify_image: reader.result, // Chuyển file thành base64
+                }));
+            };
+        }
+    };
+    
+    const xoaFileCertify = () => {
+        setFormData((prev) => ({ ...prev, certify_image: null }));
+    };
+    
+    
+
+
     return (
         <MainLayout>
             <div className="bg-white p-5 rounded-xl mb-5 shadow-xl h-full">
@@ -144,6 +169,16 @@ function ProductsPageAdd() {
                             className="mt-2 mb-5 bg-gray-100 w-full p-2 rounded-lg outline-none"
                             value={formData.tenSP}
                             onChange={(e) => setFormData(prev => ({ ...prev, tenSP: e.target.value }))}
+                        />
+                        <p>Loại cây trồng</p>
+                        <input
+                            type="text"
+                            name="loaiTrong"
+                            placeholder="Loại cây trồng"
+                            required
+                            className="mt-2 mb-5 bg-gray-100 w-full p-2 rounded-lg outline-none"
+                            value={formData.loaiTrong}
+                            onChange={(e) => setFormData(prev => ({ ...prev, loaiTrong: e.target.value }))}
                         />
                         <p>Mô tả sản phẩm</p>
                         <textarea
@@ -263,6 +298,15 @@ function ProductsPageAdd() {
                                         </button>
                                     </div>
                                 )}
+                             <input type="file" accept="image/*" onChange={xulyChonFileCertify} className="mt-10" />
+                                {formData.certify_image && (
+                                    <div className="mt-3">
+                                        <p>{formData.certify_image.name}</p>
+                                        <button className="bg-red-500 text-white px-3 py-1 rounded-md mt-2" onClick={xoaFileCertify}>
+                                            Xóa ảnh
+                                        </button>
+                                    </div>
+                                )}
                         </div>
                         <div className="bg-slate-50 p-5 mt-5">
                             <p className="font-medium text-xl mb-3">Thông tin chi tiết</p>
@@ -301,6 +345,24 @@ function ProductsPageAdd() {
                                 className="mt-2 mb-5 bg-gray-100 w-full p-2 rounded-lg outline-none"
                                 value={formData.ngayTH}
                                 onChange={(e) => setFormData(prev => ({ ...prev, ngayTH: e.target.value }))}
+                            />
+                               <input
+                                type="text"
+                                name="ngayDG"
+                                placeholder="Ngày đóng gói sản phẩm"
+                                required
+                                className="mt-2 mb-5 bg-gray-100 w-full p-2 rounded-lg outline-none"
+                                value={formData.ngayDG}
+                                onChange={(e) => setFormData(prev => ({ ...prev, ngayDG: e.target.value }))}
+                            />
+                              <input
+                                type="text"
+                                name="hanSX"
+                                placeholder="Hạn sử dụng sản phẩm"
+                                required
+                                className="mt-2 mb-5 bg-gray-100 w-full p-2 rounded-lg outline-none"
+                                value={formData.hanSX}
+                                onChange={(e) => setFormData(prev => ({ ...prev, hanSX: e.target.value }))}
                             />
                                <input
                                 type="text"
