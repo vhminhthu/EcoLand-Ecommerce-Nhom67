@@ -205,17 +205,53 @@ export const capNhatTrangThaiSanPham = async (req, res) => {
     }
 };
 
+import axios from "axios";
+import FormData from "form-data";
+
+
+const PINATA_API_KEY = process.env.PINATA_API_KEY;
+const PINATA_SECRET_KEY = process.env.PINATA_SECRET_KEY;
+
+const uploadToPinata = async (imageBase64) => {
+    try {
+        if (typeof imageBase64 !== "string") {
+            throw new Error("Dữ liệu ảnh không hợp lệ! Cần dạng chuỗi Base64.");
+        }
+
+        const formData = new FormData();
+        const base64Data = imageBase64.split(",")[1];
+        const imageBuffer = Buffer.from(base64Data, "base64");
+
+        formData.append("file", imageBuffer, { filename: "certify_image.png" });
+
+        const response = await axios.post("https://api.pinata.cloud/pinning/pinFileToIPFS", formData, {
+            headers: {
+                "Content-Type": `multipart/form-data; boundary=${formData._boundary}`,
+                pinata_api_key: PINATA_API_KEY,
+                pinata_secret_api_key: PINATA_SECRET_KEY
+            }
+        });
+
+        const cid = response.data.IpfsHash;
+        return cid; 
+    } catch (error) {
+        console.error("Lỗi upload Pinata:", error.message);
+        throw new Error("Không thể upload ảnh lên Pinata.");
+    }
+};
+
+
 
 
 export const addSanPham = async (req, res) => {
     try {
         const idND = req.nguoidung._id.toString();
         const { 
-            tenSP, moTaSP, idDM, nguonGoc, phanLoai, image, 
-            ngaySX, ngayTH, VatTuHTCT, batchId,
+            tenSP, moTaSP, idDM, nguonGoc, phanLoai, image, certify_image,
+            ngaySX, ngayTH, batchId,loaiTrong,ngayDG,hanSX,
         } = req.body;
 
-        if (!tenSP || !moTaSP || !idDM || !nguonGoc || !phanLoai || !ngaySX || !ngayTH || !VatTuHTCT || !batchId) {
+        if (!tenSP || !moTaSP || !idDM || !nguonGoc || !phanLoai || !ngaySX || !ngayTH || !batchId) {
             return res.status(400).json({ error: "Vui lòng nhập đầy đủ thông tin!" });
         }
 
@@ -230,6 +266,17 @@ export const addSanPham = async (req, res) => {
                 return res.status(500).json({ error: "Lỗi khi upload ảnh sản phẩm lên Cloudinary" });
             }
         }
+
+        let cidChungNhan = "";
+        if (certify_image) {
+            try {
+                cidChungNhan = await uploadToPinata(certify_image); // Hàm này trả về CID
+            } catch (error) {
+                console.error("Lỗi upload ảnh chứng nhận:", error.message);
+                return res.status(500).json({ error: "Lỗi khi upload ảnh chứng nhận lên Pinata" });
+            }
+        }
+
 
         const cuaHang = await CuaHang.findOne({ idNguoiDung: idND });
         if (!cuaHang) {
@@ -246,8 +293,11 @@ export const addSanPham = async (req, res) => {
             dsAnhSP: anhSPUrl,
             ngaySX,
             ngayTH,
-            VatTuHTCT,
             batchId,
+            loaiTrong,
+            hanSX,
+            ngayDG,
+            certify_image: cidChungNhan,
         });
 
         const danhMuc = await DanhMuc.findById(idDM);
@@ -268,7 +318,6 @@ export const addSanPham = async (req, res) => {
         res.status(500).json({ message: "Lỗi server!", error: error.message });
     }
 };
-
 
 export const getTatCaSanPham = async (req, res) => {
     try {
@@ -567,8 +616,8 @@ export const getPendingProduct = async (req, res) => {
                     trangThai: sp.trangThai,
                     ngaySX: formatDate(sp.ngaySX),
                     dsAnhSP: sp.dsAnhSP,
+                    certify_image: sp.certify_image,
                     ngayTH: formatDate(sp.ngayTH),
-                    VatTuHTCT: sp.VatTuHTCT,
                     batchId: sp.batchId,
                     tenDM: sp.idDM?.tenDM || "Không xác định",
                     phanLoai: sp.phanLoai?.map(pl => ({

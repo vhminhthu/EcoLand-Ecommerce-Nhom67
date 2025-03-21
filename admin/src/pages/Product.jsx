@@ -13,6 +13,9 @@ const Product = () => {
   const [showRejectDialog, setShowRejectDialog] = useState(false);
   const [rejectReason, setRejectReason] = useState("");
   const [selectedProductId, setSelectedProductId] = useState(null);
+  const [selectedImage, setSelectedImage] = useState(null);
+
+
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -121,10 +124,26 @@ const Product = () => {
                     <div className="flex items-start gap-20">
                       <img src={product.dsAnhSP} alt={product.name} className="!w-32 !h-32 !ml-10 rounded-md border" />
                       <div>
-                        <p><strong className="text-[#075310]">Vật tư HTCT:</strong> {product.VatTuHTCT}</p>
                         <p><strong className="text-[#075310]">Batch ID:</strong> {product.batchId}</p>
                         <p><strong className="text-[#075310]">Loại sản phẩm:</strong> {product.tenDM}</p>
                         <p><strong className="text-[#075310]">Nhà cung cấp:</strong> {product.tenNguoiDung}</p>
+                        <p>
+                          <strong className="text-[#075310]">Giấy chứng nhận:</strong>{" "}
+                          {product.certify_image ? (
+                            <a
+                              href="#"
+                              className="text-blue-500 underline"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                setSelectedImage(`https://gateway.pinata.cloud/ipfs/${product.certify_image}`);
+                              }}
+                            >
+                              Xem giấy chứng nhận
+                            </a>
+                          ) : (
+                            "Chưa có giấy chứng nhận"
+                          )}
+                        </p>
                         <p className="text-gray-500 flex items-center gap-2">
                           <CiShop size={20} /> {product.tenCuaHang}
                         </p>
@@ -151,6 +170,26 @@ const Product = () => {
           )}
         </div>
       </div>
+
+      {selectedImage && (
+          <div className="fixed inset-0 flex justify-center items-center">
+            <div className="relative bg-white p-4 rounded-lg shadow-lg w-[450px] h-[450px] flex justify-center items-center">
+              <button
+                className="absolute top-2 right-2 text-red-600 text-xl"
+                onClick={() => setSelectedImage(null)}
+              >
+                ✖
+              </button>
+              <img
+                src={selectedImage}
+                alt="Giấy chứng nhận"
+                className="w-[400px] h-[400px] object-contain"
+              />
+            </div>
+          </div>
+        )}
+
+
 
       {showRejectDialog && (
         <div className="fixed inset-0 flex justify-center items-center">
