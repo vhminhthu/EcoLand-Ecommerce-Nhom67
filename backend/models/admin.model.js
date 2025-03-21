@@ -4,11 +4,11 @@ const adminSchema = new mongoose.Schema(
   {
     tenAdmin: { type: String, required: true, unique: true },
     email: { type: String, required: true, unique: true },
-    matKhau: { type: String, required: true }, 
+    matKhau: { type: String }, 
     phanQuyen: { 
       type: [String], 
       required: true,
-      enum: ["SUPER_AM", "AM1", "AM2", "CERTIFY"]
+      enum: [ "CERTIFIER","INSPECTOR","SUPER_AM"]
     },
     trangThai: { 
       type: String, 
@@ -18,9 +18,6 @@ const adminSchema = new mongoose.Schema(
     },
     address:{
       type: String
-    },
-    encryptedPrivateKey:{
-      type: String,
     }
   },
   { timestamps: true }

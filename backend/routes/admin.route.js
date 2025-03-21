@@ -6,7 +6,7 @@ const router = express.Router()
 
 router.post("/login",loginAdmin)
 router.get("/getme",protectAdmin,getMeAdmin)
-router.post("/create-admin", createAdmin);
+router.post("/create-admin",protectAdmin ,createAdmin);
 router.post("/logout", logoutAdmin);
 
 export default router
