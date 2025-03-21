@@ -6,7 +6,7 @@ import axios from "axios";
 export const Roles = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [role, setRole] = useState("AM1"); 
+  const [role, setRole] = useState("INSPECTOR"); 
   const [address, setAddress] = useState(""); 
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
@@ -21,12 +21,14 @@ export const Roles = () => {
         tenAdmin: name,
         email,
         phanQuyen: role,
+        address,
       });
 
       setMessage(res.data.message);
       setName("");
       setEmail("");
-      setRole("AM1");
+      setAddress("");
+      setRole("Inspector");
     } catch (error) {
       setMessage(error.response?.data?.message || "Có lỗi xảy ra!");
     } finally {
@@ -84,10 +86,8 @@ export const Roles = () => {
                 onChange={(e) => setRole(e.target.value)}
                 className="!mt-1 block w-full !p-2 border rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
               >
-                <option value="SUPER_AM">Super Admin</option>
-                <option value="AM1">AM1</option>
-                <option value="AM2">AM2</option>
-                <option value="CERTIFY">Certify</option>
+                <option value="INSPECTOR">Inspector</option>
+                <option value="CERTIFIER">Certify</option>
               </select>
             </div>
             <button
