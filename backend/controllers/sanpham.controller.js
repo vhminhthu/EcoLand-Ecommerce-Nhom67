@@ -674,5 +674,27 @@ export const getProductInfo = async (req, res) => {
     }
 };
 
+export const getProductsByCategory = async (req, res) => {
+    try {
+        const categoryId = req.params.id;
+        
+    
+        const category = await DanhMuc.findById(categoryId).populate('dsSanPham');
+        
+        if (!category) {
+            return res.status(404).json({ message: 'Danh mục không tồn tại' });
+        }
+        
+      
+        return res.status(200).json({
+            message: 'Lấy sản phẩm thành công',
+            data: category.dsSanPham
+        });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ message: 'Lỗi server', error });
+    }
+};
+
 
 

@@ -1,0 +1,2 @@
+D:/Gittt/btcualan/thuctap5/frontend_app/android/app/.cxx/Debug/5j4y6b5j/x86/CMakeFiles/edit_cache.dir
+D:/Gittt/btcualan/thuctap5/frontend_app/android/app/.cxx/Debug/5j4y6b5j/x86/CMakeFiles/rebuild_cache.dir

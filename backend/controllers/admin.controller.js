@@ -247,3 +247,12 @@ export const getMeAdmin = async (req, res) => {
 };
 
 
+ export const logoutAdmin = async (req,res)=>{
+     try{
+         res.cookie("jwtAdmin","",{maxAge:0})
+         res.status(200).json({ message:"Đăng xuất thành công" })
+     } catch (error) {
+         console.log("Lỗi dangXuat controller",error.message)
+         res.status(500).json({ error: "Lỗi 500"})
+     }
+ }

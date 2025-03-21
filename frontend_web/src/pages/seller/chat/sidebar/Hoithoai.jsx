@@ -2,14 +2,12 @@ import PropTypes from "prop-types";
 import useConversation from "../../../../zustand/useConversation";
 
 function Hoithoai({ chat }) {
-
-
     const { hoiThoaiDuocChon, setHoiThoaiDuocChon } = useConversation();
 
     const initials = chat?.tenNguoiDung ? chat.tenNguoiDung.charAt(0).toUpperCase() : "?";
     const tenNguoiDung = chat?.tenNguoiDung ?? "Người dùng";
+    const anhND = chat?.anhND ?? ""; // Giữ chuỗi rỗng nếu không có ảnh
     const isSelected = hoiThoaiDuocChon?._id === chat._id;
-    
 
     return (
         <div
@@ -18,8 +16,8 @@ function Hoithoai({ chat }) {
             }`}
             onClick={() => setHoiThoaiDuocChon(chat)}
         >
-            {chat?.avatar ? (
-                <img src={chat.avatar} alt={tenNguoiDung} className="w-12 h-12 rounded-full object-cover" />
+            {anhND ? (
+                <img src={anhND} alt={tenNguoiDung} className="w-12 h-12 rounded-full object-cover" />
             ) : (
                 <div className="w-12 h-12 rounded-full flex items-center justify-center bg-gray-300 text-white text-lg font-bold">
                     {initials}
@@ -43,7 +41,7 @@ Hoithoai.propTypes = {
     chat: PropTypes.shape({
         _id: PropTypes.string.isRequired,
         tenNguoiDung: PropTypes.string,
-        avatar: PropTypes.string,
+        anhND: PropTypes.string, // Đã sửa lại từ avatar
         lastMessage: PropTypes.string,
         time: PropTypes.string,
         unread: PropTypes.number,

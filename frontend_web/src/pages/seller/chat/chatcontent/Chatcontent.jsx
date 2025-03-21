@@ -21,11 +21,21 @@ export default function ChatContent() {
 }
 
 const DaChon = ({ hoiThoaiDuocChon }) => {
+    const anhND = hoiThoaiDuocChon?.anhND;
+    const tenNguoiDung = hoiThoaiDuocChon?.tenNguoiDung ?? "Người dùng";
+    const initials = tenNguoiDung.charAt(0).toUpperCase(); 
+
     return (
         <>
             <header className="p-4 bg-white border-b flex items-center">
-                <img src={hoiThoaiDuocChon.avatar} alt={hoiThoaiDuocChon.tenNguoiDung} className="w-10 h-10 rounded-full" />
-                <h2 className="ml-3 font-semibold text-lg">{hoiThoaiDuocChon.tenNguoiDung}</h2>
+                {anhND ? (
+                    <img src={anhND} alt={tenNguoiDung} className="w-10 h-10 rounded-full object-cover" />
+                ) : (
+                    <div className="w-10 h-10 rounded-full flex items-center justify-center bg-gray-300 text-white text-lg font-bold">
+                        {initials}
+                    </div>
+                )}
+                <h2 className="ml-3 font-semibold text-lg">{tenNguoiDung}</h2>
             </header>
             <div className="flex-1 overflow-y-auto p-4">
                 <Cactin />
@@ -37,11 +47,10 @@ const DaChon = ({ hoiThoaiDuocChon }) => {
     );
 };
 
-
 DaChon.propTypes = {
     hoiThoaiDuocChon: PropTypes.shape({
         tenNguoiDung: PropTypes.string.isRequired,
-        avatar: PropTypes.string,
+        anhND: PropTypes.string, 
     }).isRequired,
 };
 
