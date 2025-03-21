@@ -1,15 +1,23 @@
 import PropTypes from 'prop-types';
+import { useNavigate } from 'react-router-dom';
 
 function PurchaseItem(props) {
     const { _id, maDonHang, idDanhGia, cuaHangId, trangThai, dsSanPham, tongTienThanhToan, onCapNhatTrangThai, moDanhGia } = props;
+    const navigate = useNavigate();
 
     return (
         <div key={_id} className='border border-emerald-600 shadow rounded-xl p-3'>
             <div className='flex justify-between border-b-1 border-emerald-600 pb-3'>
                 <div className='flex gap-3 items-center'>
                     <h3 className='font-medium'>{cuaHangId?.tenCH}</h3>
-                    <button className='px-3 py bg-gray-100 border border-emerald-600 text-emerald-600 rounded-sm'>Chat</button>
-                    <button className='px-3 py bg-gray-100 border border-emerald-600 text-emerald-600 rounded-sm'>Xem Shop</button>
+                    <button className='px-3 py bg-gray-100 border border-emerald-600 text-emerald-600 rounded-sm cursor-pointer hover:bg-emerald-500 hover:text-white'
+                        onClick={() => {
+                            const nameShop = cuaHangId?.tenCH.replace(/\s+/g, '-');
+                            navigate(`/shop/${nameShop}?sort=phobien&page=1&limit=15`, {
+                                state: { id: cuaHangId?._id },
+                            });
+                        }}>
+                        Xem Shop</button>
                 </div>
                 <span className='uppercase text-emerald-500'>{trangThai || "không bt"}</span>
             </div>

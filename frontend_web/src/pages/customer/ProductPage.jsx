@@ -4,9 +4,7 @@ import { FaStar, FaStarHalfAlt, FaRegStar } from "react-icons/fa";
 import { IoMdHeartEmpty  } from "react-icons/io";
 import { IoHeart } from "react-icons/io5";
 import { useState } from "react";
-import { HiOutlineChatBubbleLeftRight } from "react-icons/hi2";
 import { CiShop } from "react-icons/ci";
-import { products2, products } from "../../data/home";
 import ProductCard from '../../components/customer/common/cards/ProductCard.jsx';
 import { FaArrowRight, FaArrowLeft } from "react-icons/fa6";
 import ReviewItem from '../../components/customer/common/items/ReviewItem.jsx';
@@ -27,6 +25,9 @@ function ProductPage() {
 
     const [selectedSao, setSelectedSao] = useState('Tất cả');
     const [sanPham, setSanPham] = useState(null);
+    const [sanPhamLienQuan, setSanPhamLienQuan] = useState([]);
+    const [sanPhamGoiY, setSanPhamGoiY] = useState([]);
+
     const [selectedLoai, setSelectedLoai] = useState(null);
 
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -44,14 +45,45 @@ function ProductPage() {
         noiDung: "",
     });
 
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+
     const openQRDialog = () => {
         setIsModalOpen(true);
-      };
+    };
     
-      const closeQRDialog = () => {
+    const closeQRDialog = () => {
         setIsModalOpen(false);
-      };
+    };
+    
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const res = await axios.get(`/api/sanpham/lay/${id}`);
+                setSanPham(res.data.product);
+                setIsFavorite(res.data.isFavorite);
+                setSelectedLoai(res.data.product.phanLoai[0]);
+                if(res.status === 200) {
+                    // console.log("Tải sản phẩm thành công!");
+                    await axios.put(`/api/sanpham/capnhat/luotxem/${id}`);
+                    const [res0, res1] = await Promise.all([
+                        axios.get(`/api/sanpham/trelated/${res.data.product?.idCH?._id}`),
+                        axios.get('/api/sanpham/suggestions'),
+                    ]);
+                    //console.log(res0.data)
+                    setSanPhamLienQuan(res0.data)
+                    setSanPhamGoiY(res1.data.data);
+                }
+            } catch (err) {
+                setError(err);
+            } finally {
+                setLoading(false);
+            }
+        };
 
+        fetchData();
+    }, [id]);
+    
     useEffect(() => {
         if (!id) return;
         const fetchProductDetails = async (id) => {
@@ -77,25 +109,28 @@ function ProductPage() {
     const [sanPhamBIndex, setSanPhamBIndex] = useState(0);
     const soSanPhamBMoiSlide = 5;
     const nextSanPhamB = () => {
-        setSanPhamBIndex((prevIndex) =>
-            prevIndex + soSanPhamBMoiSlide >= products.length ? 0 : prevIndex + soSanPhamBMoiSlide
-        );
+        setSanPhamBIndex((prevIndex) =>{
+            let newIndex = prevIndex + soSanPhamBMoiSlide;
+            return newIndex >= sanPhamLienQuan.length ? 0 : newIndex;
+        });
     };
     const prevSanPhamB = () => {
-        setSanPhamBIndex((prevIndex) =>
-            prevIndex === 0 ? products.length - soSanPhamBMoiSlide : prevIndex - soSanPhamBMoiSlide
-        );
+        setSanPhamBIndex((prevIndex) =>{
+            let newIndex = prevIndex - soSanPhamBMoiSlide;
+            return newIndex < 0 ? sanPhamLienQuan.length - (sanPhamLienQuan.length % soSanPhamBMoiSlide || soSanPhamBMoiSlide) : newIndex;
+        });
     };
-    const sanPhamBHienTai = products.slice(sanPhamBIndex, sanPhamBIndex + soSanPhamBMoiSlide);
+    const sanPhamBHienTai = sanPhamLienQuan.slice(sanPhamBIndex, sanPhamBIndex + soSanPhamBMoiSlide);
     
     //Sản phẩm gợi ý
     const [sanPhamGIndex, setSanPhamGIndex] = useState(0);
-    const soSanPhamGMoiSlide = 15;
+    const soSanPhamGMoiSlide = 10;
     const xemThemSanPhamG = () => {
-        if (sanPhamGIndex + soSanPhamGMoiSlide < products2.length) {
+        if (sanPhamGIndex + soSanPhamGMoiSlide < sanPhamGoiY.length) {
             setSanPhamGIndex((prevIndex) => prevIndex + soSanPhamGMoiSlide);
         }
     };    
+    const sanPhamGHienTai = sanPhamGoiY.slice(0, sanPhamGIndex + soSanPhamGMoiSlide);
 
     //Yêu thích
     const toggleFavorite = async () => {
@@ -107,8 +142,6 @@ function ProductPage() {
             console.error("Lỗi khi cập nhật yêu thích:", error.message);
         }
     };
-
-    const sanPhamGHienTai = products2.slice(0, sanPhamGIndex + soSanPhamGMoiSlide);
 
     const handleAddToCart = async () => {
         if (!sanPham) return;
@@ -176,9 +209,10 @@ function ProductPage() {
             console.error("Lỗi khi thêm báo cáo:", error);
         }
     };
-    
+    if (loading) return <p>Đang tải dữ liệu...</p>;
+    if (error) return <p>Lỗi: {error.message}</p>;
     return (
-       <>
+    <>
         <MainLayout>
             <span  
                 className='hover:text-emerald-600 cursor-pointer' 
@@ -410,26 +444,22 @@ function ProductPage() {
                     )}
                 </div>
 
-                {/* <div className='bg-gray-50 w-full h-50'>
-
-                </div> */}
-
             </div>
             <div className='!mt-5 !mb-2 text-center border-b-2 border-emerald-600 text-emerald-600 font-bold text-xl'>CÁC SẢN PHẨM KHÁC CỦA SHOP</div>
             <div className="relative w-full flex gap-4 justify-center">
                 <button className="cursor-pointer absolute top-1/2 -translate-y-1/2 left-0.5 text-xl bg-emerald-600/50 text-white !p-2 rounded-full" onClick={prevSanPhamB}><FaArrowLeft/></button>
-                {/* {sanPhamBHienTai.map((product) => (
-                    <ProductCard key={product.id} {...product} />
-                ))} */}
+                {sanPhamBHienTai.map((product) => (
+                    <ProductCard key={product._id} {...product} />
+                ))}
                 <button className="cursor-pointer absolute top-1/2 -translate-y-1/2 right-0.5 text-xl bg-emerald-600/50 text-white !p-2 rounded-full" onClick={nextSanPhamB}><FaArrowRight /></button>
             </div>
             <div className='!mt-10 !mb-2 text-center border-b-2 border-emerald-600 text-emerald-600 font-bold text-xl'>CÓ THỂ BẠN CŨNG THÍCH</div>
-            <div className="grid grid-cols-5 gap-4 justify-center">
-                {/* {sanPhamGHienTai.map((product) => (
-                    <ProductCard key={product.id} {...product} />
-                ))} */}
+            <div className="grid grid-cols-5 gap-4 justify-items-center">
+                {sanPhamGHienTai.map((product) => (
+                    <ProductCard key={product._id} {...product} />
+                ))}
             </div>
-            {sanPhamGIndex + soSanPhamGMoiSlide < products2.length && (
+            {sanPhamGIndex + soSanPhamGMoiSlide < sanPhamGoiY.length && (
                 <button className="cursor-pointer text-xl bg-emerald-600/50 text-white !py-2 !px-5 rounded-xl mx-auto block mt-5" onClick={xemThemSanPhamG}>
                     Xem thêm
                 </button>

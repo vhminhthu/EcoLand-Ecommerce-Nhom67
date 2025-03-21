@@ -1,6 +1,6 @@
 import express from "express"
 
-import  { updateProduct,addSanPham, capNhatLuotXem, getSanPhamById, getSanPhamByIdCH, getSanPhamByIdDM, getTatCaSanPham, getTatCaSanPhamDM, goiYTimKiem, laySanPhamvoiIdCuaHang, timKiem, getPendingProduct, updateProductStatus, deleteProduct, getProductInfo, themSanPhamVaoBlockChain, capNhatTrangThaiSanPham, themQuyenDuyetSP, getProductsByCategory } from "../controllers/sanpham.controller.js"
+import  { updateProduct,addSanPham, capNhatLuotXem, getSanPhamById, getSanPhamByIdCH, getSanPhamByIdDM, getTatCaSanPham, getTatCaSanPhamDM, goiYTimKiem, laySanPhamvoiIdCuaHang, timKiem, getPendingProduct, updateProductStatus, deleteProduct, getProductInfo, themSanPhamVaoBlockChain, capNhatTrangThaiSanPham, themQuyenDuyetSP, getProductsByCategory, getTopDeal, getTopSelling, getProductSuggestions, getProducTrelated } from "../controllers/sanpham.controller.js"
 
 
 import { protectRoute } from "../middleware/protectRoute.js"
@@ -39,10 +39,12 @@ router.patch("/themQuyenDuyet/:productId",protectAdmin, themQuyenDuyetSP);
 
 router.delete("/delete/:id", deleteProduct);
 
-
-
 router.get("/lay/serial/:id", getProductInfo)
 router.get("/get/category/:id", getProductsByCategory)
 
+router.get("/top-deal",getTopDeal)
+router.get("/top-selling", getTopSelling)
+router.get("/suggestions", getProductSuggestions)
+router.get("/trelated/:idCH", getProducTrelated)
 
 export default router

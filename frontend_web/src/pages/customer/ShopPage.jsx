@@ -1,6 +1,5 @@
 import MainLayout from '../../layouts/customer/MainLayout'
 import { FiPlus } from "react-icons/fi";
-import { CiChat1 } from "react-icons/ci";
 import { useState, useEffect } from "react";
 import { FaChevronLeft, FaChevronRight  } from "react-icons/fa";
 import ProductCard from '../../components/customer/common/cards/ProductCard';
@@ -93,18 +92,20 @@ function ShopPage() {
         if (ads.length === 0) return;
         setQuangCaoIndex((prevIndex) => (prevIndex + 1) % ads.length);
     };
+    
     const prevQuangCao = () => {
         if (ads.length === 0) return;
         setQuangCaoIndex((prevIndex) =>
             prevIndex === 0 ? ads.length - 1 : prevIndex - 1
         );
     };
+    
     useEffect(() => {
         if (ads.length === 0) return;
         const interval = setInterval(nextQuangCao, 3000);
         return () => clearInterval(interval);
-    }, [ads.length]);
-
+    }, [ads]);
+    
     const filterOptions = [
         { label: "Phổ biến", value: "phobien" },
         { label: "Bán chạy", value: "banchay" },
@@ -145,6 +146,9 @@ function ShopPage() {
         }
     };
 
+    if (loading) return <p>Đang tải dữ liệu...</p>;
+    if (error) return <p>Lỗi: {error.message}</p>;
+    
     return (
         <MainLayout>
             <div className='flex gap-5'>
@@ -238,7 +242,7 @@ function ShopPage() {
                 </div>
             </div>
             <div className="!my-8">              
-                <div className="grid grid-cols-5 gap-4 justify-center">
+                <div className="grid grid-cols-5 gap-4 justify-items-center">
                     {products.map((product) => (
                         <ProductCard key={product._id} {...product} />
                     ))}

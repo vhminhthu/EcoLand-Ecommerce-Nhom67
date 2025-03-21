@@ -11,6 +11,7 @@ import CryptoJS from "crypto-js";
 import { ethers } from "ethers";
 import abi from "../abi.js";
 import dotenv from "dotenv";
+import Sanpham from "../models/sanpham.model.js";
 dotenv.config();
 
 const provider = new ethers.JsonRpcProvider("http://127.0.0.1:7545");
@@ -734,7 +735,6 @@ export const getProductsByCategory = async (req, res) => {
             return res.status(404).json({ message: 'Danh mục không tồn tại' });
         }
         
-      
         return res.status(200).json({
             message: 'Lấy sản phẩm thành công',
             data: category.dsSanPham
@@ -746,4 +746,225 @@ export const getProductsByCategory = async (req, res) => {
 };
 
 
+export const getTopDeal = async (req, res) => {
+    try {
+        const topDeals1 = await Sanpham.aggregate([
+            { 
+                $match: {
+                    trangThai: "Đang bán"
+                }
+            },
+            { $unwind: "$phanLoai" }, // Tách từng loại sản phẩm
+            { 
+                $addFields: { 
+                    giaSauKhuyenMai: {
+                        $subtract: ["$phanLoai.giaLoai", 
+                        { $multiply: ["$phanLoai.giaLoai", { $divide: ["$phanLoai.khuyenMai", 100] }] }]
+                    }
+                }
+            },
+            { 
+                $sort: { 
+                    "giaSauKhuyenMai": 1,    // Giá rẻ nhất sau giảm giá
+                    "phanLoai.khuyenMai": -1, // Giảm giá cao nhất
+                    "tongSoSao": -1,         // Ưu tiên sản phẩm có nhiều sao
+                    "tongSoDanhGia": -1      // Ưu tiên sản phẩm có nhiều đánh giá
+                }
+            },
+            { 
+                $group: {
+                    _id: "$_id" ,
+                    tenSP: { $first: "$tenSP" },
+                    idCH: { $first: "$idCH" },
+                    dsAnhSP: { $first: "$dsAnhSP" },
+                    phanLoai: { 
+                        $push: {
+                            tenLoai: "$phanLoai.tenLoai",
+                            giaLoai: "$phanLoai.giaLoai",
+                            khuyenMai: "$phanLoai.khuyenMai"
+                        }
+                    },
+                    nguonGoc: { $first: "$nguonGoc" },
+                    tongSoSao: { $first: "$tongSoSao" },
+                    tongSoDanhGia: { $first: "$tongSoDanhGia" },
+                }
+            },
+            { 
+                $sort: { 
+                    "giaSauKhuyenMai": 1,  // Giá rẻ nhất sau giảm giá
+                    "khuyenMai": -1, // Giảm giá cao nhất
+                    "tongSoSao": -1,  // Ưu tiên sản phẩm có nhiều sao
+                    "tongSoDanhGia": -1  // Ưu tiên sản phẩm có nhiều đánh giá
+                }
+            },
+            { 
+                $limit: 15
+            },
+            { 
+                $project: { _id: 1, idCH: 1, dsAnhSP: 1, phanLoai: 1, tenSP: 1, nguonGoc: 1, tongSoSao: 1, tongSoDanhGia: 1 }                
+            }
+        ]);
 
+        const topDeals = await Sanpham.populate(topDeals1, {
+            path: 'idCH',
+            select: 'tenCH'
+        });
+
+        res.status(200).json({
+            success: true,
+            message: "Top Deal - Sản phẩm giá rẻ và sale nhiều",
+            data: topDeals
+        });
+    } catch (error) {
+        console.error("Lỗi lấy danh sách Top Deal:", error);
+        res.status(500).json({
+            success: false,
+            message: "Lỗi server khi lấy danh sách Top Deal"
+        });
+    }
+};
+
+export const getTopSelling = async (req, res) => {
+    try {
+        const topSelling = await Sanpham.aggregate([
+            { 
+                $match: {
+                    trangThai: "Đang bán"
+                }
+            },
+            { 
+                $lookup: {
+                    from: "Donhang",
+                    localField: "_id",
+                    foreignField: "dsSanPham.idSP",
+                    as: "donhang"
+                }
+            },
+            { 
+                $unwind: "$donhang" 
+            },
+            { 
+                $unwind: "$donhang.dsSanPham"
+            },
+            { 
+                $group: {
+                    _id: "$_id",
+                    tenSP: { $first: "$tenSP" },
+                    idCH: { $first: "$idCH" },
+                    phanLoai: { $first: "$phanLoai" },
+                    nguonGoc: { $first: "$nguonGoc" },
+                    dsAnhSP: { $first: "$dsAnhSP" },
+                    soLuongDonHang: { $sum: "$donhang.dsSanPham.soLuong" },
+                    tongSoSao: { $sum: { $ifNull: ["$donhang.idDanhGia.soSao", 0] } },
+                    tongSoDanhGia: { $sum: { $ifNull: ["$donhang.idDanhGia.soDanhGia", 0] } }
+                }
+            },
+            { 
+                $sort: { soLuongDonHang: -1, tongSoSao: -1, tongSoDanhGia: -1 }
+            },
+            { 
+                $limit: 15 
+            },
+            { 
+                $project: { 
+                    _id: 1, tenSP: 1, idCH: 1, phanLoai: 1, nguonGoc: 1, dsAnhSP: 1, 
+                    soLuongDonHang: 1, tongSoSao: 1, tongSoDanhGia: 1 
+                }
+            }
+        ]);
+
+        const topSellingFinal = await Sanpham.populate(topSelling, {
+            path: 'idCH',
+            select: 'tenCH'
+        });
+
+        res.status(200).json({
+            success: true,
+            message: "Top Bán Chạy - Sản phẩm bán chạy và đánh giá tốt",
+            data: topSellingFinal
+        });
+    } catch (error) {
+        console.error("Lỗi lấy danh sách Top Bán Chạy:", error);
+        res.status(500).json({
+            success: false,
+            message: "Lỗi server khi lấy danh sách Top Bán Chạy"
+        });
+    }
+};
+
+export const getProductSuggestions = async (req, res) => {
+    try {
+        const suggestions = await Sanpham.aggregate([
+            {
+                $match: {
+                    trangThai: "Đang bán",
+                }
+            },
+            {
+                $lookup: {
+                    from: "Nguoidung",  // Kết nối với collection Nguoidung
+                    localField: "_id",   // Liên kết với trường _id của sản phẩm
+                    foreignField: "dsYeuThich", // Liên kết với dsYeuThich trong Nguoidung
+                    as: "yeuThichBy"    // Tạo mảng để lưu thông tin người dùng yêu thích
+                }
+            },
+            {
+                $addFields: {
+                    totalLikes: { $size: "$yeuThichBy" },  // Đếm số người dùng yêu thích sản phẩm
+                }
+            },
+            {
+                $sample: { size: 15 }  // Lấy 15 sản phẩm ngẫu nhiên
+            },
+            {
+                $project: { 
+                    _id: 1, tenSP: 1, idCH: 1, phanLoai: 1, nguonGoc: 1, dsAnhSP: 1, 
+                    soLuongDonHang: 1, tongSoSao: 1, tongSoDanhGia: 1 
+                }
+            }
+        ]);
+
+        const suggestions1 = await Sanpham.populate(suggestions, {
+            path: 'idCH',
+            select: 'tenCH'
+        });
+
+        return res.status(200).json({
+            success: true,
+            message: "Gợi ý sản phẩm thành công",
+            data: suggestions1
+        });
+        
+    } catch (error) {
+        console.error("Lỗi khi lấy gợi ý sản phẩm:", error);
+        res.status(500).json({
+            success: false,
+            message: "Lỗi server khi lấy gợi ý sản phẩm"
+        });
+    }
+};
+
+export const getProducTrelated = async (req, res) => {
+    try {
+        const { idCH } = req.params;
+        
+        const sanPhams = await SanPham.find({ 
+            trangThai: 'Đang bán', 
+            idCH: idCH 
+        }).select("tenSP idCH phanLoai nguonGoc dsAnhSP soLuongDonHang tongSoSao tongSoDanhGia").populate("idCH", "tenCH");
+
+
+        if (sanPhams.length === 0) {
+            return res.status(404).json({ message: 'Không có sản phẩm nào đang bán trong cửa hàng này.' });
+        }
+
+        const randomSanPhams = sanPhams.sort(() => Math.random() - 0.5);
+
+        const randomProducts = randomSanPhams.slice(0, 10); 
+
+        res.status(200).json(randomProducts);
+    } catch (error) {
+        console.error("Error: ", error);
+        res.status(500).json({ error: "Có lỗi xảy ra khi lấy sản phẩm." });
+    }
+};
