@@ -7,6 +7,7 @@ export const Roles = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [role, setRole] = useState("AM1"); 
+  const [address, setAddress] = useState(""); 
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
 
@@ -44,7 +45,7 @@ export const Roles = () => {
           )}
           <form
             onSubmit={handleSubmit}
-            className="bg-white min-h-[500px] !p-6 rounded-lg max-w-md border-2 border-green-700 shadow-lg"
+            className="bg-white min-h-[500px] !p-6 rounded-lg max-w-2xl border-2 border-green-700 shadow-lg !mx-auto"
           >
             <div className="!mb-4">
               <label className="block text-sm font-medium text-gray-700">Tên</label>
@@ -67,6 +68,16 @@ export const Roles = () => {
               />
             </div>
             <div className="!mb-4">
+              <label className="block text-sm font-medium text-gray-700">Address</label>
+              <input
+                type="address"
+                value={address}
+                onChange={(e) => setAddress(e.target.value)}
+                className="!mt-1 block w-full !p-2 border rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
+                required
+              />
+            </div>
+            <div className="!mb-4">
               <label className="block text-sm font-medium text-gray-700">Vai trò</label>
               <select
                 value={role}
@@ -82,7 +93,7 @@ export const Roles = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-green-700 text-white !py-2 rounded-md shadow-lg hover:bg-green-800 transition"
+              className="w-full bg-green-700 text-white !py-2 !mt-10 rounded-md shadow-lg hover:bg-green-800 transition"
             >
               {loading ? "Đang xử lý..." : "Thêm"}
             </button>
