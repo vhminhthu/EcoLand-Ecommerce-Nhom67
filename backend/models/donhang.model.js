@@ -12,7 +12,7 @@ const donhangSchema = new mongoose.Schema(
             {
                 idSP: { type: mongoose.Schema.Types.ObjectId, ref: "Sanpham", required: true },
                 phanLoai: {
-                    id: { type: Number },
+                    idPL: { type: String },
                     tenLoai: { type: String, required: true },
                     giaLoai: { type: Number, required: true },
                     khuyenMai: { type: Number, default: 0 },

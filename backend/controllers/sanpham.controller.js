@@ -4,8 +4,10 @@ import DanhMuc from "../models/danhmuc.model.js";
 import NguoiDung from "../models/nguoidung.model.js";
 import CuaHang from "../models/cuahang.model.js";
 import mongoose from "mongoose";
-import moment from 'moment';  // Nhớ import moment
-
+import moment from 'moment';
+import axios from "axios";
+import FormData from "form-data";
+import Cuahang from "../models/cuahang.model.js";
 import Admin from "../models/admin.model.js";
 import CryptoJS from "crypto-js";
 import { ethers } from "ethers";
@@ -39,16 +41,16 @@ export const themSanPhamVaoBlockChain = async (req, res) => {
         }
 
         // Giải mã private key của admin
-        let privateKey;
-        try {
-            privateKey = CryptoJS.AES.decrypt(admin.encryptedPrivateKey, matKhau).toString(CryptoJS.enc.Utf8);
-        } catch (error) {
-            return res.status(403).json({ message: "Mật khẩu không hợp lệ!" });
-        }
+        // let privateKey;
+        // try {
+        //     privateKey = CryptoJS.AES.decrypt(admin.encryptedPrivateKey, matKhau).toString(CryptoJS.enc.Utf8);
+        // } catch (error) {
+        //     return res.status(403).json({ message: "Mật khẩu không hợp lệ!" });
+        // }
 
-        if (!privateKey || privateKey.trim() === "") {
-            return res.status(403).json({ message: "Private Key không hợp lệ hoặc trống!" });
-        }
+        // if (!privateKey || privateKey.trim() === "") {
+        //     return res.status(403).json({ message: "Private Key không hợp lệ hoặc trống!" });
+        // }
 
         console.log("Signer được khởi tạo:", signer.address);
         console.log("Contract được khởi tạo tại:", contractAddress);
@@ -205,11 +207,6 @@ export const capNhatTrangThaiSanPham = async (req, res) => {
         return res.status(500).json({ message: "Đã xảy ra lỗi khi xử lý sản phẩm", error: error.message });
     }
 };
-
-
-import axios from "axios";
-import FormData from "form-data";
-
 
 const PINATA_API_KEY = process.env.PINATA_API_KEY;
 const PINATA_SECRET_KEY = process.env.PINATA_SECRET_KEY;
@@ -411,7 +408,12 @@ export const goiYTimKiem = async (req, res) => {
             ...(danhmuc && { idDM: danhmuc })  // Chỉ thêm điều kiện idDM nếu danhmuc có giá trị
         }).limit(5);
 
-        res.json(goiY);
+        const goiYCuaHang = await Cuahang.find({
+            tenCH: { $regex: search, $options: 'i' },
+            trangThaiCH: "Mở cửa"
+        }).limit(5);
+
+        res.json({ goiY, goiYCuaHang }); // Trả về cả hai kết quả
     } catch (err) {
         console.error('Lỗi trả về gợi ý:', err);
         res.status(500).json({ message: 'Server error' });
@@ -443,7 +445,11 @@ export const timKiem = async (req, res) => {
     try {
         const { search, sort, page, limit, danhmuc='', minStar=0, maxStar=0, locations='' } = req.query;
         const result = await sapxepSanPham({ search, sort, page, limit, danhmuc, minStar, maxStar,locations });
-        return res.status(200).json(result);
+        const timKiemCH = await Cuahang.find({
+            tenCH: { $regex: search, $options: 'i' },
+            trangThaiCH: "Mở cửa"
+        });
+        return res.status(200).json({ result, timKiemCH });
     } catch (error) {
         res.status(500).json({ error: "Lỗi 500" });
         console.log("Lỗi tim kiem controller", error.message);
@@ -783,6 +789,7 @@ export const getTopDeal = async (req, res) => {
                     dsAnhSP: { $first: "$dsAnhSP" },
                     phanLoai: { 
                         $push: {
+                            idPL: "$phanLoai.idPL",
                             tenLoai: "$phanLoai.tenLoai",
                             giaLoai: "$phanLoai.giaLoai",
                             khuyenMai: "$phanLoai.khuyenMai"
@@ -972,3 +979,4 @@ export const getProducTrelated = async (req, res) => {
         res.status(500).json({ error: "Có lỗi xảy ra khi lấy sản phẩm." });
     }
 };
+

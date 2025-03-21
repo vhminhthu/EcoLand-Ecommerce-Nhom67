@@ -1,8 +1,9 @@
 import { useAuth } from "../../context/AuthContext";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { IoIosInformationCircleOutline } from "react-icons/io";
 import axios from "axios";
 import PropTypes from "prop-types";
+import { useNavigate } from "react-router-dom";
 
 const steps = [
     "Thông tin Shop",
@@ -11,6 +12,7 @@ const steps = [
 ];
 
 export default function BecomeSeller() {
+    const navigate = useNavigate();
     const { user, loading } = useAuth();
     const [step, setStep] = useState(0);
 
@@ -30,7 +32,8 @@ export default function BecomeSeller() {
             hinhChup: '',
             soDinhDanh: '',
             hoVaTen: ''
-        }
+        },
+        cidChungNhan: ''
     });
 
     const handleSubmit = async () => {
@@ -38,6 +41,7 @@ export default function BecomeSeller() {
             const response = await axios.post("/api/cuahang/them", formData);
             if (response.status === 200 || response.status === 201) {
                 alert("Thêm cửa hàng thành công!");
+                navigate("/")
             } else {
                 alert("Có lỗi xảy ra, vui lòng thử lại!");
             }
@@ -99,6 +103,23 @@ export default function BecomeSeller() {
         }));
     };
 
+    const xulyChonFileCertify = (event) => {
+        const file = event.target.files[0];  
+        if (file) {
+            const reader = new FileReader(); 
+            reader.onloadend = () => {
+                setFormData((prevData) => ({
+                    ...prevData,
+                    cidChungNhan: reader.result, 
+                }));
+            };
+            reader.readAsDataURL(file);  
+        }
+    };   
+    useEffect(() => {
+        console.log("formData đã thay đổi:", formData);
+    }, [formData]); 
+
     if (loading) return <p>Đang tải thông tin...</p>;
     
     return (
@@ -134,7 +155,7 @@ export default function BecomeSeller() {
                 <div className=" w-full flex flex-col items-center my-5 p-5  rounded-md">
                     {step === 0 && <StepOne formData={formData} handleInputChange={handleInputChange} />}
                     {step === 1 && <StepTwo formData={formData} handleThueChange={handleThueChange} />}
-                    {step === 2 && <StepThree formData={formData} handleDinhDanhChange={handleDinhDanhChange} xulyAnhChup={xulyAnhChup} />}
+                    {step === 2 && <StepThree formData={formData} handleDinhDanhChange={handleDinhDanhChange} xulyAnhChup={xulyAnhChup} xulyChonFileCertify={xulyChonFileCertify}/>}
                 </div>
 
                 <div className="flex justify-between gap-5">
@@ -259,7 +280,7 @@ function StepTwo({ formData, handleThueChange }) {
     );
 }
 
-function StepThree({ formData, handleDinhDanhChange, xulyAnhChup }) {
+function StepThree({ formData, handleDinhDanhChange, xulyAnhChup, xulyChonFileCertify }) {
     StepThree.propTypes = {
         formData: PropTypes.shape({
             thongTinDinhDanh: PropTypes.shape({
@@ -268,9 +289,12 @@ function StepThree({ formData, handleDinhDanhChange, xulyAnhChup }) {
                 soDinhDanh: PropTypes.string,
                 hoVaTen: PropTypes.string,
             }).isRequired,
+            cidChungNhan: PropTypes.string,
         }).isRequired,
+        previewImage: PropTypes.string.isRequired,
         handleDinhDanhChange: PropTypes.func.isRequired,
         xulyAnhChup: PropTypes.func.isRequired,
+        xulyChonFileCertify: PropTypes.func.isRequired,
     };
     return (
         <div>
@@ -298,16 +322,29 @@ function StepThree({ formData, handleDinhDanhChange, xulyAnhChup }) {
                         <span>Hộ Chiếu</span>
                     </label>
                 </div>
-                <div className="flex gap-3 space-y-2 items-center">
+                <div className="flex flex-col gap-3 space-y-2">
                     <label htmlFor="file-upload" className="text-gray-700">
-                        <span className="text-red-500">*</span> Chọn tệp
+                        <span className="text-red-500">*</span> Chọn tệp: Ảnh mặt trước Căng Cước Công Dân (CCCD)
                     </label>
-                    <input type="file" accept="image/*" onChange={xulyAnhChup} />
-                    <label
-                        htmlFor="file-upload"
-                        className="px-4 py-2 border text-black rounded-lg cursor-pointer hover:bg-gray-100 text-center"
-                    >
+                    {formData?.thongTinDinhDanh?.hinhChup ? (
+                        <div className="flex gap-3 items-center">
+                            <img
+                                src={formData?.thongTinDinhDanh?.hinhChup}
+                                alt="Hình ảnh chứng nhận"
+                                className="w-32 h-32 object-cover border rounded-lg"
+                            />
+                        </div>
+                    ) : (
+                        <p className="text-gray-500">Chưa có ảnh nào được chọn.</p>
+                    )}
+                    <label className="px-4 py-2 border text-black rounded-lg cursor-pointer hover:bg-gray-100 text-center">
                         Tải lên tệp
+                        <input
+                            type="file"
+                            accept="image/*"
+                            onChange={xulyAnhChup}
+                            className="hidden"
+                        />
                     </label>
                 </div>
 
@@ -319,6 +356,35 @@ function StepThree({ formData, handleDinhDanhChange, xulyAnhChup }) {
                     <label htmlFor="hoVaTen"><span className="text-red-500">*</span> Họ & Tên</label>
                     <input id="hoVaTen" name="hoVaTen" value={formData.thongTinDinhDanh.hoVaTen} onChange={handleDinhDanhChange} className="border p-2 rounded-md" />
                 </div>
+
+                <div className="flex flex-col gap-3">
+                    <label htmlFor="file-upload" className="text-gray-700">
+                        <span className="text-red-500">*</span> Nhập hình ảnh chứng nhận của cửa hàng:
+                    </label>
+
+                    {formData?.cidChungNhan ? (
+                        <div className="flex gap-3 items-center">
+                            <img
+                                src={formData.cidChungNhan}
+                                alt="Hình ảnh chứng nhận"
+                                className="w-32 h-32 object-cover border rounded-lg"
+                            />
+                        </div>
+                    ) : (
+                        <p className="text-gray-500">Chưa có ảnh nào được chọn.</p>
+                    )}
+
+                    <label className="px-4 py-2 border text-black rounded-lg cursor-pointer hover:bg-gray-100 text-center">
+                        Tải tệp lên
+                        <input
+                            type="file"
+                            accept="image/*"
+                            onChange={xulyChonFileCertify}
+                            className="hidden"
+                        />
+                    </label>
+                </div>
+
             </div>
         </div>
     );

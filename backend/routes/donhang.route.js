@@ -7,6 +7,6 @@ router.post("/them",protectRoute, themDonHang)
 router.get("/lay/theonguoidung",protectRoute, layDonHangTheoNguoiDung)
 router.get("/lay/theocuahang",protectRoute,layDonHangTheoCuaHang)
 router.get("/lay/theoid/:id",layDonHangTheoId)
-router.put("/capnhat/:id",capNhatTrangThaiDonHang)
+router.put("/capnhat/:id",protectRoute,capNhatTrangThaiDonHang)
 
 export default router

@@ -4,6 +4,7 @@ import Cuahang from "../models/cuahang.model.js";
 import Sanpham from "../models/sanpham.model.js"; 
 
 import moment from "moment";
+import Nguoidung from "../models/nguoidung.model.js";
 
 export const taoMaDonHang = async () => {
     const ngayHienTai = moment().format("YYYYMMDD");
@@ -77,7 +78,7 @@ export const themDonHang = async (req, res) => {
                 cuaHang.sanPhamChiTiet = cuaHang.sanPhamChiTiet.filter(
                     (sp) => !dsSanPham.some(
                         (item) => item.idSP.toString() === sp.idSP.toString() &&
-                                item.phanLoai.id === sp.idLoai
+                                item.phanLoai.idPL === sp.idLoai
                     )
                 );
             }
@@ -203,10 +204,16 @@ export const capNhatTrangThaiDonHang = async (req, res) => {
     try {
         const { id } = req.params;
         const { trangThai } = req.body;
+        const idND = req.nguoidung._id;
 
         const donHang = await Donhang.findById(id);
         if (!donHang) {
             return res.status(404).json({ message: "Không tìm thấy đơn hàng!" });
+        }
+
+        const nguoiDung = await Nguoidung.findById(idND);
+        if (!nguoiDung) {
+            return res.status(404).json({ message: "Không tìm thấy người dùng!" });
         }
 
         if (trangThai === "Hoàn thành" && donHang.trangThai !== "Hoàn thành") {
@@ -215,7 +222,7 @@ export const capNhatTrangThaiDonHang = async (req, res) => {
                 if (!sanPham) continue;
 
                 sanPham.phanLoai.forEach((loai) => {
-                    if (loai.id === item.phanLoai.id) {
+                    if (loai.idPL === item.phanLoai.idPL) {
                         loai.khoHang -= item.soLuong;
                         loai.daBan = (loai.daBan || 0) + item.soLuong;
                     }
@@ -223,6 +230,16 @@ export const capNhatTrangThaiDonHang = async (req, res) => {
 
                 await sanPham.save();
             }
+
+            nguoiDung.soDuTien += donHang.tongTienHang;
+            nguoiDung.nguonTien.push({
+                loaiTien: "cộng",
+                soTien: donHang.tongTienHang,
+                ngay: Date.now(),
+                noidung: `Thanh toán của đơn hàng ${donHang.maDonHang}`,
+            });
+            await nguoiDung.save();
+
         }
 
         donHang.trangThai = trangThai;

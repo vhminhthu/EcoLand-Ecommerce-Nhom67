@@ -18,25 +18,28 @@ function Header() {
     const [danhMucChon, setDanhMucChon] = useState("");
     const [timKiem, setTimKiem] = useState("");
     const [danhSachGoiY, setDanhSachGoiY] = useState([]);
+    const [danhSachGoiYCuaHang, setDanhSachGoiYCuaHang] = useState([]);
 
     const handleChange = async (e) => {
         const value = e.target.value;
         setTimKiem(value);
         if (value.trim() === '') {
             setDanhSachGoiY([]);
+            setDanhSachGoiYCuaHang([]);
             return;
         }
         
         try {
             const response = await axios.get(`/api/sanpham/search/goiy?search=${value}&danhmuc=${danhMucChon}`);
-            setDanhSachGoiY(response.data);
+            setDanhSachGoiY(response.data.goiY);
+            setDanhSachGoiYCuaHang(response.data.goiYCuaHang);
         } catch (error) {
             console.error(error);
         }
     };
 
     const handleKeyPress = (e) => {
-        if (e.key === 'Enter' && danhSachGoiY.length > 0) {
+        if (e.key === 'Enter' && (danhSachGoiY.length > 0 || danhSachGoiYCuaHang.length > 0)) {
             navigate(`/search/sp?search=${timKiem}&sort=phobien&page=1&limit=20`, {state: { id: danhMucChon }});
         }
     };
@@ -44,8 +47,19 @@ function Header() {
     const xuLyChonGoiY = (goiY) => {
         setTimKiem(goiY.tenSP);
         setDanhSachGoiY([]);
+        setDanhSachGoiYCuaHang([]);
         const nameProduct = goiY.tenSP.replace(/\s+/g, '-');
         navigate(`/${nameProduct}`, {
+            state: { id: goiY._id },
+        });
+    };
+
+    const xuLyChonGoiYCuaHang = (goiY) => {
+        setTimKiem(goiY.tenCH);
+        setDanhSachGoiY([]);
+        setDanhSachGoiYCuaHang([]);
+        const nameShop = goiY.tenCH.replace(/\s+/g, '-');
+        navigate(`/shop/${nameShop}?sort=phobien&page=1&limit=15`, {
             state: { id: goiY._id },
         });
     };
@@ -140,21 +154,42 @@ function Header() {
                             onKeyPress={handleKeyPress}
                             />
                         <BiSearch className="text-xl !mr-5 text-white" />
-                        {danhSachGoiY.length > 0 && (
-                            <div className="absolute top-12 left-0 w-full bg-white shadow-lg rounded-r-lg z-50">
+                        {(danhSachGoiYCuaHang.length > 0 || danhSachGoiY.length > 0) && (
+                            <div className="absolute top-12 left-0 w-full bg-white shadow-lg rounded-r-lg z-50 border-b">
                                 <ul>
-                                    {danhSachGoiY.map((item, index) => (
-                                        <li 
-                                            key={index} 
-                                            className="!p-2 text-black hover:bg-gray-100 cursor-pointer"
-                                            onClick={() => xuLyChonGoiY(item)}
-                                        >
-                                            {item.tenSP}
-                                        </li>
-                                    ))}
+                                    {danhSachGoiYCuaHang.length > 0 && (
+                                        <div>
+                                            <h3 className="font-semibold text-lg p-2">Gợi ý cửa hàng:</h3>
+                                            {danhSachGoiYCuaHang.map((item, index) => (
+                                                <li 
+                                                    key={index} 
+                                                    className="!p-2 text-black hover:bg-gray-100 cursor-pointer"
+                                                    onClick={() => xuLyChonGoiYCuaHang(item)}
+                                                >
+                                                    {item.tenCH}
+                                                </li>
+                                            ))}
+                                        </div>
+                                    )}
+
+                                    {danhSachGoiY.length > 0 && (
+                                        <div>
+                                            <h3 className="font-semibold text-lg p-2">Gợi ý sản phẩm:</h3>
+                                            {danhSachGoiY.map((item, index) => (
+                                                <li 
+                                                    key={index} 
+                                                    className="!p-2 text-black hover:bg-gray-100 cursor-pointer"
+                                                    onClick={() => xuLyChonGoiY(item)}
+                                                >
+                                                    {item.tenSP}
+                                                </li>
+                                            ))}
+                                        </div>
+                                    )}
                                 </ul>
                             </div>
                         )}
+
                     </div>
                 </div>
                 <div className="flex gap-4">

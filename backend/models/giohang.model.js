@@ -9,7 +9,7 @@ const giohangSchema = new mongoose.Schema(
                 sanPhamChiTiet: [
                     {
                         idSP: { type: mongoose.Schema.Types.ObjectId, ref: "Sanpham", required: true },
-                        idLoai: { type: Number, required: true },
+                        idLoai: { type: String, required: true },
                         soLuong: { type: Number, required: true, min: 1 },
                         checked: { type: Boolean, default: false },
                     }

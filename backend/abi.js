@@ -1,30 +1,25 @@
 const abi=
 [
 	{
-		"inputs": [],
-		"stateMutability": "nonpayable",
-		"type": "constructor"
-	},
-	{
-		"anonymous": false,
 		"inputs": [
 			{
-				"indexed": true,
 				"internalType": "address",
-				"name": "admin",
+				"name": "_certifier",
 				"type": "address"
-			}
-		],
-		"name": "AdminAdded",
-		"type": "event"
-	},
-	{
-		"inputs": [
+			},
 			{
 				"internalType": "string",
-				"name": "_productId",
+				"name": "_name",
 				"type": "string"
-			},
+			}
+		],
+		"name": "addCertifier",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
 			{
 				"internalType": "address",
 				"name": "_inspector",
@@ -32,16 +27,11 @@ const abi=
 			},
 			{
 				"internalType": "string",
-				"name": "_seedType",
-				"type": "string"
-			},
-			{
-				"internalType": "string",
-				"name": "_sowingDate",
+				"name": "_name",
 				"type": "string"
 			}
 		],
-		"name": "approveProduct",
+		"name": "addInspector",
 		"outputs": [],
 		"stateMutability": "nonpayable",
 		"type": "function"
@@ -52,54 +42,9 @@ const abi=
 				"internalType": "string",
 				"name": "_productId",
 				"type": "string"
-			},
-			{
-				"internalType": "string",
-				"name": "_harvestingDate",
-				"type": "string"
-			},
-			{
-				"internalType": "string",
-				"name": "_fertilizersUsed",
-				"type": "string"
-			},
-			{
-				"internalType": "address",
-				"name": "_inspector",
-				"type": "address"
 			}
 		],
-		"name": "checkProductQuality",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"components": [
-					{
-						"internalType": "string",
-						"name": "productId",
-						"type": "string"
-					},
-					{
-						"internalType": "string",
-						"name": "productName",
-						"type": "string"
-					},
-					{
-						"internalType": "string",
-						"name": "storeId",
-						"type": "string"
-					}
-				],
-				"internalType": "struct AgroSupplyChain.ProductInput",
-				"name": "input",
-				"type": "tuple"
-			}
-		],
-		"name": "createProduct",
+		"name": "certifyProduct",
 		"outputs": [],
 		"stateMutability": "nonpayable",
 		"type": "function"
@@ -115,9 +60,101 @@ const abi=
 				"internalType": "string",
 				"name": "_storeName",
 				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "_cid",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "_storeLocation",
+				"type": "string"
 			}
 		],
 		"name": "createStore",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"stateMutability": "nonpayable",
+		"type": "constructor"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "certifierAddress",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "name",
+				"type": "string"
+			}
+		],
+		"name": "CertifierAdded",
+		"type": "event"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "_productId",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "_productName",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "_storeId",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "_seedType",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "_sowingDate",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "_harvestingDate",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "_packagingDate",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "_expirationDate",
+				"type": "string"
+			},
+			{
+				"internalType": "address",
+				"name": "_certifierAddress",
+				"type": "address"
+			},
+			{
+				"internalType": "string",
+				"name": "_certifierImageCid",
+				"type": "string"
+			}
+		],
+		"name": "createProduct",
 		"outputs": [],
 		"stateMutability": "nonpayable",
 		"type": "function"
@@ -127,14 +164,8 @@ const abi=
 		"inputs": [
 			{
 				"indexed": true,
-				"internalType": "uint256",
-				"name": "id",
-				"type": "uint256"
-			},
-			{
-				"indexed": true,
 				"internalType": "address",
-				"name": "inspector",
+				"name": "inspectorAddress",
 				"type": "address"
 			},
 			{
@@ -157,121 +188,13 @@ const abi=
 				"type": "string"
 			},
 			{
-				"indexed": false,
+				"indexed": true,
 				"internalType": "address",
-				"name": "inspector",
+				"name": "certifier",
 				"type": "address"
 			}
 		],
-		"name": "InspectorAssigned",
-		"type": "event"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "string",
-				"name": "_productId",
-				"type": "string"
-			},
-			{
-				"internalType": "string",
-				"name": "_packagingDate",
-				"type": "string"
-			},
-			{
-				"internalType": "string",
-				"name": "_expiryDate",
-				"type": "string"
-			},
-			{
-				"internalType": "address",
-				"name": "_inspector",
-				"type": "address"
-			}
-		],
-		"name": "makeProductAvailable",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "string",
-				"name": "_productId",
-				"type": "string"
-			},
-			{
-				"internalType": "address",
-				"name": "_inspector",
-				"type": "address"
-			}
-		],
-		"name": "markProductSoldOut",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"anonymous": false,
-		"inputs": [
-			{
-				"indexed": false,
-				"internalType": "string",
-				"name": "productId",
-				"type": "string"
-			},
-			{
-				"indexed": false,
-				"internalType": "address",
-				"name": "inspector",
-				"type": "address"
-			},
-			{
-				"indexed": false,
-				"internalType": "string",
-				"name": "seedType",
-				"type": "string"
-			},
-			{
-				"indexed": false,
-				"internalType": "string",
-				"name": "sowingDate",
-				"type": "string"
-			}
-		],
-		"name": "ProductApproved",
-		"type": "event"
-	},
-	{
-		"anonymous": false,
-		"inputs": [
-			{
-				"indexed": false,
-				"internalType": "string",
-				"name": "productId",
-				"type": "string"
-			},
-			{
-				"indexed": false,
-				"internalType": "string",
-				"name": "packagingDate",
-				"type": "string"
-			},
-			{
-				"indexed": false,
-				"internalType": "string",
-				"name": "expiryDate",
-				"type": "string"
-			},
-			{
-				"indexed": false,
-				"internalType": "address",
-				"name": "inspector",
-				"type": "address"
-			}
-		],
-		"name": "ProductAvailable",
+		"name": "ProductCertified",
 		"type": "event"
 	},
 	{
@@ -294,6 +217,12 @@ const abi=
 				"internalType": "string",
 				"name": "storeId",
 				"type": "string"
+			},
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "inspector",
+				"type": "address"
 			}
 		],
 		"name": "ProductCreated",
@@ -305,74 +234,6 @@ const abi=
 			{
 				"indexed": false,
 				"internalType": "string",
-				"name": "productId",
-				"type": "string"
-			},
-			{
-				"indexed": false,
-				"internalType": "string",
-				"name": "harvestingDate",
-				"type": "string"
-			},
-			{
-				"indexed": false,
-				"internalType": "string",
-				"name": "fertilizersUsed",
-				"type": "string"
-			},
-			{
-				"indexed": false,
-				"internalType": "address",
-				"name": "inspector",
-				"type": "address"
-			}
-		],
-		"name": "ProductQualityChecked",
-		"type": "event"
-	},
-	{
-		"anonymous": false,
-		"inputs": [
-			{
-				"indexed": false,
-				"internalType": "string",
-				"name": "productId",
-				"type": "string"
-			},
-			{
-				"indexed": false,
-				"internalType": "address",
-				"name": "inspector",
-				"type": "address"
-			}
-		],
-		"name": "ProductSoldOut",
-		"type": "event"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "string",
-				"name": "_productId",
-				"type": "string"
-			},
-			{
-				"internalType": "address",
-				"name": "_inspector",
-				"type": "address"
-			}
-		],
-		"name": "setInspectorForProduct",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"anonymous": false,
-		"inputs": [
-			{
-				"indexed": true,
-				"internalType": "string",
 				"name": "storeId",
 				"type": "string"
 			},
@@ -380,6 +241,12 @@ const abi=
 				"indexed": false,
 				"internalType": "string",
 				"name": "storeName",
+				"type": "string"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "cid",
 				"type": "string"
 			}
 		],
@@ -390,65 +257,25 @@ const abi=
 		"inputs": [
 			{
 				"internalType": "address",
-				"name": "_admin",
+				"name": "",
 				"type": "address"
 			}
 		],
-		"name": "themAdmin",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
+		"name": "certifiers",
+		"outputs": [
 			{
 				"internalType": "address",
-				"name": "_inspector",
+				"name": "certifierAddress",
 				"type": "address"
 			},
 			{
 				"internalType": "string",
-				"name": "_name",
+				"name": "name",
 				"type": "string"
-			}
-		],
-		"name": "themInspector",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"name": "adminList",
-		"outputs": [
-			{
-				"internalType": "address",
-				"name": "",
-				"type": "address"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "",
-				"type": "address"
-			}
-		],
-		"name": "admins",
-		"outputs": [
+			},
 			{
 				"internalType": "bool",
-				"name": "",
+				"name": "isActive",
 				"type": "bool"
 			}
 		],
@@ -456,138 +283,24 @@ const abi=
 		"type": "function"
 	},
 	{
-		"inputs": [],
-		"name": "getAdmins",
-		"outputs": [
+		"inputs": [
 			{
-				"internalType": "address[]",
+				"internalType": "address",
 				"name": "",
-				"type": "address[]"
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
 			}
 		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "getAllProducts",
+		"name": "certifierToProducts",
 		"outputs": [
 			{
-				"components": [
-					{
-						"internalType": "string",
-						"name": "productId",
-						"type": "string"
-					},
-					{
-						"internalType": "string",
-						"name": "productName",
-						"type": "string"
-					},
-					{
-						"internalType": "string",
-						"name": "storeName",
-						"type": "string"
-					},
-					{
-						"internalType": "string",
-						"name": "seedType",
-						"type": "string"
-					},
-					{
-						"internalType": "string",
-						"name": "sowingDate",
-						"type": "string"
-					},
-					{
-						"internalType": "string",
-						"name": "harvestingDate",
-						"type": "string"
-					},
-					{
-						"internalType": "string",
-						"name": "fertilizersUsed",
-						"type": "string"
-					},
-					{
-						"internalType": "string",
-						"name": "packagingDate",
-						"type": "string"
-					},
-					{
-						"internalType": "string",
-						"name": "expirationDate",
-						"type": "string"
-					},
-					{
-						"internalType": "string",
-						"name": "status",
-						"type": "string"
-					},
-					{
-						"internalType": "string",
-						"name": "inspectorName",
-						"type": "string"
-					}
-				],
-				"internalType": "struct AgroSupplyChain.ProductDetail[]",
+				"internalType": "string",
 				"name": "",
-				"type": "tuple[]"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "getAllStores",
-		"outputs": [
-			{
-				"components": [
-					{
-						"internalType": "string",
-						"name": "storeId",
-						"type": "string"
-					},
-					{
-						"internalType": "string",
-						"name": "storeName",
-						"type": "string"
-					}
-				],
-				"internalType": "struct AgroSupplyChain.Store[]",
-				"name": "",
-				"type": "tuple[]"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "getInspectors",
-		"outputs": [
-			{
-				"components": [
-					{
-						"internalType": "uint256",
-						"name": "id",
-						"type": "uint256"
-					},
-					{
-						"internalType": "address",
-						"name": "inspectorAddress",
-						"type": "address"
-					},
-					{
-						"internalType": "string",
-						"name": "name",
-						"type": "string"
-					}
-				],
-				"internalType": "struct AgroSupplyChain.Inspector[]",
-				"name": "",
-				"type": "tuple[]"
+				"type": "string"
 			}
 		],
 		"stateMutability": "view",
@@ -637,7 +350,78 @@ const abi=
 					},
 					{
 						"internalType": "string",
-						"name": "fertilizersUsed",
+						"name": "packagingDate",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "expirationDate",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "inspectorName",
+						"type": "string"
+					},
+					{
+						"internalType": "bool",
+						"name": "isCertified",
+						"type": "bool"
+					},
+					{
+						"internalType": "string",
+						"name": "certifierName",
+						"type": "string"
+					}
+				],
+				"internalType": "struct EcoLand.ProductDetail",
+				"name": "",
+				"type": "tuple"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_certifierAddress",
+				"type": "address"
+			}
+		],
+		"name": "getProductsByCertifier",
+		"outputs": [
+			{
+				"components": [
+					{
+						"internalType": "string",
+						"name": "productId",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "productName",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "storeName",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "seedType",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "sowingDate",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "harvestingDate",
 						"type": "string"
 					},
 					{
@@ -652,69 +436,23 @@ const abi=
 					},
 					{
 						"internalType": "string",
-						"name": "status",
+						"name": "inspectorName",
 						"type": "string"
 					},
 					{
+						"internalType": "bool",
+						"name": "isCertified",
+						"type": "bool"
+					},
+					{
 						"internalType": "string",
-						"name": "inspectorName",
+						"name": "certifierName",
 						"type": "string"
 					}
 				],
-				"internalType": "struct AgroSupplyChain.ProductDetail",
+				"internalType": "struct EcoLand.ProductDetail[]",
 				"name": "",
-				"type": "tuple"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "string",
-				"name": "_productId",
-				"type": "string"
-			}
-		],
-		"name": "getStoreNameFromProductId",
-		"outputs": [
-			{
-				"internalType": "string",
-				"name": "",
-				"type": "string"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "inspectorCount",
-		"outputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"name": "inspectorList",
-		"outputs": [
-			{
-				"internalType": "address",
-				"name": "",
-				"type": "address"
+				"type": "tuple[]"
 			}
 		],
 		"stateMutability": "view",
@@ -731,11 +469,6 @@ const abi=
 		"name": "inspectors",
 		"outputs": [
 			{
-				"internalType": "uint256",
-				"name": "id",
-				"type": "uint256"
-			},
-			{
 				"internalType": "address",
 				"name": "inspectorAddress",
 				"type": "address"
@@ -744,6 +477,11 @@ const abi=
 				"internalType": "string",
 				"name": "name",
 				"type": "string"
+			},
+			{
+				"internalType": "bool",
+				"name": "isActive",
+				"type": "bool"
 			}
 		],
 		"stateMutability": "view",
@@ -790,7 +528,7 @@ const abi=
 			},
 			{
 				"internalType": "string",
-				"name": "farmId",
+				"name": "storeId",
 				"type": "string"
 			},
 			{
@@ -810,11 +548,6 @@ const abi=
 			},
 			{
 				"internalType": "string",
-				"name": "fertilizersUsed",
-				"type": "string"
-			},
-			{
-				"internalType": "string",
 				"name": "packagingDate",
 				"type": "string"
 			},
@@ -824,41 +557,27 @@ const abi=
 				"type": "string"
 			},
 			{
-				"internalType": "enum AgroSupplyChain.ProductStatus",
-				"name": "status",
-				"type": "uint8"
-			},
-			{
 				"internalType": "address",
 				"name": "inspectorAddress",
 				"type": "address"
 			},
 			{
+				"internalType": "address",
+				"name": "certifierAddress",
+				"type": "address"
+			},
+			{
+				"internalType": "bool",
+				"name": "isCertified",
+				"type": "bool"
+			},
+			{
 				"internalType": "string",
-				"name": "inspectorName",
+				"name": "certifierImageCid",
 				"type": "string"
 			}
 		],
 		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "enum AgroSupplyChain.ProductStatus",
-				"name": "status",
-				"type": "uint8"
-			}
-		],
-		"name": "productStatusToString",
-		"outputs": [
-			{
-				"internalType": "string",
-				"name": "",
-				"type": "string"
-			}
-		],
-		"stateMutability": "pure",
 		"type": "function"
 	},
 	{
@@ -870,25 +589,6 @@ const abi=
 			}
 		],
 		"name": "productToStore",
-		"outputs": [
-			{
-				"internalType": "string",
-				"name": "",
-				"type": "string"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "",
-				"type": "uint256"
-			}
-		],
-		"name": "storeList",
 		"outputs": [
 			{
 				"internalType": "string",
@@ -917,6 +617,16 @@ const abi=
 			{
 				"internalType": "string",
 				"name": "storeName",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "cid",
+				"type": "string"
+			},
+			{
+				"internalType": "string",
+				"name": "storeLocation",
 				"type": "string"
 			}
 		],

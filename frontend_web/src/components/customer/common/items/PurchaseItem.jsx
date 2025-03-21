@@ -82,7 +82,7 @@ PurchaseItem.propTypes = {
                 dsAnhSP: PropTypes.string.isRequired,
             }).isRequired,
             phanLoai: PropTypes.shape({
-                id: PropTypes.number.isRequired,
+                idPL: PropTypes.string.isRequired,
                 giaLoai: PropTypes.string.isRequired,
                 tenLoai: PropTypes.string.isRequired,
                 khuyenMai: PropTypes.number.isRequired,

@@ -86,13 +86,13 @@ function CartPage() {
             .filter(item => item.checked)
             .reduce((total, item) => {
                 const sanPhamChiTiet = gioHang?.find(shop => 
-                    shop.sanPhamChiTiet?.some(sp => sp.idSP?.phanLoai?.some(loai => loai.id === item.idLoai))
+                    shop.sanPhamChiTiet?.some(sp => sp.idSP?.phanLoai?.some(loai => loai.idPL === item.idLoai))
                 );
                 if (!sanPhamChiTiet) return total;
 
                 const phanLoai = sanPhamChiTiet.sanPhamChiTiet.find(sp => 
-                    sp.idSP?.phanLoai?.some(loai => loai.id === item.idLoai)
-                )?.idSP?.phanLoai?.find(loai => loai.id === item.idLoai);
+                    sp.idSP?.phanLoai?.some(loai => loai.idPL === item.idLoai)
+                )?.idSP?.phanLoai?.find(loai => loai.idPL === item.idLoai);
                 if (!phanLoai) return total;
 
                 const { giaLoai, khuyenMai } = phanLoai;

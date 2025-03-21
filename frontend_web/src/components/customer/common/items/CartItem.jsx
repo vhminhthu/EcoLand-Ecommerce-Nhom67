@@ -42,7 +42,7 @@ CartItem.propTypes = {
                 tenSP: PropTypes.string.isRequired,
                 phanLoai: PropTypes.arrayOf(
                     PropTypes.shape({
-                        id: PropTypes.number.isRequired,
+                        idPL: PropTypes.string.isRequired,
                         tenLoai: PropTypes.string.isRequired,
                         giaLoai: PropTypes.number.isRequired,
                         khuyenMai: PropTypes.number.isRequired,
