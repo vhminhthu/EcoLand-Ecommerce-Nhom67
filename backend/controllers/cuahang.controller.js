@@ -295,3 +295,57 @@ export const getAnhCH = async (req, res) => {
         res.status(500).json({ success: false, message: "Lỗi server!", error: error.message });
     }
 };
+
+export const getPopularShops = async (req, res) => {
+    try {
+        const users = await Nguoidung.aggregate([
+            {
+                $project: {
+                    soTheoDoi: { $size: "$dsNguoiTheoDoi" }
+                }
+            },
+            {
+                $sort: { soTheoDoi: -1 } 
+            },
+            {
+                $limit: 9 
+            }
+        ]);
+    
+        const usersWithStores = [];
+
+        for (const user of users) {
+            const cuaHangs = await CuaHang.find({ idNguoiDung: user._id, trangThaiCH: 'Mở cửa' })
+                .select("anhCH tenCH diaChiCH")
+                .populate({ path: "idNguoiDung", select: "dsNguoiTheoDoi" })
+                .lean();
+
+            for (let cuaHang of cuaHangs) {
+                const sanPhams = await SanPham.find({ idCH: cuaHang._id });
+                
+                let tongSoSao = 0;
+                let tongSoDanhGia = 0;
+                let tongSanPham = sanPhams.length;
+                
+                sanPhams.forEach(sp => {
+                    tongSoSao += sp.tongSoSao;
+                    tongSoDanhGia += sp.tongSoDanhGia;
+                });
+                
+                cuaHang.tongSanPham = tongSanPham;
+                cuaHang.tongSoDanhGia = tongSoDanhGia;
+                cuaHang.trungBinhSao = tongSoDanhGia > 0 ? (tongSoSao / tongSoDanhGia).toFixed(2) : 0;
+
+                usersWithStores.push({ cuaHang });
+            }
+        }
+
+        res.status(200).json({ usersWithStores });
+    } catch (error) {
+        console.error("Error: ", error);
+        res.status(500).json({ error: "Có lỗi xảy ra khi lấy dữ liệu." });
+    }
+};
+
+
+

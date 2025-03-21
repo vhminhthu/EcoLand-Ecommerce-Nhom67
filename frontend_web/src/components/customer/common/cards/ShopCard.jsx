@@ -2,11 +2,11 @@ import PropTypes from 'prop-types';
 import { FaStar } from "react-icons/fa6";
 import { useNavigate } from 'react-router-dom';
 function ShopCard(props) {
-    const { _id, dsQuangCao, tenCH, idNguoiDung, trungBinhSao, tongSoDanhGia} = props;
+    const { _id, anhCH, tenCH, idNguoiDung, trungBinhSao, tongSoDanhGia} = props;
 
     ShopCard.propTypes = {
         _id: PropTypes.string,
-        dsQuangCao: PropTypes.string,
+        anhCH: PropTypes.string,
         tenCH: PropTypes.string,
         idNguoiDung: PropTypes.number,
         trungBinhSao: PropTypes.number, 
@@ -27,12 +27,12 @@ function ShopCard(props) {
                 }}
                 >
                 <div className="w-15 h-15 rounded-full bg-amber-50 overflow-hidden flex justify-center items-center shadow-lg">
-                    <img className="w-full h-full object-cover rounded-2xl" src={dsQuangCao} alt={tenCH} />
+                    <img className="w-full h-full object-cover rounded-2xl" src={anhCH || "https://img.icons8.com/dusk/64/shop.png"} alt={tenCH} />
                 </div>
                 <div className='gap-1 items-center'>
                     <p className="text-lg font-bold line-clamp-1">{tenCH}</p>
                     <div className='flex items-center gap-2'>
-                        <p className='text-sm'><span className='text-emerald-600'>{idNguoiDung.dsNguoiTheoDoi.length} </span> Người theo dõi</p>
+                        <p className='text-sm'><span className='text-emerald-600'>{idNguoiDung?.dsNguoiTheoDoi?.length} </span> Người theo dõi</p>
                         <p>|</p>
                         <div className="rating flex items-center gap-1 text-yellow-500 text-sm">
                             <FaStar/> <span className="font-bold">{trungBinhSao || 0}</span> 
