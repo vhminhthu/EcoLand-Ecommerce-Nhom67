@@ -214,8 +214,12 @@ function ProductPage() {
                                 </div>
                             ))}
                         </div> */}
-                        <div className="product-image w-96 h-96 overflow-hidden">
-                            <img src={sanPham?.dsAnhSP} alt={sanPham?.tenSP}  className=" h-full object-cover rounded-xl"/>
+                        <div className="product-image w-96 h-96 overflow-hidden rounded-xl">
+                            <img 
+                                src={sanPham?.dsAnhSP} 
+                                alt={sanPham?.tenSP}  
+                                className="w-full h-full object-cover"
+                            />
                         </div>
                     </div>
 
@@ -330,7 +334,11 @@ function ProductPage() {
 
 
             <div className='!mt-5 border border-emerald-600 rounded-xl !py-6 !px-8 flex items-center gap-10'>
-                <img className="w-20 h-20 object-cover rounded-full cursor-pointer hover:opacity-80" src={sanPham?.idCH?.anhCH} alt={sanPham?.idCH?.tenCH}  ></img>
+                <img 
+                    className="w-20 h-20 object-cover rounded-full cursor-pointer hover:opacity-80" 
+                    src={sanPham?.idCH?.anhCH || "https://img.icons8.com/dusk/64/shop.png"} 
+                    alt={sanPham?.idCH?.tenCH || "Cửa hàng"} 
+                />
                 <div>
                     <span className='text-xl font-bold'>{sanPham?.idCH?.tenCH}</span>
                     <button 

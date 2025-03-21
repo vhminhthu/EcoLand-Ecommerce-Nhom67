@@ -128,3 +128,42 @@ export const layNguoiDungQuaId = async (req, res) => {
         return res.status(500).json({ message: "Lỗi 500" });
     }
 };
+
+export const layYeuThich = async (req, res) => {
+    try {
+        const id = req.nguoidung._id;
+        const { sort = "createdAt", page = 1, limit = 12 } = req.query;
+        
+        const nguoidung = await Nguoidung.findById(id)
+            .populate({
+                path: "dsYeuThich",
+                select: "_id idCH dsAnhSP phanLoai tenSP nguonGoc tongSoSao tongSoDanhGia",
+                populate: {
+                    path: "idCH",
+                    select: "tenCH",
+                },
+                options: {
+                    sort: { [sort]: -1 }, // Sắp xếp mặc định giảm dần theo `createdAt`
+                    skip: (page - 1) * limit, // Bỏ qua số lượng sản phẩm
+                    limit: parseInt(limit), // Giới hạn số sản phẩm trả về
+                },
+            });
+
+        if (!nguoidung) {
+            return res.status(404).json({ message: "Không tìm thấy người dùng" });
+        }
+
+        const tong = nguoidung.dsYeuThich.length;
+        const tongPage = Math.ceil(tong / limit);
+
+        return res.status(200).json({ 
+            dsYeuThich: nguoidung.dsYeuThich, 
+            tong, 
+            tongPage, 
+            currentPage: parseInt(page) 
+        });
+    } catch (error) {
+        console.error("Lỗi lấy danh sách yêu thích:", error.message);
+        return res.status(500).json({ message: "Lỗi 500 - Server Error" });
+    }
+};

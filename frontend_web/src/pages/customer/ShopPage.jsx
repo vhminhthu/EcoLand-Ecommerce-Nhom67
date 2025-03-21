@@ -150,11 +150,11 @@ function ShopPage() {
             <div className='flex gap-5'>
                 <div className='bg-emerald-600 shadow w-2/5 rounded-l-2xl py-3 px-5 flex items-center gap-4'>
                     <div className="w-30 h-30 rounded-full overflow-hidden !p-2">
-                        <img 
-                            src={shop?.anhCH || "/default-shop.png"}
-                            alt="Ảnh cửa hàng"
-                            className="w-full h-full object-cover rounded-full bg-green-300"
-                        />
+                    <img 
+                        className="w-20 h-20 object-cover rounded-full cursor-pointer hover:opacity-80 bg-emerald-50" 
+                        src={shop?.anhCH || "https://img.icons8.com/dusk/64/shop.png"} 
+                        alt={shop?.tenCH || "Cửa hàng"} 
+                    />
                     </div>
 
                     <div className='flex flex-col'>

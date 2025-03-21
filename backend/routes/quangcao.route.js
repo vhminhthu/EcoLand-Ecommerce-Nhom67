@@ -7,7 +7,7 @@ router.post("/them", protectRoute, themQuangCao)
 router.post("/admin/them", themQuangCaoAdmin)
 
 router.get("/lay", protectRoute, layQuangCao )
-router.get("/admin/lay", layQuangCaoAdmin )
+router.get("/admin/lay", layQuangCaoAdmin)
 router.get("/admin/lay/dangdienra", layQuangCaoADangDienRa )
 router.get("/lay/dangdienra/:id", layQuangCaoDangDienRaCuaCuaHang )
 

@@ -22,7 +22,7 @@ import giaodichRoutes from "./routes/giaodich.route.js";
 import danhgiaRoutes from "./routes/danhgia.route.js";
 import baocaoRoutes from "./routes/baocao.route.js";
 import tinnhanRoutes from "./routes/tinnhan.route.js";
-// import quangcaoRoutes from "./routes/quangcao.route.js";
+import quangcaoRoutes from "./routes/quangcao.route.js";
 import blockchainRoutes from "./routes/blockchain.route.js";
 
 import passport from "./config/passport.js";
@@ -78,14 +78,12 @@ app.use("/api/giaodich", giaodichRoutes);
 app.use("/api/danhgia", danhgiaRoutes);
 app.use("/api/baocao", baocaoRoutes);
 app.use("/api/tinnhan", tinnhanRoutes);
-// app.use("/api/quangcao", quangcaoRoutes);
+app.use("/api/quangcao", quangcaoRoutes);
 app.use("/api/blockchain", blockchainRoutes);
 
 app.get("/", (req, res) => {
     res.send("Xin chào bạn");
 });
-
-
 
 server.listen(5000, ()=>{
     console.log(`Server is running on port ${PORT}`)
