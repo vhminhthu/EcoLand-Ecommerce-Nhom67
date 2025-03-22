@@ -58,12 +58,19 @@ app.use(morgan("tiny"));
 app.use(express.json({ limit: "500mb" }));
 app.use(express.urlencoded({ extended: true, limit: "500mb" }));
 app.use(cookieParser());
-app.use(
-    cors({
-        origin: "http://localhost:3000",
-        credentials: true,
-    })
-);
+// app.use(
+//     cors({
+//         origin: "http://localhost:3000",
+//         credentials: true,
+//     })
+// );
+
+app.use(cors({
+    origin: "*",  // Chấp nhận mọi domain (hoặc thay "*" bằng domain cụ thể)
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"], 
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true,
+  }));
 
 app.use("/api/auth",authRoutes)
 app.use("/api/danhmuc",danhmucRoutes)
