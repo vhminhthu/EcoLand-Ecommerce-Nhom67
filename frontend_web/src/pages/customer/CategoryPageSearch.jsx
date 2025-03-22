@@ -8,6 +8,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import {ListLocations} from "../../data/ListLocations";
 import { GrInfo } from "react-icons/gr";
 import { FaAngleLeft, FaAngleRight } from "react-icons/fa6";
+import ShopCard from "../../components/customer/common/cards/ShopCard";
 
 const ratings = [5, 4, 3, 2, 1];
 
@@ -15,6 +16,8 @@ function CategoryPageSearch() {
   const [expanded, setExpanded] = useState(false);
   const [categories, setCategories] = useState([]);
   const [products, setProducts] = useState([]);
+  const [shops, setShops] = useState([]);
+
   const [tongPages, setTongPages] = useState(1);
 
   const location = useLocation();
@@ -38,13 +41,15 @@ function CategoryPageSearch() {
               setCategories(response.data); 
               if(id){
                 const responsesp = await axios.get(`/api/sanpham/search/timkiem?search=${search}&sort=${sort}&page=${page}&limit=${limit}&danhmuc=${id}&minStar=${minStar}&maxStar=${maxStar}&locations=${locations}`);
-                // console.log(responsesp.data);
-                setProducts(responsesp.data.sp);
-                setTongPages(responsesp.data.tongPage);
+                console.log(responsesp.data);
+                setProducts(responsesp.data.result.sp);
+                setTongPages(responsesp.data.result.tongPage);
+                setShops(responsesp.data.timKiemCH);
               } else {
                 const responsesp = await axios.get(`/api/sanpham/search/timkiem?search=${search}&sort=${sort}&page=${page}&limit=${limit}&minStar=${minStar}&maxStar=${maxStar}&locations=${locations}`);
-                // console.log(responsesp.data);
-                setProducts(responsesp.data.sp);
+                console.log(responsesp.data);
+                setProducts(responsesp.data.result.sp);
+                setShops(responsesp.data.timKiemCH);
               }
           } catch (error) {
               console.error("Có lỗi xảy ra khi lấy sản phẩm:", error);
@@ -199,59 +204,78 @@ function CategoryPageSearch() {
             <GrInfo /> Kết quả tìm kiếm cho từ khóa <span className="text-[#1B8057]">{search}</span>
           </p>
           <hr className="my-4 text-[#959595] font-bold" />
-          <div className="flex justify-between mb-4">
-            <span className="font-semibold">Sắp xếp theo</span>
-            <div className="flex gap-2">
-              <button 
-                className={`px-4 py-2 border font-semibold rounded-lg hover:bg-[#1B8057] hover:text-white transition duration-200 cursor-pointer ${sort === 'phobien' ? 'bg-[#1B8057] text-white' : 'bg-white '}`}
-                onClick={() => handleSortChange('phobien')} 
-                >Phổ Biến</button>
-              <button 
-                className={`px-4 py-2 border font-semibold rounded-lg hover:bg-[#1B8057] hover:text-white transition duration-200 cursor-pointer ${sort === 'moinhat' ? 'bg-[#1B8057] text-white' : 'bg-white '}`}
-                onClick={() => handleSortChange('moinhat')} 
-                >Mới nhất</button>
-              <button 
-                className={`px-4 py-2 border font-semibold rounded-lg hover:bg-[#1B8057] hover:text-white transition duration-200 cursor-pointer ${sort === 'banchay' ? 'bg-[#1B8057] text-white' : 'bg-white '}`}
-                onClick={() => handleSortChange('banchay')} 
-                >Bán chạy</button>
-              <select 
-                className={`px-4 py-2 border font-semibold rounded-lg hover:bg-[#1B8057] hover:text-white transition duration-200 cursor-pointer ${sort === "giaTang" || sort === "giaGiam" ? 'bg-[#1B8057] text-white' : 'bg-white'}`}
-                onChange={(e) => handleSortChange(e.target.value)}
-                value={sort}
-              >
-                <option value="" className="text-black bg-white">Giá</option>
-                <option value="giaTang" className={`cursor-pointer text-black ${sort === "giaTang" ? 'bg-[#1B8057] text-white' : 'bg-white'}`}>Giá tăng</option>
-                <option value="giaGiam" className={`cursor-pointer text-black ${sort === "giaGiam" ? 'bg-[#1B8057] text-white' : 'bg-white'}`}>Giá giảm</option>
-              </select>
+          {shops.length >0 ? (
+            <>
+              <div className="grid grid-cols-3 gap-4 justify-center">
+                {shops.map((shop, index) => (
+                    <ShopCard key={index} {...shop} />
+                ))}
+              </div>
+              <hr className="my-4 text-[#959595] font-bold" />
+            </>
+          ) : (
+            <p>Không có cửa hàng</p>
+          )}
+          <hr className="my-4 text-[#959595] font-bold" />
+            <div className="flex justify-between mb-4">
+              <span className="font-semibold">Sắp xếp theo</span>
+              <div className="flex gap-2">
+                <button 
+                  className={`px-4 py-2 border font-semibold rounded-lg hover:bg-[#1B8057] hover:text-white transition duration-200 cursor-pointer ${sort === 'phobien' ? 'bg-[#1B8057] text-white' : 'bg-white '}`}
+                  onClick={() => handleSortChange('phobien')} 
+                  >Phổ Biến</button>
+                <button 
+                  className={`px-4 py-2 border font-semibold rounded-lg hover:bg-[#1B8057] hover:text-white transition duration-200 cursor-pointer ${sort === 'moinhat' ? 'bg-[#1B8057] text-white' : 'bg-white '}`}
+                  onClick={() => handleSortChange('moinhat')} 
+                  >Mới nhất</button>
+                <button 
+                  className={`px-4 py-2 border font-semibold rounded-lg hover:bg-[#1B8057] hover:text-white transition duration-200 cursor-pointer ${sort === 'banchay' ? 'bg-[#1B8057] text-white' : 'bg-white '}`}
+                  onClick={() => handleSortChange('banchay')} 
+                  >Bán chạy</button>
+                <select 
+                  className={`px-4 py-2 border font-semibold rounded-lg hover:bg-[#1B8057] hover:text-white transition duration-200 cursor-pointer ${sort === "giaTang" || sort === "giaGiam" ? 'bg-[#1B8057] text-white' : 'bg-white'}`}
+                  onChange={(e) => handleSortChange(e.target.value)}
+                  value={sort}
+                >
+                  <option value="" className="text-black bg-white">Giá</option>
+                  <option value="giaTang" className={`cursor-pointer text-black ${sort === "giaTang" ? 'bg-[#1B8057] text-white' : 'bg-white'}`}>Giá tăng</option>
+                  <option value="giaGiam" className={`cursor-pointer text-black ${sort === "giaGiam" ? 'bg-[#1B8057] text-white' : 'bg-white'}`}>Giá giảm</option>
+                </select>
+              </div>
             </div>
-          </div>
-          <div className="grid grid-cols-4 gap-4 justify-center">
-            {products.map((product) => (
-              <ProductCard key={product._id} {...product} />
-            ))}
-          </div>
-          <div className="flex justify-center items-center mt-6 mb-10">
-            <button 
-                onClick={() => handlePageChange(page - 1)}
-                disabled={page === 1}
-                className={`px-4 py-2 mx-1 rounded-lg shadow hover:bg-[#1B8057] hover:text-white transition duration-200 ${page === 1 ? 'bg-gray-200 cursor-not-allowed' : 'bg-white'}`}>
-                <FaAngleLeft />
-            </button>
-            {Array.from({ length: tongPages }, (_, index) => (
-                <button
-                    key={index + 1}
-                    onClick={() => handlePageChange(index + 1)}
-                    className={`px-4 py-2 mx-1 rounded-lg shadow hover:bg-[#1B8057] hover:text-white transition duration-200 ${page === index + 1 ? 'bg-[#1B8057] text-white' : 'bg-white'}`}>
-                    {index + 1}
-                </button>
-            ))}
-            <button 
-                onClick={() => handlePageChange(page + 1)}
-                disabled={page === tongPages}
-                className={`px-4 py-2 mx-1 rounded-lg shadow hover:bg-[#1B8057] hover:text-white transition duration-200 ${page === tongPages ? 'bg-gray-200 cursor-not-allowed' : 'bg-white'}`}>
-                <FaAngleRight />
-            </button>
-        </div>
+            {products.length >0 ? (
+              <>
+                <div className="grid grid-cols-4 gap-4 justify-center">
+                  {products.map((product) => (
+                    <ProductCard key={product._id} {...product} />
+                  ))}
+                </div>
+                <div className="flex justify-center items-center mt-6 mb-10">
+                  <button 
+                      onClick={() => handlePageChange(page - 1)}
+                      disabled={page === 1}
+                      className={`px-4 py-2 mx-1 rounded-lg shadow hover:bg-[#1B8057] hover:text-white transition duration-200 ${page === 1 ? 'bg-gray-200 cursor-not-allowed' : 'bg-white'}`}>
+                      <FaAngleLeft />
+                  </button>
+                  {Array.from({ length: tongPages }, (_, index) => (
+                      <button
+                          key={index + 1}
+                          onClick={() => handlePageChange(index + 1)}
+                          className={`px-4 py-2 mx-1 rounded-lg shadow hover:bg-[#1B8057] hover:text-white transition duration-200 ${page === index + 1 ? 'bg-[#1B8057] text-white' : 'bg-white'}`}>
+                          {index + 1}
+                      </button>
+                  ))}
+                  <button 
+                      onClick={() => handlePageChange(page + 1)}
+                      disabled={page === tongPages}
+                      className={`px-4 py-2 mx-1 rounded-lg shadow hover:bg-[#1B8057] hover:text-white transition duration-200 ${page === tongPages ? 'bg-gray-200 cursor-not-allowed' : 'bg-white'}`}>
+                      <FaAngleRight />
+                  </button>
+                </div>
+              </>
+            ) : (
+              <p>Không có sản phẩm</p>
+            )}
         </div>
       </div>
     </MainLayout>

@@ -13,6 +13,7 @@ const cuahangSchema = new mongoose.Schema(
         nguyenNhanTC: { type: String },
         emailCH: { type: String, required: true },
         soDienThoaiCH: { type: String, required: true },
+        cidChungNhan: { type: String, required: true },
         thongTinThue: {
             loaiHinhKD: { type: String, required: true },
             diaChiDK: { type: String, required: true },

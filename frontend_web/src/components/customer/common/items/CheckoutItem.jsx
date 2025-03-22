@@ -1,7 +1,7 @@
 import PropTypes from "prop-types";
 
 function CheckoutItem({ _id, idLoai, idSP, soLuong }) {
-    const phanLoai = idSP?.phanLoai?.find((loai) => loai.id === idLoai);
+    const phanLoai = idSP?.phanLoai?.find((loai) => loai.idPL === idLoai);
     const donGia = phanLoai ? (phanLoai.giaLoai * (1 - phanLoai.khuyenMai / 100)) : 0;
     const thanhTien = phanLoai ? (donGia * soLuong) : 0;
 
@@ -33,7 +33,7 @@ CheckoutItem.propTypes = {
         tenSP: PropTypes.string.isRequired,
         phanLoai: PropTypes.arrayOf(
             PropTypes.shape({
-                id: PropTypes.number.isRequired,
+                idPL: PropTypes.string.isRequired,
                 tenLoai: PropTypes.string.isRequired,
                 giaLoai: PropTypes.number.isRequired,
                 khuyenMai: PropTypes.number.isRequired,

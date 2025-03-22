@@ -4,7 +4,7 @@ function CartItemProduct({ sanPham, onUpdateQuantity, onRemoveItem, onSelectItem
     if (!sanPham) return null;
 
     const { idSP, idLoai, soLuong } = sanPham;
-    const phanLoai = idSP?.phanLoai?.find(loai => loai.id === idLoai);
+    const phanLoai = idSP?.phanLoai?.find(loai => loai.idPL === idLoai);
 
     if (!phanLoai) return null;
 

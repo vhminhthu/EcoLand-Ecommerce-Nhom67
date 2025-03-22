@@ -70,12 +70,12 @@ function CheckoutPage() {
                     diaChi: user?.thongTinGiaoHang?.diaChi,
                 },
                 dsSanPham: selectedItems.map(item => {
-                    const selectedPhanLoai = item.idSP.phanLoai.find(loai => loai.id === item.idLoai);
+                    const selectedPhanLoai = item.idSP.phanLoai.find(loai => loai.idPL === item.idLoai);
                     return {
                         idSP: item.idSP._id,
                         phanLoai: selectedPhanLoai
                             ? {
-                                id: selectedPhanLoai.id,
+                                idPL: selectedPhanLoai.idPL,
                                 tenLoai: selectedPhanLoai.tenLoai,
                                 giaLoai: selectedPhanLoai.giaLoai,
                                 khuyenMai: selectedPhanLoai.khuyenMai

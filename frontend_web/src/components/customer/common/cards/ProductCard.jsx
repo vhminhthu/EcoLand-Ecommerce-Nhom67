@@ -14,7 +14,7 @@ function ProductCard(props) {
         dsAnhSP: PropTypes.string.isRequired, 
         phanLoai: PropTypes.arrayOf(
             PropTypes.shape({
-                id: PropTypes.number.isRequired,
+                idPL: PropTypes.string.isRequired,
                 tenLoai: PropTypes.string.isRequired,
                 giaLoai: PropTypes.number.isRequired,
                 donVi: PropTypes.string.isRequired,
@@ -33,7 +33,7 @@ function ProductCard(props) {
     const handleAddToCart = async () => {
         const giohang = {
             idSP: _id,
-            idLoai: phanLoai[0].id,
+            idLoai: phanLoai[0].idPL,
             soLuong: 1,
         };
     

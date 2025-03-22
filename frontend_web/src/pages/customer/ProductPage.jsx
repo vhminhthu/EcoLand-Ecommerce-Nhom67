@@ -145,7 +145,7 @@ function ProductPage() {
 
     const handleAddToCart = async () => {
         if (!sanPham) return;
-        const idLoai = selectedLoai.id; 
+        const idLoai = selectedLoai.idPL; 
         if (!idLoai) {
             alert("Vui lòng chọn phân loại trước khi thêm vào giỏ hàng!");
             return;
@@ -153,7 +153,7 @@ function ProductPage() {
     
         const giohang = {
             idSP: sanPham._id,
-            idLoai: selectedLoai.id,
+            idLoai: selectedLoai.idPL,
             soLuong: quantity,
         };
     
@@ -171,7 +171,7 @@ function ProductPage() {
     const handlePurchase = () => {
         const selectedItems = [{
             checked: true,
-            idLoai: selectedLoai.id,  
+            idLoai: selectedLoai.idPL,  
             idSP: {
                 _id: sanPham._id,
                 tenSP: sanPham.tenSP,
