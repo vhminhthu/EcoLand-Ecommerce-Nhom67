@@ -67,7 +67,7 @@ app.use(cookieParser());
 
 app.use(cors({
     origin: "*",  // Chấp nhận mọi domain (hoặc thay "*" bằng domain cụ thể)
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"], 
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS","PATCH"], 
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
   }));

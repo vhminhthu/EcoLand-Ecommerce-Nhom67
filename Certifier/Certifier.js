@@ -38,9 +38,9 @@ async function loadProducts() {
                 <td>${sp.tenDM}</td>
                 <td>${sp.certifier}</td>
                 <td>
-                    <button onclick="approveProduct('${sp._id}')" ${sp.trangThai === "approved" ? "disabled" : ""}>
-                        Duyệt
-                    </button>
+                           <button onclick="approveProduct('${sp._id}')" ${sp.trangThai === "approved" ? "disabled" : ""}>
+            Duyệt
+        </button>
                 </td>
             `;
             tableBody.appendChild(row);
@@ -51,5 +51,36 @@ async function loadProducts() {
         tableBody.innerHTML = "<tr><td colspan='12'>Lỗi tải dữ liệu</td></tr>";
     }
 }
+
+async function approveProduct(productId) {
+    const privateKey = prompt("Nhập Private Key để duyệt sản phẩm:");
+
+    if (!privateKey) {
+        alert("Bạn cần nhập private key!");
+        return;
+    }
+
+    try {
+        const response = await fetch(`http://localhost:5000/api/sanpham/certify/${productId}`, {
+            method: "PATCH",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ privateKey })
+        });
+
+        const data = await response.json();
+        if (response.ok) {
+            alert("Sản phẩm đã được duyệt!");
+            document.querySelector(`tr[data-id='${productId}']`)?.remove(); // Xóa dòng đã duyệt khỏi bảng
+        } else {
+            alert(`Lỗi: ${data.message}`);
+        }
+    } catch (error) {
+        console.error("Lỗi khi duyệt sản phẩm:", error);
+        alert("Không thể duyệt sản phẩm. Hãy kiểm tra lại kết nối và private key!");
+    }
+}
+
 
 document.addEventListener("DOMContentLoaded", loadProducts);
