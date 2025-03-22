@@ -1,11 +1,7 @@
 import express from "express"
-
 import  { updateProduct,addSanPham, capNhatLuotXem, getSanPhamById, getSanPhamByIdCH, getSanPhamByIdDM, getTatCaSanPham, getTatCaSanPhamDM, goiYTimKiem, laySanPhamvoiIdCuaHang, timKiem, getPendingProduct, updateProductStatus, deleteProduct, getProductInfo, themSanPhamVaoBlockChain, capNhatTrangThaiSanPham, themQuyenDuyetSP, getProductsByCategory, getTopDeal, getTopSelling, getProductSuggestions, getProducTrelated, getPendingProductFromCertifier, duyetSanPhamTrenBlockChain } from "../controllers/sanpham.controller.js"
-
-
 import { protectRoute } from "../middleware/protectRoute.js"
 import { protectAdmin } from "../middleware/protectAdmin.js"
-
 const router = express.Router()
 
 router.post("/them", protectRoute, addSanPham)
@@ -17,9 +13,7 @@ router.get("/lay/theocuahang",protectRoute, laySanPhamvoiIdCuaHang)
 router.get("/lay/:id",protectRoute, getSanPhamById)
 router.get("/laytheocuahang/:id",protectRoute, getSanPhamByIdCH)
 
-
 router.get("/search/goiy",goiYTimKiem)
-
 
 router.put("/capnhat/luotxem/:id",capNhatLuotXem)
 router.get("/search/timkiem",timKiem)
@@ -29,8 +23,6 @@ router.get("/lay/danhmuc/sp",getSanPhamByIdDM)
 router.get("/lay/cuahang/sp", getSanPhamByIdCH)
 
 router.patch("/sua/:id", updateProduct);
-
-
 
 router.get("/get/pending", getPendingProduct);
 router.get("/get/:certifierAddress", getPendingProductFromCertifier);
