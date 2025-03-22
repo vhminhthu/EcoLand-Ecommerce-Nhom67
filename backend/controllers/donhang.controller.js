@@ -165,6 +165,8 @@ export const layDonHangTheoCuaHang = async (req, res) => {
         const tong = await Donhang.countDocuments(filterStage);
         const tongPage = Math.ceil(tong / limit);
 
+        const soLuongChoXacNhan = await Donhang.countDocuments({ cuaHangId, trangThai: "Chờ xác nhận" });
+
         const donHangs = await Donhang.find(filterStage)
             .sort({ ngayDat: -1 })
             .skip((page - 1) * limit)
@@ -175,6 +177,7 @@ export const layDonHangTheoCuaHang = async (req, res) => {
             message: "Lấy danh sách đơn hàng thành công!",
             tongDonHang: tong,
             tongPage,
+            soLuongChoXacNhan,
             donHangs
         });
     } catch (error) {

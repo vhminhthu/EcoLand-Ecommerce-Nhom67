@@ -1,29 +1,21 @@
 import { ethers } from "ethers";
 import abi from "../abi.js";
+import dotenv from "dotenv";
+dotenv.config();
 
-const provider = new ethers.JsonRpcProvider("http://127.0.0.1:7545");
+const provider = new ethers.JsonRpcProvider(process.env.INFURA_API_URL);
 const contractAddress = process.env.CONTRACT_ADDRESS;
 const contractABI = abi;
 const contract = new ethers.Contract(contractAddress, contractABI, provider);
 
-export const getAllAdmin = async (req, res) => {
+export const getInspector = async (req, res) => {
     try {
-        const admins = await contract.getAdmins();
-        console.log("Danh sách tất cả các admin", admins);
-        res.status(201).json(admins);
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: "Lỗi khi lấy dữ liệu admin" });
-    }
-};
-
-export const getAllInspector = async (req, res) => {
-    try {
-        const inspectors = await contract.getInspectors();
-        const result = inspectors.map(inspector => {
-            return convertBigIntToString(inspector);
-        });
-        console.log("Danh sách tất cả các kiểm duyệt", result);
+        const { address } = req.query;
+        if (!address) {
+            return res.status(400).json({ message: "Address is required" });
+        }
+        const inspector = await contract.inspectors(address);
+        const result = convertBigIntToString(inspector);
         res.status(201).json(result);
     } catch (error) {
         console.error(error);
@@ -31,16 +23,32 @@ export const getAllInspector = async (req, res) => {
     }
 };
 
-export const getAllStore = async (req, res) => {
+export const getCertifier = async (req, res) => {
     try {
-        const stores = await contract.getAllStores();
-        const result = stores.map(store => {
-            return convertBigIntToString(store);
-        });
-        console.log("Danh sách tất cả các cửa hàng", result);
+        const { address } = req.query;
+        if (!address) {
+            return res.status(400).json({ message: "Address is required" });
+        }
+        const certifier = await contract.certifiers(address);
+        const result = convertBigIntToString(certifier);
         res.status(201).json(result);
     } catch (error) {
         console.error(error);
+        res.status(500).json({ message: "Lỗi khi lấy dữ liệu certifier" });
+    }
+};
+
+export const getStore = async (req, res) => {
+    try {
+        const { id } = req.query;
+        if (!id) {
+            return res.status(400).json({ message: "ID is required" });
+        }
+        const store = await contract.stores(id);
+        const result = convertBigIntToString(store);
+        res.status(200).json(result);
+    } catch (error) {
+        console.error("Error fetching stores:", error);
         res.status(500).json({ message: "Lỗi khi lấy dữ liệu store" });
     }
 };
@@ -53,17 +61,6 @@ export const getAllProduct = async (req, res) => {
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: "Lỗi khi lấy dữ liệu product" });
-    }
-};
-
-export const getAllProductById = async (req, res) => {
-    const { productId } = req.params;
-    try {
-        const productDetails = await contract.methods.getProductDetails(productId).call();
-        console.log("Thông tin sản phẩm", productDetails);
-        res.status(201).json(productDetails);
-    } catch (error) {
-        res.status(500).json({ error: error.message });
     }
 };
 
