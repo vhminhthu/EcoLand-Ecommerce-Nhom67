@@ -106,7 +106,7 @@ export const layThanhtoan = async (req, res, next) => {
                 idDonHang: donhangId,
                 soTien: vnp_Params['vnp_Amount'] / 100,
                 dongTien: 'Cộng',
-                loaiGiaoDich: 'VNPAY',
+                loaiGiaoDich: 'Thanh toán',
                 thongTinGiaoDich
             });
 

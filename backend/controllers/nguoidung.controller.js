@@ -114,14 +114,10 @@ export const capNhat = async (req, res) => {
 export const layNguoiDungQuaId = async (req, res) => {
     try {
         const { id } = req.params;
-
-     
         const nguoidung = await Nguoidung.findById(id).select("-matKhau");
-
         if (!nguoidung) {
             return res.status(404).json({ message: "Không tìm thấy người dùng" });
         }
-
         return res.status(200).json({ nguoidung });
     } catch (error) {
         console.error("Lỗi layNguoiDungQuaId controller:", error.message);

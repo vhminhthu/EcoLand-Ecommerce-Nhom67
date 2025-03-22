@@ -113,21 +113,16 @@ export const duyetCuaHang = async (req, res) => {
 
         const cuaHang = await CuaHang.findById(idCuaHang);
         if (!cuaHang) {
-            return res.status(403).json({ message: "Cửa hàng không tồn tại!" });
+            return res.status(404).json({ message: "Cửa hàng không tồn tại!" });
         }
 
         const admin = await Admin.findById(adminId);
         if (!admin) {
-            return res.status(403).json({ message: "Không tìm thấy admin!" });
+            return res.status(405).json({ message: "Không tìm thấy admin!" });
         }
-        if (admin.phanQuyen !== "INSPECTOR") {
-            if (trangThai === "Đã xác nhận") {
-                return res.status(403).json({ message: "Bạn không có quyền duyệt cửa hàng!" });
-            }
-            if (trangThai === "Từ chối") {
-                return res.status(403).json({ message: "Bạn không có quyền từ chối cửa hàng!" });
-            }
-        }
+        if (!admin.phanQuyen.includes("INSPECTOR") && ["Đã xác nhận", "Từ chối"].includes(trangThai)) {
+            return res.status(403).json({ message: `Bạn không có quyền thay đổi trạng thái thành ${trangThai}!` });
+        }        
 
         const signer = new ethers.Wallet(matKhau, provider);
         const contract = new ethers.Contract(contractAddress, contractABI, signer);
@@ -136,11 +131,10 @@ export const duyetCuaHang = async (req, res) => {
             try {
                 console.log("Đang gửi giao dịch tạo cửa hàng lên Blockchain...");
                 const tx = await contract.createStore(
-                    idCuaHang,
+                    idCuaHang.toString(),
                     cuaHang.tenCH,
                     cuaHang.cidChungNhan,
-                    cuaHang.diaChiCH,
-                    { gasLimit: estimatedGas.mul(120).div(100), gasPrice: ethers.parseUnits("5", "gwei") }
+                    cuaHang.diaChiCH
                 );
                 console.log("Giao dịch đã gửi:", tx.hash);
                 await tx.wait();
@@ -151,7 +145,7 @@ export const duyetCuaHang = async (req, res) => {
             }
         }
 
-        cuaHang.trangThai = trangThai;
+        cuaHang.trangThaiCH = trangThai;
         cuaHang.nguyenNhanTC = trangThai === "Từ chối" ? nguyenNhanTC : "Không";
         await cuaHang.save();
 

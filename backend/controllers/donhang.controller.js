@@ -233,7 +233,7 @@ export const capNhatTrangThaiDonHang = async (req, res) => {
 
             nguoiDung.soDuTien += donHang.tongTienHang;
             nguoiDung.nguonTien.push({
-                loaiTien: "cộng",
+                loaiTien: "Cộng",
                 soTien: donHang.tongTienHang,
                 ngay: Date.now(),
                 noidung: `Thanh toán của đơn hàng ${donHang.maDonHang}`,

@@ -12,21 +12,22 @@ const nguoidungSchema = new mongoose.Schema(
         dsTheoDoi: [{ type: mongoose.Schema.Types.ObjectId, ref: "Nguoidung", default: [] }],
         dsNguoiTheoDoi: [{ type: mongoose.Schema.Types.ObjectId, ref: "Nguoidung", default: [] }],
         dsYeuThich: [{ type: mongoose.Schema.Types.ObjectId, ref: "Sanpham", default: [] }],
+        dsGiaoDich: [{ type: mongoose.Schema.Types.ObjectId, ref: "Giaodich", default: [] }], //Với hệ thống
         soDuTien: { type: Number, default: 0 },
-        nguonTien: [
+        nguonTien: [ //Của người mua
             { 
-                loaiTien: { type: String,  enum: ["cộng", "trừ"], },
+                loaiTien: { type: String,  enum: ["Cộng", "Trừ"], },
                 soTien: { type: Number },
                 ngay: { type: Date, default: Date.now  }, 
                 noidung: { type: String },
             }
         ],
         thongTinGiaoHang: 
-            {
-                hoVaTen: { type: String },
-                sdt: { type: String },
-                diaChi: { type: String },
-            },
+        {
+            hoVaTen: { type: String },
+            sdt: { type: String },
+            diaChi: { type: String },
+        },
         
     },
     {

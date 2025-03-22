@@ -101,7 +101,12 @@ export const login = async (req,res)=>{
  
 export const getMe = async(req,res)=>{
     try{
-        const nguoidung = await Nguoidung.findById(req.nguoidung._id).select("-matKhau").populate("dsYeuThich", "_id, idCH, dsAnhSP, phanLoai, tenSP, nguonGoc, tongSoSao, tongSoDanhGia")
+        const nguoidung = await Nguoidung.findById(req.nguoidung._id).select("-matKhau")
+        .populate("dsYeuThich", "_id, idCH, dsAnhSP, phanLoai, tenSP, nguonGoc, tongSoSao, tongSoDanhGia")            
+        .populate({
+            path: "nguonTien",
+            options: { sort: { createdAt: -1 } }
+        });
         res.status(200).json(nguoidung)
     }catch(error){
         console.log("Lỗi getMe controller",error.message)
