@@ -34,14 +34,13 @@ const sanphamSchema = new mongoose.Schema(
         loaiTrong: { type: String },  //
 
         ngayTH: { type: Date}, 
-        VatTuHTCT: { type: String}, 
 
         ngayDG: { type: Date}, 
         hanSX: { type: Date}, 
 
         batchId: { type: String },
         nguyenNhanTC:{type: String},
-
+        certifier:{type: String}
     },
     {
         timestamps: true

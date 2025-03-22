@@ -41,17 +41,17 @@ const Product = () => {
  
   const handleUpdateStatus = async (productId, trangThai, nguyenNhanTC = "Không") => {
     try {
-        const matKhau = prompt("Vui lòng nhập mật khẩu để xác nhận:");
+        const privateKey = prompt("Vui lòng nhập private key để xác nhận:");
 
-        if (!matKhau) {
-            alert("Bạn phải nhập mật khẩu để cập nhật trạng thái!");
+        if (!privateKey) {
+            alert("Bạn phải nhập private key để cập nhật trạng thái!");
             return;
         }
 
         const response = await axios.patch(`/api/sanpham/update-status/${productId}`, {
             trangThai,
             nguyenNhanTC,
-            matKhau,
+            privateKey,
         });
 
         alert(response.data.message);
@@ -124,7 +124,6 @@ const Product = () => {
                     <div className="flex items-start gap-20">
                       <img src={product.dsAnhSP} alt={product.name} className="!w-32 !h-32 !ml-10 rounded-md border" />
                       <div>
-                        <p><strong className="text-[#075310]">Vật tư HTCT:</strong> {product.VatTuHTCT}</p>
                         <p><strong className="text-[#075310]">Batch ID:</strong> {product.batchId}</p>
                         <p><strong className="text-[#075310]">Loại sản phẩm:</strong> {product.tenDM}</p>
                         <p><strong className="text-[#075310]">Nhà cung cấp:</strong> {product.tenNguoiDung}</p>

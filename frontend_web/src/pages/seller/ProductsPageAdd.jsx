@@ -15,11 +15,11 @@ function ProductsPageAdd() {
         certify_image:null,
         ngaySX: '',       
         ngayTH: '',       
-        VatTuHTCT: '',    
         batchId: '', 
         ngayDG:'',
         hanSX:''  ,
         loaiTrong: '',
+        certifier:'',
         phanLoai: [
             { idPL: "", tenLoai: "", giaLoai: "", donVi: "", khuyenMai: "", khoHang: "" }
         ],
@@ -69,6 +69,32 @@ function ProductsPageAdd() {
         setChonLoai(false);
     };
 
+    const [chonCertifier, setChonCertifier] = useState(false);
+    const [certifiers, setCertifiers] = useState([]);
+    const [ setTenCertifier] = useState("");
+
+        useEffect(() => {
+            const fetchCertifiers = async () => {
+                try {
+                    const response = await axios.get("/api/admin/lay/certifier");
+                    setCertifiers(response.data);
+                } catch (error) {
+                    console.error("Lỗi khi lấy danh sách certifier:", error);
+                }
+            };
+
+            fetchCertifiers();
+        }, []);
+
+
+        const handleCertifierSelect = (certifier) => {
+            setFormData(prev => ({ ...prev, certifier:  certifier.tenAdmin}));
+            setTenCertifier(certifier.tenAdmin);
+            setChonCertifier(false);
+        };
+        
+
+    
  
 
 
@@ -307,6 +333,38 @@ function ProductsPageAdd() {
                                         </button>
                                     </div>
                                 )}
+                                 <div className="flex gap-5 items-center mt-10">
+                                    <p>Certifier</p>
+                                    <div className="relative w-full">
+                                        <button
+                                            className="cursor-pointer relative bg-gray-100 hover:bg-gray-200 w-full h-12 rounded-lg flex gap-2 items-center justify-between px-5"
+                                            onClick={() => setChonCertifier(!chonCertifier)}
+                                        >
+                                           {formData.certifier || "Chọn certifier"}
+                                            <IoIosArrowDropdownCircle />
+                                        </button>
+
+                                        {chonCertifier && (
+                                            <div className="absolute left-0 w-full bg-white shadow-lg rounded-lg p-2 z-50">
+                                                <ul>
+                                                    {certifiers.length > 0 ? (
+                                                        certifiers.map((certifier, index) => (
+                                                            <li
+                                                                key={index}
+                                                                className="text-black border-b border-gray-200 hover:bg-gray-100 p-2 cursor-pointer"
+                                                                onClick={() => handleCertifierSelect(certifier)}
+                                                            >
+                                                                {certifier.tenAdmin}
+                                                            </li>
+                                                        ))
+                                                    ) : (
+                                                        <li className="text-gray-500 p-2">Không có certifier nào</li>
+                                                    )}
+                                                </ul>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
                         </div>
                         <div className="bg-slate-50 p-5 mt-5">
                             <p className="font-medium text-xl mb-3">Thông tin chi tiết</p>
@@ -364,15 +422,7 @@ function ProductsPageAdd() {
                                 value={formData.hanSX}
                                 onChange={(e) => setFormData(prev => ({ ...prev, hanSX: e.target.value }))}
                             />
-                               <input
-                                type="text"
-                                name="VatTuHTCT"
-                                placeholder="Vật tư hỗ trợ canh tác vd: Thuốc-KL01"
-                                required
-                                className="mt-2 mb-5 bg-gray-100 w-full p-2 rounded-lg outline-none"
-                                value={formData.VatTuHTCT}
-                                onChange={(e) => setFormData(prev => ({ ...prev, VatTuHTCT: e.target.value }))}
-                            />
+                            
                         </div>
                         
                     </div>

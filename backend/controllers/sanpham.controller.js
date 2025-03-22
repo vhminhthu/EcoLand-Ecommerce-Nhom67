@@ -14,77 +14,95 @@ import { ethers } from "ethers";
 import abi from "../abi.js";
 import dotenv from "dotenv";
 import Sanpham from "../models/sanpham.model.js";
+
 dotenv.config();
 
-const provider = new ethers.JsonRpcProvider("http://127.0.0.1:7545");
-const adminPrivateKey = process.env.ADMIN_PRIVATE_KEY;
-const signer = new ethers.Wallet(adminPrivateKey, provider);
-
+const provider = new ethers.JsonRpcProvider(process.env.INFURA_API_URL);
 const contractAddress = process.env.CONTRACT_ADDRESS;
+console.log("Contract Address:", process.env.CONTRACT_ADDRESS);
+
 const contractABI = abi; 
-const contract = new ethers.Contract(contractAddress, contractABI, signer);
+
+
 
 export const themSanPhamVaoBlockChain = async (req, res) => {
     try {
-        const adminId = req.admin._id;
-        const { trangThai, nguyenNhanTC, matKhau } = req.body;
+        const { trangThai, nguyenNhanTC, privateKey } = req.body;
         const { productId } = req.params;
+          const admin = await Admin.findById(req.admin._id)
 
+
+        
+            if (!admin || !admin.phanQuyen.includes("INSPECTOR")) {
+              return res.status(403).json({ message: "Bạn không có quyền duyệt sản phẩm" });
+          }
+        
         const product = await SanPham.findById(productId).populate("idDM");
         if (!product) {
             return res.status(404).json({ message: "Sản phẩm không tồn tại!" });
         }
-
-        const admin = await Admin.findById(adminId);
-        if (!admin) {
-            return res.status(403).json({ message: "Không tìm thấy admin!" });
+        
+        if (!privateKey || privateKey.trim() === "") {
+            return res.status(403).json({ message: "Private Key không hợp lệ hoặc trống!" });
         }
-
-        // Giải mã private key của admin
-        // let privateKey;
-        // try {
-        //     privateKey = CryptoJS.AES.decrypt(admin.encryptedPrivateKey, matKhau).toString(CryptoJS.enc.Utf8);
-        // } catch (error) {
-        //     return res.status(403).json({ message: "Mật khẩu không hợp lệ!" });
-        // }
-
-        // if (!privateKey || privateKey.trim() === "") {
-        //     return res.status(403).json({ message: "Private Key không hợp lệ hoặc trống!" });
-        // }
-
-        console.log("Signer được khởi tạo:", signer.address);
-        console.log("Contract được khởi tạo tại:", contractAddress);
-
+        
+        let signer;
+        try {
+            signer = new ethers.Wallet(privateKey, provider);
+        } catch (error) {
+            return res.status(403).json({ message: "Private Key không hợp lệ!" });
+        }
+        
+        console.log("Signer address:", signer.address);
+        
+        const contract = new ethers.Contract(contractAddress, contractABI, signer);
+        console.log(contractAddress)
+        
         if (trangThai === "Chờ duyệt") {
             try {
                 console.log("Đang gửi giao dịch tạo sản phẩm lên Blockchain...");
-                
-                const productInput = {
-                    productId: productId.toString() || "Unknown_Product",
-                    productName: product.tenSP || "Unknown_Product_Name",
-                    storeId: product.idCH ? product.idCH.toString() : "Unknown_Farm",
-                };
 
-                console.log("Trước khi truyền vào contract:");
-                console.log("productId:", productInput.productId);
+                // const productInput = {
+                //                         productId: productId.toString() || "Unknown_Product",
+                //                         productName: product.tenSP || "Unknown_Product_Name",
+                //                         storeId: product.idCH ? product.idCH.toString() : "Unknown_Farm",
+                //                         seedType: product.loaiTrong || "Unknown_Store",
+                //                         sowingDate:  product.ngaySX ? new Date(product.ngaySX).toISOString().split("T")[0] : "Unknown_Sowing_Date",
+                //                         harvestingDate: product.ngayTH ? new Date(product.ngayTH).toISOString().split("T")[0] : "Unknown_Harvest_Date",
+                //                         packagingDate:  product.ngayDG ? new Date(product.ngayDG).toISOString().split("T")[0] : "Unknown_Packaging_Date",
+                //                         expirationDate: product.hanSX ? new Date(product.hanSX).toISOString().split("T")[0] : "Unknown_Expiration_Date",
+                //                         certifierAddress:  "0xdFe60112686a7B405819662596543d14078CA7ce",
+                //                         certifierImageCid:  "QmQnoMiDqovtoNBEZdh3b1g3yXPDutB68Qce6rt8T4yo5W"
+                //                     };
                 
                 const tx = await contract.createProduct(
-                    productInput,
-                    { gasLimit: 500000, gasPrice: ethers.parseUnits("5", "gwei") }
+                    productId.toString(),
+                    product.tenSP || "Unknown_Product_Name",
+                    product.idCH ? product.idCH.toString() : "Unknown_Store",
+                    product.loaiTrong || "Unknown_Store",
+                    product.ngaySX ? new Date(product.ngaySX).toISOString().split("T")[0] : "Unknown_Sowing_Date",
+                    product.ngayTH ? new Date(product.ngayTH).toISOString().split("T")[0] : "Unknown_Harvest_Date",
+                    product.ngayDG ? new Date(product.ngayDG).toISOString().split("T")[0] : "Unknown_Packaging_Date",
+                    product.hanSX ? new Date(product.hanSX).toISOString().split("T")[0] : "Unknown_Expiration_Date",
+                    "0xdFe60112686a7B405819662596543d14078CA7ce",
+                    "QmQnoMiDqovtoNBEZdh3b1g3yXPDutB68Qce6rt8T4yo5W",
+
                 );
+                
+                
                 console.log("Giao dịch đã gửi:", tx.hash);
                 await tx.wait();
-                console.log("Giao dịch hoàn tất trên blockchain!");                
+                console.log("Giao dịch hoàn tất trên blockchain!");
             } catch (err) {
                 console.error("Lỗi khi gửi giao dịch:", err);
                 return res.status(500).json({ message: "Lỗi khi gửi giao dịch lên blockchain", error: err.message });
             }
         }
-
+        
         if (trangThai === "Từ chối" && nguyenNhanTC) {
             product.nguyenNhanTC = nguyenNhanTC;
         }
-
+        
         product.trangThai = trangThai;
         await product.save();
 
@@ -94,6 +112,8 @@ export const themSanPhamVaoBlockChain = async (req, res) => {
         return res.status(500).json({ message: "Lỗi máy chủ", error: error.message });
     }
 };
+
+
 
 export const themQuyenDuyetSP = async (req, res) => {
     const { addressNguoiDuyet, idNguoiDuyet, matKhau } = req.body;
@@ -246,10 +266,10 @@ export const addSanPham = async (req, res) => {
         const idND = req.nguoidung._id.toString();
         const { 
             tenSP, moTaSP, idDM, nguonGoc, phanLoai, image, certify_image,
-            ngaySX, ngayTH, VatTuHTCT, batchId,loaiTrong,ngayDG,hanSX,
+            ngaySX, ngayTH, batchId,loaiTrong,ngayDG,hanSX,certifier
         } = req.body;
 
-        if (!tenSP || !moTaSP || !idDM || !nguonGoc || !phanLoai || !ngaySX || !ngayTH || !VatTuHTCT || !batchId) {
+        if (!tenSP || !moTaSP || !idDM || !nguonGoc || !phanLoai || !ngaySX || !ngayTH || !batchId|| !certifier) {
             return res.status(400).json({ error: "Vui lòng nhập đầy đủ thông tin!" });
         }
 
@@ -291,12 +311,12 @@ export const addSanPham = async (req, res) => {
             dsAnhSP: anhSPUrl,
             ngaySX,
             ngayTH,
-            VatTuHTCT,
             batchId,
             loaiTrong,
             hanSX,
             ngayDG,
             certify_image: cidChungNhan,
+            certifier
         });
 
         const danhMuc = await DanhMuc.findById(idDM);
@@ -628,7 +648,6 @@ export const getPendingProduct = async (req, res) => {
                     dsAnhSP: sp.dsAnhSP,
                     certify_image: sp.certify_image,
                     ngayTH: formatDate(sp.ngayTH),
-                    VatTuHTCT: sp.VatTuHTCT,
                     batchId: sp.batchId,
                     tenDM: sp.idDM?.tenDM || "Không xác định",
                     phanLoai: sp.phanLoai?.map(pl => ({

@@ -63,74 +63,10 @@ export const createAdmin = async (req, res) => {
     
         tx = await contract.addInspector(address, tenAdmin);
         await tx.wait();
-        console.log(`Đã thêm CERTIFIER vào blockchain:`, tx.hash);
+        console.log(`Đã thêm INSPECTOR vào blockchain:`, tx.hash);
 
         res.status(201).json({ message: `Admin ${tenAdmin} (${phanQuyen}) đã được tạo và ghi vào blockchain.` });
         emailTemplate = `
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <meta charset="UTF-8">
-            <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <title>Invite to Management Ecoland System</title>
-            <style>
-                body {
-                    font-family: Arial, sans-serif;
-                    background-color: #f4f4f4;
-                    margin: 0;
-                    padding: 0;
-                }
-                .container {
-                    max-width: 600px;
-                    margin: 20px auto;
-                    background: #ffffff;
-                    padding: 20px;
-                    border-radius: 8px;
-                    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-                }
-                .header {
-                    text-align: center;
-                    padding: 10px 0;
-                    border-bottom: 2px solid #4CAF50;
-                }
-                .header img {
-                    max-width: 120px;
-                    border-radius: 50%;
-                }
-                .content {
-                    padding: 20px;
-                    text-align: center;
-                }
-                .content h2 {
-                    color: #333;
-                }
-                .password-box {
-                    background: #f9f9f9;
-                    padding: 15px;
-                    font-size: 18px;
-                    font-weight: bold;
-                    color: #4CAF50;
-                    border-radius: 5px;
-                    display: inline-block;
-                    margin-top: 10px;
-                }
-                .footer {
-                    text-align: center;
-                    padding: 15px;
-                    font-size: 12px;
-                    color: #777;
-                }
-                .footer a {
-                    color: #4CAF50;
-                    text-decoration: none;
-                }
-            </style>
-        </head>
-        <body>
-            <div class="container">
-                <div class="header">
-                    <img src="https://i.pinimg.com/736x/9f/93/ae/9f93ae8f39417cd575e735bf5f1b1505.jpg" alt="Company Logo">
-                </div>
                 <div class="content">
                     <h2>Xin chào, ${tenAdmin}</h2>
                     <p>Hệ thống của chúng tôi đã cấp lại mật khẩu mới cho bạn.</p>
@@ -141,10 +77,7 @@ export const createAdmin = async (req, res) => {
                 <div class="footer">
                     <p>Nếu bạn có thắc mắc khác, vui lòng liên hệ để hỗ trợ.</p>
                     <p>&copy; 2025 Ecoland. All rights reserved.</p>
-                </div>
-            </div>
-        </body>
-        </html>`;
+                </div>`;
     } else if (phanQuyen === "CERTIFIER") {
        
         tx = await contract.addCertifier(address, tenAdmin);
@@ -176,6 +109,16 @@ export const createAdmin = async (req, res) => {
   }
 };
 
+
+export const getCertifiers = async (req, res) => {
+  try {
+      const certifiers = await Admin.find({ phanQuyen: { $in: ["CERTIFIER"] } }).select("tenAdmin");
+      res.status(200).json(certifiers);
+  } catch (error) {
+      console.error("Lỗi khi lấy danh sách certifier:", error);
+      res.status(500).json({ message: "Lỗi server!", error: error.message });
+  }
+};
 
 
 
@@ -226,6 +169,51 @@ export const loginAdmin = async (req, res) => {
 
   } catch (error) {
     console.log("Lỗi loginAdmin:", error);
+    res.status(500).json({ error: "Lỗi máy chủ" });
+  }
+};
+
+
+export const loginCertifier = async (req, res) => {
+  try {
+    const { tenAdmin, address } = req.body;
+
+  
+    const admin = await Admin.findOne({ tenAdmin, address }).lean();
+
+    if (!admin) {
+      return res.status(400).json({ error: "Tên đăng nhập hoặc địa chỉ không đúng" });
+    }
+
+   
+    if (admin.trangThai !== "active") {
+      return res.status(403).json({ error: "Tài khoản của bạn đã bị vô hiệu hóa" });
+    }
+
+
+    const rolesArray = Array.isArray(admin.phanQuyen) ? admin.phanQuyen : [admin.phanQuyen];
+    const formattedRoles = rolesArray.map(role => String(role).toUpperCase());
+
+    console.log("Quyền admin sau khi xử lý:", formattedRoles);
+
+
+    const validAdminRoles = ["CERTIFIER"];
+    if (!formattedRoles.some(role => validAdminRoles.includes(role))) {
+      return res.status(403).json({ error: "Bạn không có quyền truy cập" });
+    }
+
+    // Sinh token và trả về thông tin
+    generateTokenAM(admin._id, formattedRoles, res);
+
+    res.status(200).json({
+      tenAdmin: admin.tenAdmin,
+      address: admin.address,
+      phanQuyen: formattedRoles,
+      _id: admin._id,
+    });
+
+  } catch (error) {
+    console.error("Lỗi loginCertifier:", error);
     res.status(500).json({ error: "Lỗi máy chủ" });
   }
 };
