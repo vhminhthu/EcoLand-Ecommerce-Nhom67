@@ -112,7 +112,7 @@ export const createAdmin = async (req, res) => {
 
 export const getCertifiers = async (req, res) => {
   try {
-      const certifiers = await Admin.find({ phanQuyen: { $in: ["CERTIFIER"] } }).select("tenAdmin");
+      const certifiers = await Admin.find({ phanQuyen: { $in: ["CERTIFIER"] } });
       res.status(200).json(certifiers);
   } catch (error) {
       console.error("Lỗi khi lấy danh sách certifier:", error);

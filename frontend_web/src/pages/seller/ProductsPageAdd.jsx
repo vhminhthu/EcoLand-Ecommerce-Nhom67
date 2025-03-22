@@ -71,7 +71,8 @@ function ProductsPageAdd() {
 
     const [chonCertifier, setChonCertifier] = useState(false);
     const [certifiers, setCertifiers] = useState([]);
-    const [ setTenCertifier] = useState("");
+    const [tenCertifier, setTenCertifier] = useState("Chọn certifier");
+
 
         useEffect(() => {
             const fetchCertifiers = async () => {
@@ -88,10 +89,11 @@ function ProductsPageAdd() {
 
 
         const handleCertifierSelect = (certifier) => {
-            setFormData(prev => ({ ...prev, certifier:  certifier.tenAdmin}));
-            setTenCertifier(certifier.tenAdmin);
+            setFormData(prev => ({ ...prev, certifier: certifier.address }));
+            setTenCertifier(certifier.tenAdmin); 
             setChonCertifier(false);
         };
+        
         
 
     
@@ -336,14 +338,13 @@ function ProductsPageAdd() {
                                  <div className="flex gap-5 items-center mt-10">
                                     <p>Certifier</p>
                                     <div className="relative w-full">
-                                        <button
+                                    <button
                                             className="cursor-pointer relative bg-gray-100 hover:bg-gray-200 w-full h-12 rounded-lg flex gap-2 items-center justify-between px-5"
                                             onClick={() => setChonCertifier(!chonCertifier)}
                                         >
-                                           {formData.certifier || "Chọn certifier"}
+                                            {tenCertifier}
                                             <IoIosArrowDropdownCircle />
                                         </button>
-
                                         {chonCertifier && (
                                             <div className="absolute left-0 w-full bg-white shadow-lg rounded-lg p-2 z-50">
                                                 <ul>

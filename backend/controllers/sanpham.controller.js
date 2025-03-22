@@ -23,6 +23,59 @@ console.log("Contract Address:", process.env.CONTRACT_ADDRESS);
 
 const contractABI = abi; 
 
+export const duyetSanPhamTrenBlockChain = async (req, res) => {
+    try {
+        const { privateKey } = req.body;
+        const { productId } = req.params;
+
+        // Kiểm tra quyền duyệt sản phẩm
+        // const admin = await Admin.findById(req.admin._id);
+        // if (!admin || !admin.phanQuyen.includes("CERTIFIER")) {
+        //     return res.status(403).json({ message: "Bạn không có quyền duyệt sản phẩm" });
+        // }
+
+        // Kiểm tra sản phẩm có tồn tại không
+        const product = await SanPham.findById(productId);
+        if (!product) {
+            return res.status(404).json({ message: "Sản phẩm không tồn tại!" });
+        }
+
+        if (!privateKey || privateKey.trim() === "") {
+            return res.status(400).json({ message: "Private Key không hợp lệ hoặc trống!" });
+        }
+
+        let signer;
+        try {
+            signer = new ethers.Wallet(privateKey, provider);
+        } catch (error) {
+            return res.status(400).json({ message: "Private Key không hợp lệ!" });
+        }
+
+        console.log("Signer address:", signer.address);
+        const contract = new ethers.Contract(contractAddress, contractABI, signer);
+
+        try {
+            console.log("Đang gửi giao dịch duyệt sản phẩm lên Blockchain...");
+
+            const tx = await contract.certifyProduct(productId.toString());
+            console.log("Giao dịch đã gửi:", tx.hash);
+            await tx.wait();
+            console.log("Duyệt sản phẩm thành công trên blockchain!");
+
+       
+            product.trangThai = "approved";
+            await product.save();
+
+            return res.json({ message: "Sản phẩm đã được duyệt!", txHash: tx.hash });
+        } catch (err) {
+            console.error("Lỗi khi gửi giao dịch:", err);
+            return res.status(500).json({ message: "Lỗi khi duyệt sản phẩm trên blockchain", error: err.message });
+        }
+    } catch (error) {
+        console.error("Lỗi hệ thống:", error);
+        return res.status(500).json({ message: "Lỗi máy chủ", error: error.message });
+    }
+};
 
 
 export const themSanPhamVaoBlockChain = async (req, res) => {
@@ -62,19 +115,6 @@ export const themSanPhamVaoBlockChain = async (req, res) => {
             try {
                 console.log("Đang gửi giao dịch tạo sản phẩm lên Blockchain...");
 
-                // const productInput = {
-                //                         productId: productId.toString() || "Unknown_Product",
-                //                         productName: product.tenSP || "Unknown_Product_Name",
-                //                         storeId: product.idCH ? product.idCH.toString() : "Unknown_Farm",
-                //                         seedType: product.loaiTrong || "Unknown_Store",
-                //                         sowingDate:  product.ngaySX ? new Date(product.ngaySX).toISOString().split("T")[0] : "Unknown_Sowing_Date",
-                //                         harvestingDate: product.ngayTH ? new Date(product.ngayTH).toISOString().split("T")[0] : "Unknown_Harvest_Date",
-                //                         packagingDate:  product.ngayDG ? new Date(product.ngayDG).toISOString().split("T")[0] : "Unknown_Packaging_Date",
-                //                         expirationDate: product.hanSX ? new Date(product.hanSX).toISOString().split("T")[0] : "Unknown_Expiration_Date",
-                //                         certifierAddress:  "0xdFe60112686a7B405819662596543d14078CA7ce",
-                //                         certifierImageCid:  "QmQnoMiDqovtoNBEZdh3b1g3yXPDutB68Qce6rt8T4yo5W"
-                //                     };
-                
                 const tx = await contract.createProduct(
                     productId.toString(),
                     product.tenSP || "Unknown_Product_Name",
@@ -84,8 +124,8 @@ export const themSanPhamVaoBlockChain = async (req, res) => {
                     product.ngayTH ? new Date(product.ngayTH).toISOString().split("T")[0] : "Unknown_Harvest_Date",
                     product.ngayDG ? new Date(product.ngayDG).toISOString().split("T")[0] : "Unknown_Packaging_Date",
                     product.hanSX ? new Date(product.hanSX).toISOString().split("T")[0] : "Unknown_Expiration_Date",
-                    "0xdFe60112686a7B405819662596543d14078CA7ce",
-                    "QmQnoMiDqovtoNBEZdh3b1g3yXPDutB68Qce6rt8T4yo5W",
+                    product.certifier || "unknown",
+                    product.certify_image  || "Unknown_Image_Name",
 
                 );
                 
@@ -631,12 +671,17 @@ export const getPendingProduct = async (req, res) => {
                 if (!date) return null;
                 return new Date(date).toLocaleDateString("vi-VN"); 
             };
+
+           
+
         const results = await Promise.all(
             sanPhams.map(async (sp) => {
                 const seller = sp.idCH?.idNguoiDung
                     ? await NguoiDung.findById(sp.idCH.idNguoiDung).select("tenNguoiDung").lean()
                     : null;
-
+                const certifierInfo = sp.certifier
+                    ? await Admin.findOne({ address: sp.certifier }).select("tenAdmin").lean()
+                    : null;
                 return {
                     _id: sp._id.toString(), 
                     tenNguoiDung: seller?.tenNguoiDung || "Không xác định",
@@ -647,6 +692,7 @@ export const getPendingProduct = async (req, res) => {
                     ngaySX: formatDate(sp.ngaySX),
                     dsAnhSP: sp.dsAnhSP,
                     certify_image: sp.certify_image,
+                    certifier: certifierInfo?.tenAdmin || "Không xác định", 
                     ngayTH: formatDate(sp.ngayTH),
                     batchId: sp.batchId,
                     tenDM: sp.idDM?.tenDM || "Không xác định",
@@ -668,6 +714,60 @@ export const getPendingProduct = async (req, res) => {
         res.status(500).json({ message: "Lỗi máy chủ", error: error.message });
     }
 };
+
+
+
+
+const contract = new ethers.Contract(contractAddress, abi, provider);
+
+export const getPendingProductFromCertifier = async (req, res) => {
+    try {
+        const { certifierAddress } = req.params;
+        console.log("Received certifierAddress:", certifierAddress);
+
+        if (!certifierAddress ||  !ethers.isAddress(certifierAddress)) {
+            return res.status(400).json({ message: "Địa chỉ certifier không hợp lệ" });
+        }
+
+        // Gọi smart contract để lấy danh sách sản phẩm pending
+        const productDetails = await contract.getProductsByCertifier(certifierAddress);
+
+        if (!productDetails.length) {
+            return res.status(200).json([]);
+        }
+
+        // Chuyển đổi dữ liệu sang định dạng mong muốn
+        const results = productDetails.map((p) => ({
+            _id: p.productId,
+            tenSP: p.productName,
+            tenCuaHang: p.storeName || "Không xác định",
+            nguonGoc: p.seedType || "Không xác định",
+            trangThai: p.isCertified ? "Đã xác nhận" : "Chờ xác nhận",
+            ngaySX: formatDate(p.sowingDate),
+            ngayTH: formatDate(p.harvestingDate),
+            dsAnhSP: [], // Blockchain có lưu ảnh không? Nếu có, cần truy xuất
+            certify_image: null,
+            certifier: p.certifierName,
+            batchId: p.productId, // Giả sử productId cũng là batchId
+            tenDM: "Không xác định", // Không có thông tin danh mục trong contract
+            phanLoai: [] // Blockchain có hỗ trợ phân loại không? Nếu có, cần xử lý
+        }));
+
+        res.status(200).json(results);
+    } catch (error) {
+        console.error("Lỗi khi lấy sản phẩm pending từ blockchain:", error);
+        res.status(500).json({ message: "Lỗi server", error: error.message });
+    }
+};
+
+
+
+// Hàm định dạng ngày
+function formatDate(dateStr) {
+    if (!dateStr) return "Không xác định";
+    const date = new Date(dateStr);
+    return date.toLocaleDateString("vi-VN");
+}
 
 export const updateProductStatus = async (req, res) => {
     try {
