@@ -144,6 +144,7 @@ const Product = () => {
                             "Chưa có giấy chứng nhận"
                           )}
                         </p>
+                        <p><strong className="text-[#075310]">Nhà chứng nhận:</strong> {product.certifier}</p>
                         <p className="text-gray-500 flex items-center gap-2">
                           <CiShop size={20} /> {product.tenCuaHang}
                         </p>

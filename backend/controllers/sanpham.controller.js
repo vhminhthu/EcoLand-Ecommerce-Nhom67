@@ -647,6 +647,7 @@ export const getPendingProduct = async (req, res) => {
                     ngaySX: formatDate(sp.ngaySX),
                     dsAnhSP: sp.dsAnhSP,
                     certify_image: sp.certify_image,
+                    certifier: sp.certifier,
                     ngayTH: formatDate(sp.ngayTH),
                     batchId: sp.batchId,
                     tenDM: sp.idDM?.tenDM || "Không xác định",
@@ -668,6 +669,74 @@ export const getPendingProduct = async (req, res) => {
         res.status(500).json({ message: "Lỗi máy chủ", error: error.message });
     }
 };
+
+
+export const getPendingProductFromCertifier = async (req, res) => {
+    try {
+        const { tenAdmin } = req.params;
+
+        if (!tenAdmin) {
+            return res.status(400).json({ message: "Thiếu tên certifier" });
+        }
+
+  
+        const sanPhams = await Sanpham.find({ trangThai: "Chờ xác nhận",certifier: tenAdmin,})    
+        .populate({ path: "idCH", select: "tenCH idNguoiDung" })
+        .populate({ path: "idDM", select: "tenDM" })
+        .lean(); // tăng hiệu suất
+
+        if (!sanPhams.length) {
+            return res.status(200).json([]);
+        }
+
+      
+        const results = await Promise.all(
+            sanPhams.map(async (sp) => {
+                const seller = sp.idCH?.idNguoiDung
+                    ? await NguoiDung.findById(sp.idCH.idNguoiDung).select("tenNguoiDung").lean()
+                    : null;
+
+                return {
+                    _id: sp._id.toString(),
+                    tenNguoiDung: seller?.tenNguoiDung || "Không xác định",
+                    tenCuaHang: sp.idCH?.tenCH || "Không xác định",
+                    tenSP: sp.tenSP,
+                    nguonGoc: sp.nguonGoc,
+                    trangThai: sp.trangThai,
+                    ngaySX: formatDate(sp.ngaySX),
+                    dsAnhSP: sp.dsAnhSP || [],
+                    certify_image: sp.certify_image || null,
+                    certifier: sp.certifier,
+                    ngayTH: formatDate(sp.ngayTH),
+                    batchId: sp.batchId || "Không có",
+                    tenDM: sp.idDM?.tenDM || "Không xác định",
+                    phanLoai: sp.phanLoai?.map(pl => ({
+                        idPL: pl.idPL,
+                        tenLoai: pl.tenLoai,
+                        giaLoai: pl.giaLoai,
+                        donVi: pl.donVi,
+                        khuyenMai: pl.khuyenMai,
+                        khoHang: pl.khoHang
+                    })) || []
+                };
+            })
+        );
+
+        // Trả về danh sách đã xử lý
+        res.status(200).json(results);
+
+    } catch (error) {
+        console.error("Lỗi khi lấy sản phẩm pending:", error);
+        res.status(500).json({ message: "Lỗi server", error: error.message });
+    }
+};
+
+// Hàm định dạng ngày
+function formatDate(dateStr) {
+    if (!dateStr) return "Không xác định";
+    const date = new Date(dateStr);
+    return date.toLocaleDateString("vi-VN");
+}
 
 export const updateProductStatus = async (req, res) => {
     try {

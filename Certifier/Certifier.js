@@ -1,66 +1,55 @@
-// certifier.js
-const products = [
-    {
-        productId: "P001",
-        productName: "Gạo ST25",
-        storeId: "S001",
-        seedType: "Lúa ST25",
-        sowingDate: "2024-01-10",
-        harvestingDate: "2024-05-20",
-        fertilizersUsed: "Phân hữu cơ",
-        packagingDate: "2024-05-25",
-        expirationDate: "2025-05-25",
-        inspectorAddress: "0xAbc123...",
-        certifierAddress: "0xDef456...",
-        isCertified: false
-    },
-    {
-        productId: "P002",
-        productName: "Cà phê Arabica",
-        storeId: "S002",
-        seedType: "Arabica",
-        sowingDate: "2023-12-15",
-        harvestingDate: "2024-06-30",
-        fertilizersUsed: "Phân bón vi sinh",
-        packagingDate: "2024-07-05",
-        expirationDate: "2025-07-05",
-        inspectorAddress: "0xGhi789...",
-        certifierAddress: "0xJkl012...",
-        isCertified: false
-    }
-];
-
-function loadProducts() {
+async function loadProducts() {
     const tableBody = document.getElementById("certifierTable");
-    tableBody.innerHTML = "";
+    tableBody.innerHTML = "<tr><td colspan='12'>Đang tải...</td></tr>";
 
-    products.forEach((product, index) => {
-        const row = document.createElement("tr");
-        row.innerHTML = `
-            <td>${product.productId}</td>
-            <td>${product.productName}</td>
-            <td>${product.storeId}</td>
-            <td>${product.seedType}</td>
-            <td>${product.sowingDate}</td>
-            <td>${product.harvestingDate}</td>
-            <td>${product.fertilizersUsed}</td>
-            <td>${product.packagingDate}</td>
-            <td>${product.expirationDate}</td>
-            <td>${product.inspectorAddress}</td>
-            <td>${product.isCertified ? " Đã duyệt" : " Chưa duyệt"}</td>
-            <td>
-                <button onclick="approveProduct(${index})" ${product.isCertified ? "disabled" : ""}>
-                    Duyệt
-                </button>
-            </td>
-        `;
-        tableBody.appendChild(row);
-    });
+    // Lấy thông tin certifier từ localStorage
+    const certifierData = JSON.parse(localStorage.getItem("certifierData"));
+    console.log(certifierData)
+
+    if (!certifierData || !certifierData.tenAdmin) {
+        console.error("Không tìm thấy thông tin certifier");
+        tableBody.innerHTML = "<tr><td colspan='12'>Lỗi: Không có thông tin certifier</td></tr>";
+        return;
+    }
+
+    try {
+        // Gọi API lấy danh sách sản phẩm pending theo certifier
+        const response = await fetch(`http://localhost:5000/api/sanpham/get/${certifierData.tenAdmin}`);
+        const products = await response.json();
+
+        tableBody.innerHTML = "";
+
+        if (products.length === 0) {
+            tableBody.innerHTML = "<tr><td colspan='12'>Không có sản phẩm pending</td></tr>";
+            return;
+        }
+
+        // Duyệt qua danh sách sản phẩm và hiển thị lên bảng
+        products.forEach((sp) => {
+            const row = document.createElement("tr");
+            row.innerHTML = `
+                <td>${sp._id}</td>
+                <td>${sp.tenNguoiDung}</td>
+                <td>${sp.tenCuaHang}</td>
+                <td>${sp.tenSP}</td>
+                <td>${sp.nguonGoc}</td>
+                <td>${sp.trangThai}</td>
+                <td>${sp.ngaySX}</td>
+                <td>${sp.tenDM}</td>
+                <td>${sp.certifier}</td>
+                <td>
+                    <button onclick="approveProduct('${sp._id}')" ${sp.trangThai === "approved" ? "disabled" : ""}>
+                        Duyệt
+                    </button>
+                </td>
+            `;
+            tableBody.appendChild(row);
+        });
+
+    } catch (error) {
+        console.error("Lỗi khi tải sản phẩm pending:", error);
+        tableBody.innerHTML = "<tr><td colspan='12'>Lỗi tải dữ liệu</td></tr>";
+    }
 }
 
-function approveProduct(index) {
-    products[index].isCertified = true;
-    loadProducts();
-}
-
-loadProducts();
+document.addEventListener("DOMContentLoaded", loadProducts);

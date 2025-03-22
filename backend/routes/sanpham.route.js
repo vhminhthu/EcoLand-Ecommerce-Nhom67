@@ -1,6 +1,6 @@
 import express from "express"
 
-import  { updateProduct,addSanPham, capNhatLuotXem, getSanPhamById, getSanPhamByIdCH, getSanPhamByIdDM, getTatCaSanPham, getTatCaSanPhamDM, goiYTimKiem, laySanPhamvoiIdCuaHang, timKiem, getPendingProduct, updateProductStatus, deleteProduct, getProductInfo, themSanPhamVaoBlockChain, capNhatTrangThaiSanPham, themQuyenDuyetSP, getProductsByCategory, getTopDeal, getTopSelling, getProductSuggestions, getProducTrelated } from "../controllers/sanpham.controller.js"
+import  { updateProduct,addSanPham, capNhatLuotXem, getSanPhamById, getSanPhamByIdCH, getSanPhamByIdDM, getTatCaSanPham, getTatCaSanPhamDM, goiYTimKiem, laySanPhamvoiIdCuaHang, timKiem, getPendingProduct, updateProductStatus, deleteProduct, getProductInfo, themSanPhamVaoBlockChain, capNhatTrangThaiSanPham, themQuyenDuyetSP, getProductsByCategory, getTopDeal, getTopSelling, getProductSuggestions, getProducTrelated, getPendingProductFromCertifier } from "../controllers/sanpham.controller.js"
 
 
 import { protectRoute } from "../middleware/protectRoute.js"
@@ -33,6 +33,7 @@ router.patch("/sua/:id", updateProduct);
 
 
 router.get("/get/pending", getPendingProduct);
+router.get("/get/:tenAdmin", getPendingProductFromCertifier);
 router.patch("/update-status/:productId",protectAdmin, themSanPhamVaoBlockChain);
 router.patch("/update-status-2/:productId",protectAdmin, capNhatTrangThaiSanPham);
 router.patch("/themQuyenDuyet/:productId",protectAdmin, themQuyenDuyetSP);
