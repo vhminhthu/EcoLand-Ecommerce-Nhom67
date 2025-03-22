@@ -4,22 +4,22 @@ async function loadProducts() {
 
     // Lấy thông tin certifier từ localStorage
     const certifierData = JSON.parse(localStorage.getItem("certifierData"));
-    console.log(certifierData)
+    console.log("Certifier Data:", certifierData);
 
-    if (!certifierData || !certifierData.tenAdmin) {
-        console.error("Không tìm thấy thông tin certifier");
-        tableBody.innerHTML = "<tr><td colspan='12'>Lỗi: Không có thông tin certifier</td></tr>";
+    if (!certifierData || !certifierData.address) {
+        console.error("Không tìm thấy địa chỉ certifier");
+        tableBody.innerHTML = "<tr><td colspan='12'>Lỗi: Không có địa chỉ certifier</td></tr>";
         return;
     }
 
     try {
-        // Gọi API lấy danh sách sản phẩm pending theo certifier
-        const response = await fetch(`http://localhost:5000/api/sanpham/get/${certifierData.tenAdmin}`);
+        // Gọi API lấy danh sách sản phẩm pending theo certifierAddress
+        const response = await fetch(`http://localhost:5000/api/sanpham/get/${certifierData.address}`);
         const products = await response.json();
 
         tableBody.innerHTML = "";
 
-        if (products.length === 0) {
+        if (!products.length) {
             tableBody.innerHTML = "<tr><td colspan='12'>Không có sản phẩm pending</td></tr>";
             return;
         }
@@ -29,18 +29,18 @@ async function loadProducts() {
             const row = document.createElement("tr");
             row.innerHTML = `
                 <td>${sp._id}</td>
-                <td>${sp.tenNguoiDung}</td>
                 <td>${sp.tenCuaHang}</td>
                 <td>${sp.tenSP}</td>
                 <td>${sp.nguonGoc}</td>
                 <td>${sp.trangThai}</td>
-                <td>${sp.ngaySX}</td>
+                <td>${sp.ngaySX || "Không có"}</td>
+                <td>${sp.ngayTH || "Không có"}</td>
                 <td>${sp.tenDM}</td>
                 <td>${sp.certifier}</td>
                 <td>
-                           <button onclick="approveProduct('${sp._id}')" ${sp.trangThai === "approved" ? "disabled" : ""}>
-            Duyệt
-        </button>
+                    <button onclick="approveProduct('${sp._id}')" ${sp.trangThai === "Đã xác nhận" ? "disabled" : ""}>
+                        Duyệt
+                    </button>
                 </td>
             `;
             tableBody.appendChild(row);
@@ -51,6 +51,7 @@ async function loadProducts() {
         tableBody.innerHTML = "<tr><td colspan='12'>Lỗi tải dữ liệu</td></tr>";
     }
 }
+
 
 async function approveProduct(productId) {
     const privateKey = prompt("Nhập Private Key để duyệt sản phẩm:");

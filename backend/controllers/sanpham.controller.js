@@ -716,65 +716,51 @@ export const getPendingProduct = async (req, res) => {
 };
 
 
+
+
+const contract = new ethers.Contract(contractAddress, abi, provider);
+
 export const getPendingProductFromCertifier = async (req, res) => {
     try {
-        const { tenAdmin } = req.params;
+        const { certifierAddress } = req.params;
+        console.log("Received certifierAddress:", certifierAddress);
 
-        if (!tenAdmin) {
-            return res.status(400).json({ message: "Thiếu tên certifier" });
+        if (!certifierAddress ||  !ethers.isAddress(certifierAddress)) {
+            return res.status(400).json({ message: "Địa chỉ certifier không hợp lệ" });
         }
 
-  
-        const sanPhams = await Sanpham.find({ trangThai: "Chờ xác nhận",certifier: tenAdmin,})    
-        .populate({ path: "idCH", select: "tenCH idNguoiDung" })
-        .populate({ path: "idDM", select: "tenDM" })
-        .lean(); // tăng hiệu suất
+        // Gọi smart contract để lấy danh sách sản phẩm pending
+        const productDetails = await contract.getProductsByCertifier(certifierAddress);
 
-        if (!sanPhams.length) {
+        if (!productDetails.length) {
             return res.status(200).json([]);
         }
 
-      
-        const results = await Promise.all(
-            sanPhams.map(async (sp) => {
-                const seller = sp.idCH?.idNguoiDung
-                    ? await NguoiDung.findById(sp.idCH.idNguoiDung).select("tenNguoiDung").lean()
-                    : null;
+        // Chuyển đổi dữ liệu sang định dạng mong muốn
+        const results = productDetails.map((p) => ({
+            _id: p.productId,
+            tenSP: p.productName,
+            tenCuaHang: p.storeName || "Không xác định",
+            nguonGoc: p.seedType || "Không xác định",
+            trangThai: p.isCertified ? "Đã xác nhận" : "Chờ xác nhận",
+            ngaySX: formatDate(p.sowingDate),
+            ngayTH: formatDate(p.harvestingDate),
+            dsAnhSP: [], // Blockchain có lưu ảnh không? Nếu có, cần truy xuất
+            certify_image: null,
+            certifier: p.certifierName,
+            batchId: p.productId, // Giả sử productId cũng là batchId
+            tenDM: "Không xác định", // Không có thông tin danh mục trong contract
+            phanLoai: [] // Blockchain có hỗ trợ phân loại không? Nếu có, cần xử lý
+        }));
 
-                return {
-                    _id: sp._id.toString(),
-                    tenNguoiDung: seller?.tenNguoiDung || "Không xác định",
-                    tenCuaHang: sp.idCH?.tenCH || "Không xác định",
-                    tenSP: sp.tenSP,
-                    nguonGoc: sp.nguonGoc,
-                    trangThai: sp.trangThai,
-                    ngaySX: formatDate(sp.ngaySX),
-                    dsAnhSP: sp.dsAnhSP || [],
-                    certify_image: sp.certify_image || null,
-                    certifier: sp.certifier,
-                    ngayTH: formatDate(sp.ngayTH),
-                    batchId: sp.batchId || "Không có",
-                    tenDM: sp.idDM?.tenDM || "Không xác định",
-                    phanLoai: sp.phanLoai?.map(pl => ({
-                        idPL: pl.idPL,
-                        tenLoai: pl.tenLoai,
-                        giaLoai: pl.giaLoai,
-                        donVi: pl.donVi,
-                        khuyenMai: pl.khuyenMai,
-                        khoHang: pl.khoHang
-                    })) || []
-                };
-            })
-        );
-
-        // Trả về danh sách đã xử lý
         res.status(200).json(results);
-
     } catch (error) {
-        console.error("Lỗi khi lấy sản phẩm pending:", error);
+        console.error("Lỗi khi lấy sản phẩm pending từ blockchain:", error);
         res.status(500).json({ message: "Lỗi server", error: error.message });
     }
 };
+
+
 
 // Hàm định dạng ngày
 function formatDate(dateStr) {

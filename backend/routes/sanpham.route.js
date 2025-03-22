@@ -33,7 +33,7 @@ router.patch("/sua/:id", updateProduct);
 
 
 router.get("/get/pending", getPendingProduct);
-router.get("/get/:tenAdmin", getPendingProductFromCertifier);
+router.get("/get/:certifierAddress", getPendingProductFromCertifier);
 router.patch("/certify/:productId", duyetSanPhamTrenBlockChain);
 router.patch("/update-status/:productId",protectAdmin, themSanPhamVaoBlockChain);
 router.patch("/update-status-2/:productId",protectAdmin, capNhatTrangThaiSanPham);
