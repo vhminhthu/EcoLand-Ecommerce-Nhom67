@@ -4,33 +4,24 @@ import Navigation from "../components/Navigation";
 import axios from "axios";
 
 export const Blockchain = () => {
-  const [showAdminList, setShowAdminList] = useState(false);
-  const [showInspectorList, setShowInspectorList] = useState(false);
-  const [showStoreList, setShowStoreList] = useState(false);
+  const [showInspector, setShowInspector] = useState(false);
+  const [showCertifier, setShowCertifier] = useState(false);
+  const [showStore, setShowStore] = useState(false);
   const [showProductList, setShowProductList] = useState(false);
-  const [storeList, setStoreList] = useState([]);
 
   const [productList, setProductList] = useState([]);
-  const [adminList, setAdminList] = useState([]);
-  const [inspectorList, setInspectorList] = useState([]);
+  const [inspector, setInspector] = useState(null);
+  const [certifier, setCertifier] = useState(null);
+  const [store, setStore] = useState(null);
 
-  const fetchAdmin = async () => {
-    try {
-        const response = await axios.get("/api/blockchain/all/admin");
-        setAdminList(response.data);
-    } catch (err) {
-        console.error("Lỗi API:", err);
-    }
-  };
+  const [showImage, setShowImage] = useState(false);
+  const [image, setImage] = useState("");
+  const [showImageStore, setShowImageStore] = useState(false);
+  const [imageStore, setImageStore] = useState("");
 
-  const fetchInspector = async () => {
-    try {
-        const response = await axios.get("/api/blockchain/all/inspector");
-        setInspectorList(response.data);
-    } catch (err) {
-        console.error("Lỗi API:", err);
-    }
-  };
+  const [searchInspector, setSearchInspector] = useState("");
+  const [searchCertifier, setSearchCertifier] = useState("");
+  const [searchStore, setSearchStore] = useState("");
 
   const fetchProduct = async () => {
     try {
@@ -41,46 +32,85 @@ export const Blockchain = () => {
     }
   };
 
-  const fetchStore = async () => {
+  const handleShowInspector = () => {
+    setShowInspector((prev) => !prev);
+    setShowCertifier(false);
+    setShowStore(false);
+    setShowProductList(false);
+  };
+  
+  const handleShowCertifier = () => {
+    setShowCertifier((prev) => !prev);
+    setShowInspector(false);
+    setShowStore(false);
+    setShowProductList(false);
+  };
+  
+  const handleShowStore = () => {
+    setShowStore((prev) => !prev);
+    setShowInspector(false);
+    setShowCertifier(false);
+    setShowProductList(false);
+  };
+  
+  const handleShowProduct = () => {
+    setShowProductList((prev) => !prev);
+    setShowInspector(false);
+    setShowCertifier(false);
+    setShowStore(false);
+    if (!showProductList) fetchProduct();
+  }; 
+
+  const handleSearchInspector = async () => {
+    if (!searchInspector.trim()) return;
     try {
-        const response = await axios.get("/api/blockchain/all/store");
-        setStoreList(response.data);
+      const response = await axios.get(`/api/blockchain/inspector?address=${searchInspector}`);
+      setInspector(response.data);
     } catch (err) {
-        console.error("Lỗi API:", err);
+      console.error("Lỗi API:", err);
+      setInspector([]);
     }
   };
 
-  const handleShowAdminList = () => {
-    setShowAdminList((prev) => !prev);
-    setShowInspectorList(false);
-    setShowStoreList(false);
-    setShowProductList(false);
-    if (!showAdminList) fetchAdmin();
+  const handleSearchCertifier = async () => {
+    if (!searchCertifier.trim()) return;
+    try {
+      const response = await axios.get(`/api/blockchain/certifier?address=${searchCertifier}`);
+      setCertifier(response.data);
+    } catch (err) {
+      console.error("Lỗi API:", err);
+      setCertifier([]);
+    }
   };
   
-  const handleShowInspectorList = () => {
-    setShowInspectorList((prev) => !prev);
-    setShowAdminList(false);
-    setShowStoreList(false);
-    setShowProductList(false);
-    if (!showInspectorList) fetchInspector();
+  const handleSearchStore = async () => {
+    if (!searchStore.trim()) return;
+    try {
+      const response = await axios.get(`/api/blockchain/store?id=${searchStore}`);
+      setStore(response.data);
+    } catch (err) {
+      console.error("Lỗi API:", err);
+      setStore([]);
+    }
+  };
+
+  const handleKeyDownInspector = (e) => {
+    if (e.key === "Enter") {
+      handleSearchInspector();
+    }
+  };
+
+  const handleKeyDownCertifier = (e) => {
+    if (e.key === "Enter") {
+      handleSearchCertifier();
+    }
   };
   
-  const handleShowStoreList = () => {
-    setShowStoreList((prev) => !prev);
-    setShowAdminList(false);
-    setShowInspectorList(false);
-    setShowProductList(false);
-    if (!showStoreList) fetchStore();
+  const handleKeyDownStore = (e) => {
+    if (e.key === "Enter") {
+      handleSearchStore();
+    }
   };
-  
-  const handleShowProductList = () => {
-    setShowProductList((prev) => !prev);
-    setShowAdminList(false);
-    setShowInspectorList(false);
-    setShowStoreList(false);
-    if (!showProductList) fetchProduct();
-  };  
 
   return (
     <div className="bg-gradient-to-r from-blue-200 via-indigo-100 to-pink-200 min-h-screen h-fit">
@@ -91,23 +121,23 @@ export const Blockchain = () => {
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 h-30">
               <button
                 className="bg-blue-600 text-white p-6 rounded-lg shadow-xl hover:bg-blue-700 transition-all duration-300 transform hover:scale-105"
-                onClick={handleShowAdminList}
+                onClick={handleShowInspector}
               >
-                <div className="text-xl font-semibold">Quản lý người quản trị</div>
-                <div className="mt-2 text-gray-300">Quản lý các quyền truy cập và tài khoản người quản trị</div>
+                <div className="text-xl font-semibold">Quản lý Inspector</div>
+                <div className="mt-2 text-gray-300">Quản lý tài khoản người Inspector</div>
               </button>
 
               <button
                 className="bg-green-600 text-white p-6 rounded-lg shadow-xl hover:bg-green-700 transition-all duration-300 transform hover:scale-105"
-                onClick={handleShowInspectorList}
+                onClick={handleShowCertifier}
               >
-                <div className="text-xl font-semibold">Quản lý người kiểm duyệt</div>
-                <div className="mt-2 text-gray-300">Quản lý các người kiểm duyệt trong hệ thống</div>
+                <div className="text-xl font-semibold">Quản lý người Certifier</div>
+                <div className="mt-2 text-gray-300">Quản lý tài khoản người Certifier</div>
               </button>
 
               <button
                 className="bg-yellow-600 text-white p-6 rounded-lg shadow-xl hover:bg-yellow-700 transition-all duration-300 transform hover:scale-105"
-                onClick={handleShowStoreList}
+                onClick={handleShowStore}
               >
                 <div className="text-xl font-semibold">Quản lý cửa hàng</div>
                 <div className="mt-2 text-gray-300">Quản lý các cửa hàng</div>
@@ -115,72 +145,140 @@ export const Blockchain = () => {
 
               <button
                 className="bg-purple-600 text-white p-6 rounded-lg shadow-xl hover:bg-purple-700 transition-all duration-300 transform hover:scale-105"
-                onClick={handleShowProductList}
+                onClick={handleShowProduct}
               >
                 <div className="text-xl font-semibold">Quản lý sản phẩm</div>
                 <div className="mt-2 text-gray-300">Quản lý các sản phẩm trong hệ thống blockchain</div>
               </button>
             </div>
 
-            {showAdminList && ( 
+            {showInspector && ( 
               <div className='w-full !my-3 bg-white !p-6 rounded-xl shadow-xl'>
-                  <h1 className='!mb-5 text-2xl font-black uppercase text-emerald-900 text-center'>Danh sách các Admin trong Blockchain</h1>
+                  <div className="flex items-center gap-2 !mb-4">
+                    <input
+                      type="text"
+                      placeholder="Nhập Address Inspector..."
+                      value={searchInspector}
+                      onChange={(e) => setSearchInspector(e.target.value)}
+                      onKeyDown={handleKeyDownInspector}
+                      className="w-full !p-2  border rounded-md"
+                    />
+                    <button 
+                      onClick={handleSearchInspector} 
+                      className="!px-4 !py-2 bg-emerald-900 text-white rounded-md"
+                    >
+                      Tìm kiếm
+                    </button>
+                  </div>
+                  <h1 className='!mb-5 text-2xl font-black uppercase text-emerald-900 text-center'>Kết quả tìm kiểm Inspector trong Blockchain</h1>
                   <div className='!mt-2'>
-                    <div className='!mt-2 w-full rounded-md bg-emerald-900 text-white grid grid-cols-5 items-center font-semibold text-xl'>
-                        <div className='col-span-1 text-center border-r !py-4 uppercase'>#</div>
-                        <div className='col-span-4 border-r !py-4 text-center uppercase'>Địa chỉ address</div>
-                    </div>
-                    {adminList.map((admin, index) => (
-                        <div key={index} className='w-full rounded-md border-b bg-white text-black grid grid-cols-5 items-center text-lg !py-3'>
-                            <div className='col-span-1 text-center border-r !p-4'>{index + 1}</div>
-                            <div className='col-span-4 text-center border-r !p-4'>{admin}</div>
+                    {inspector && (
+                      <div className='!mt-2'>
+                        <div className='!mt-2 w-full rounded-md bg-emerald-900 text-white grid grid-cols-17 items-center font-semibold text-xl'>
+                            <div className='col-span-1 text-center border-r !p-4 uppercase'>#</div>
+                            <div className='col-span-8 border-r !p-4 text-center uppercase'>id</div>
+                            <div className='col-span-4 border-r !p-4 text-center uppercase'>Tên cửa hàng</div>
+                            <div className='col-span-4 border-r !p-4 text-center uppercase'>Hoạt động</div>
                         </div>
-                    ))}
+                          <div className='w-full rounded-md border-b bg-white text-black grid grid-cols-17 items-center text-lg !py-3'>
+                              <div className='col-span-1 text-center border-r !p-4'>1</div>
+                              <div className='col-span-8 text-center border-r !p-4'>{inspector[0]}</div>
+                              <div className='col-span-4 text-center border-r !p-4'>{inspector[1]}</div>
+                              <div className={`col-span-4 text-center border-r !p-4 ${inspector[2] ? "text-green-600 font-bold" : "text-red-600 font-bold"}`}>{inspector[2] ? "HOẠT ĐỘNG" : "NGƯNG HOẠT ĐỘNG"}</div>
+                          </div>
+                      </div>
+                    )}
                   </div>
               </div>
             )}
 
-            {showInspectorList && ( 
+            {showCertifier && ( 
               <div className='w-full !my-3 bg-white !p-6 rounded-xl shadow-xl'>
-                  <h1 className='!mb-5 text-2xl font-black uppercase text-emerald-900 text-center'>Danh sách các Người kiểm duyệt trong Blockchain</h1>
+                  <div className="flex items-center gap-2 !mb-4">
+                    <input
+                      type="text"
+                      placeholder="Nhập Address Certifier..."
+                      value={searchCertifier}
+                      onChange={(e) => setSearchCertifier(e.target.value)}
+                      onKeyDown={handleKeyDownCertifier}
+                      className="w-full !p-2   border rounded-md"
+                    />
+                    <button 
+                      onClick={handleSearchCertifier} 
+                      className="!px-4 !py-2 bg-emerald-900 text-white rounded-md"
+                    >
+                      Tìm kiếm
+                    </button>
+                  </div>
+                  <h1 className='!mb-5 text-2xl font-black uppercase text-emerald-900 text-center'>Kết quả tìm kiếm Certifier trong Blockchain</h1>
                   <div className='!mt-2'>
-                    <div className='!mt-2 w-full rounded-md bg-emerald-900 text-white grid grid-cols-9 items-center font-semibold text-xl'>
-                        <div className='col-span-1 text-center border-r !p-4 uppercase'>#</div>
-                        <div className='col-span-2 border-r !p-4 text-center uppercase'>id</div>
-                        <div className='col-span-2 border-r !p-4 text-center uppercase'>Tên tài khoản</div>
-                        <div className='col-span-4 border-r !p-4 text-center uppercase'>Địa chỉ address</div>
-
-                    </div>
-                    {inspectorList.map((i, index) => (
-                        <div key={index} className='w-full rounded-md border-b bg-white text-black grid grid-cols-9 items-center text-lg'>
-                            <div className='col-span-1 text-center border-r !p-4'>{index + 1}</div>
-                            <div className='col-span-2 text-center border-r !p-4'>{i[0]}</div>
-                            <div className='col-span-2 text-center border-r !p-4'>{i[2]}</div>
-                            <div className='col-span-4 text-center border-r !p-4'>{i[1]}</div>
+                    {certifier && (
+                      <div className='!mt-2'>
+                        <div className='!mt-2 w-full rounded-md bg-emerald-900 text-white grid grid-cols-17 items-center font-semibold text-xl'>
+                          <div className='col-span-1 text-center border-r !p-4 uppercase'>#</div>
+                          <div className='col-span-8 border-r !p-4 text-center uppercase'>id</div>
+                          <div className='col-span-4 border-r !p-4 text-center uppercase'>Tên Certifier</div>
+                          <div className='col-span-4 border-r !p-4 text-center uppercase'>Hoạt động</div>
                         </div>
-                    ))}
+                          <div className='w-full rounded-md border-b bg-white text-black grid grid-cols-17 items-center text-lg !py-3'>
+                            <div className='col-span-1 text-center border-r !p-4'>1</div>
+                            <div className='col-span-8 text-center border-r !p-4'>{certifier[0]}</div>
+                            <div className='col-span-4 text-center border-r !p-4'>{certifier[1]}</div>
+                            <div className={`col-span-4 text-center border-r !p-4 ${certifier[2] ? "text-green-600 font-bold" : "text-red-600 font-bold"}`}>{certifier[1] ? "HOẠT ĐỘNG" : "NGƯNG HOẠT ĐỘNG"}</div>
+                          </div>
+                      </div>
+                    )}
                   </div>
               </div>
             )}
 
-            {showStoreList && ( 
+            {showStore && ( 
               <div className='w-full !my-3 bg-white !p-6 rounded-xl shadow-xl'>
-                  <h1 className='!mb-5 text-2xl font-black uppercase text-emerald-900 text-center'>Danh sách các Cửa hàng trong Blockchain</h1>
-                  <div className='!mt-2'>
-                    <div className='!mt-2 w-full rounded-md bg-emerald-900 text-white grid grid-cols-8 items-center font-semibold text-xl'>
-                        <div className='col-span-1 text-center border-r !p-4 uppercase'>#</div>
-                        <div className='col-span-3 border-r !p-4 text-center uppercase'>id</div>
-                        <div className='col-span-4 border-r !p-4 text-center uppercase'>Tên cửa hàng</div>
-
-                    </div>
-                    {storeList.map((i, index) => (
-                        <div key={index} className='w-full rounded-md border-b bg-white text-black grid grid-cols-8 items-center text-lg !py-3'>
-                            <div className='col-span-1 text-center border-r !p-4'>{index + 1}</div>
-                            <div className='col-span-3 text-center border-r !p-4'>{i[0]}</div>
-                            <div className='col-span-4 text-center border-r !p-4'>{i[1]}</div>
-                        </div>
-                    ))}
+                  <div className="flex items-center gap-2 !mb-4">
+                    <input
+                      type="text"
+                      placeholder="Nhập ID cửa hàng..."
+                      value={searchStore}
+                      onChange={(e) => setSearchStore(e.target.value)}
+                      onKeyDown={handleKeyDownStore}
+                      className="w-full !p-2 border rounded-md"
+                    />
+                    <button 
+                      onClick={handleSearchStore} 
+                      className="!px-4 !py-2 bg-emerald-900 text-white rounded-md"
+                    >
+                      Tìm kiếm
+                    </button>
                   </div>
+                  <h1 className='!mb-5 text-2xl font-black uppercase text-emerald-900 text-center'>Kết quả tìm kiểm Cửa hàng trong Blockchain</h1>
+                  {store && (
+                    <div className='!mt-2'>
+                      <div className='!mt-2 w-full rounded-md bg-emerald-900 text-white grid grid-cols-16 items-center font-semibold text-xl'>
+                          <div className='col-span-1 text-center border-r !p-4 uppercase'>#</div>
+                          <div className='col-span-3 border-r !p-4 text-center uppercase'>id</div>
+                          <div className='col-span-4 border-r !p-4 text-center uppercase'>Tên cửa hàng</div>
+                          <div className='col-span-4 border-r !p-4 text-center uppercase'>Ảnh chứng nhận</div>
+                          <div className='col-span-4 border-r !p-4 text-center uppercase'>Vị trí cửa hàng</div>
+                      </div>
+                        <div className='w-full rounded-md border-b bg-white text-black grid grid-cols-16 items-center text-lg !py-3'>
+                            <div className='col-span-1 text-center border-r !p-4'>1</div>
+                            <div className='col-span-3 text-center border-r !p-4'>{store[0]}</div>
+                            <div className='col-span-4 text-center border-r !p-4'>{store[1]}</div>
+                            <div className='col-span-4 text-center border-r !p-4'>
+                              <button 
+                                onClick={() => {
+                                  setShowImageStore(!showImageStore); 
+                                  setImageStore(store[2]);
+                                }} 
+                                className="text-blue-500 cursor-pointer"
+                              >
+                                Xem ảnh
+                              </button>
+                            </div>
+                            <div className='col-span-4 text-center border-r !p-4'>{store[3]}</div>
+                        </div>
+                    </div>
+                  )}
               </div>
             )}
 
@@ -190,58 +288,82 @@ export const Blockchain = () => {
                   Danh sách các Sản Phẩm trong Blockchain
                 </h1>
                 <div className='!mt-2'>
-                  <div className='!mt-2 w-full rounded-md bg-emerald-900 text-white grid grid-cols-25 items-center font-semibold text-lg'>
+                  <div className='!mt-2 w-full rounded-md bg-emerald-900 text-white grid grid-cols-33 items-center font-semibold text-md'>
                       <div className='col-span-1 text-center border-r !py-4 uppercase'>#</div>
-                      <div className='col-span-4 border-r !py-4 text-center uppercase'>id</div>
+                      <div className='col-span-5 border-r !py-4 text-center uppercase'>id</div>
                       <div className='col-span-3 border-r !py-4 text-center uppercase'>Tên sản phẩm</div>
                       <div className='col-span-3 border-r !py-4 text-center uppercase'>Tên cửa hàng</div>
 
-                      <div className='col-span-4 border-r !py-4 text-center uppercase'>Đã duyệt</div>
-                      <div className='col-span-3 border-r !py-4 text-center uppercase'>Đã kiểm tra</div>
-                      <div className='col-span-3 border-r !py-4 text-center uppercase'>Đang bán</div>
+                      <div className='col-span-4 border-r !py-4 text-center uppercase'>Loại trồng</div>
+                      <div className='col-span-3 border-r !py-4 text-center uppercase'>Ngày gieo</div>
+                      <div className='col-span-3 border-r !py-4 text-center uppercase'>Ngày thu hoạch</div>
+                      <div className='col-span-3 border-r !py-4 text-center uppercase'>Ngày đóng gói</div>
+                      <div className='col-span-2 border-r !py-4 text-center uppercase'>Hạn sử dụng</div>
 
+                      <div className='col-span-2 border-r !py-4 text-center uppercase'>Người xác nhận</div>
+                      <div className='col-span-2 border-r !py-4 text-center uppercase'>Chứng nhận</div>
+                      <div className='col-span-2 border-r !py-4 text-center uppercase'>Duyệt</div>
 
-                      <div className='col-span-2 border-r !py-4 text-center uppercase'>Trạng thái</div>
-                      <div className='col-span-2 border-r !py-4 text-center uppercase'>Kiểm duyệt</div>
 
                   </div>
                   {productList.map((i, index) => (
-                      <div key={index} className='w-full rounded-md border-b bg-white text-black grid grid-cols-25 items-center text-sm !py-3'>
-                          <div className='col-span-1 text-center border-r !py-4'>{index + 1}</div>
-                          <div className='col-span-4 text-center border-r !py-4'>{i[0]}</div>
-                          <div className='col-span-3 text-center border-r !py-4'>{i[1]}</div>
-                          <div className='col-span-3 text-center border-r !py-4'>{i[2]}</div>
+                      <div key={index} className='w-full rounded-md border-b bg-white text-black grid grid-cols-33 items-center text-sm !py-3'>
+                        <div className='col-span-1 text-center border-r !py-4'>{index+1}</div>
+                        <div className='col-span-5 border-r !py-4 text-center'>{i[0]}</div>
+                        <div className='col-span-3 border-r !py-4 text-center'>{i[1]}</div>
+                        <div className='col-span-3 border-r !py-4 text-center'>{i[2]}</div>
 
-                          <div className='col-span-4 grid grid-rows-4 text-center border-r !py-4'>
-                              <p className='row-span-1'><strong>Loại giống</strong></p>
-                              <p className='row-span-1'>{i[3] != "" ? i[3] : "Chưa có"}</p>
-                              <p className='col-span-1'><strong>Ngày gieo</strong></p>
-                              <p className='col-span-1'>{i[4] != "" ? i[4] : "Chưa có"}</p>
+                        <div className='col-span-4 border-r !py-4 text-center'>{i[3]}</div>
+                        <div className='col-span-3 border-r !py-4 text-center'>{i[4]}</div>
+                        <div className='col-span-3 border-r !py-4 text-center'>{i[5]}</div>
+                        <div className='col-span-3 border-r !py-4 text-center'>{i[6]}</div>
+                        <div className='col-span-2 border-r !py-4 text-center'>{i[7]}</div>
 
-                          </div>
-                          <div className='col-span-3 grid grid-rows-4 text-center border-r !py-4'>
-                              <p className='row-span-1'><strong>Vật dụng</strong></p>
-                              <p className='row-span-1'>{i[6] != "" ? i[6] : "Chưa có"}</p>
-
-                              <p className='row-span-1'><strong>Ngày thu hoạch</strong></p>
-                              <p className='row-span-1'>{i[5] != "" ? i[5] : "Chưa có"}</p>
-
-                          </div>
-                          <div className='col-span-3 grid grid-rows-4 text-center border-r !py-4'>
-                              <p className='row-span-1'><strong>Hạn sử dụng</strong></p>
-                              <p className='row-span-1'>{i[7] != "" ? i[7] : "Chưa có"}</p>
-
-                              <p className='row-span-1'><strong>Ngày đóng gói</strong></p>
-                              <p className='row-span-1'>{i[8] != "" ? i[8] : "Chưa có"}</p>
-
-                          </div>
-
-                          <div className='col-span-2 text-center border-r !py-4'>{i[9]}</div>
-                          <div className='col-span-2 text-center border-r !py-4'>{i[10]}</div>
-
+                        <div className='col-span-2 border-r !py-4 text-center'>{i[8]}</div>
+                        <div className='col-span-2 border-r !py-4 text-center'>
+                          <p>{i[10]}</p>
+                          <button onClick={() => {
+                              setShowImage(!showImage);
+                              setImage(i[11]);
+                            }} 
+                          className="text-blue-500 cursor-pointer">Xem ảnh</button>
+                        </div>
+                        <div className={`col-span-2 border-r !py-4 text-center ${i[9] ? "text-green-600 font-bold" : "text-red-600 font-bold"}`}>
+                          {i[9] ? "RỒI" : "CHƯA"}
+                        </div>
                       </div>
                     ))}
                 </div>
+                {showImage && (
+                  <div className='fixed top-0 left-0 w-full h-full bg-black/50 bg-opacity-50 flex items-center justify-center z-50'>
+                    <div className='bg-white !p-4 rounded-lg'>
+                      <div className='flex justify-end'>
+                        <button className='!mb-5 cursor-pointer hover:text-red-500' 
+                          onClick={() => {
+                            setShowImage(!showImage);
+                            setImage(null);
+                          }} >X
+                        </button>
+                      </div>
+                      <img src={`https://gateway.pinata.cloud/ipfs/${image}`} alt="Hình ảnh" className="w-50 h-59 object-cover mx-auto mt-2" />
+                    </div>
+                  </div>
+                )}
+                {showImageStore && (
+                  <div className='fixed top-0 left-0 w-full h-full bg-black/50 flex items-center justify-center z-50'>
+                    <div className='bg-white !p-4 rounded-lg'>
+                      <div className='flex justify-end'>
+                        <button className='!mb-5 cursor-pointer hover:text-red-500' 
+                          onClick={() => {
+                            setShowImageStore(!showImageStore);
+                            setImageStore(null);
+                          }} >X
+                        </button>
+                      </div>
+                      <img src={`https://gateway.pinata.cloud/ipfs/${imageStore}`} alt="Hình ảnh 2" className="w-50 h-59 object-cover mx-auto mt-2" />
+                    </div>
+                  </div>
+                )}
               </div>
             )}
           </div>

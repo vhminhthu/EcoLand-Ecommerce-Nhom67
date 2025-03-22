@@ -116,6 +116,11 @@ export const duyetCuaHang = async (req, res) => {
             return res.status(404).json({ message: "Cửa hàng không tồn tại!" });
         }
 
+        const nguoiDung = await Nguoidung.findById(cuaHang.idNguoiDung);
+        if (!nguoiDung) {
+            return res.status(405).json({ message: "Không tìm thấy người dùng!" });
+        }
+
         const admin = await Admin.findById(adminId);
         if (!admin) {
             return res.status(405).json({ message: "Không tìm thấy admin!" });
@@ -138,7 +143,10 @@ export const duyetCuaHang = async (req, res) => {
                 );
                 console.log("Giao dịch đã gửi:", tx.hash);
                 await tx.wait();
-                console.log("Giao dịch hoàn tất trên blockchain!");                
+                console.log("Giao dịch hoàn tất trên blockchain!"); 
+                
+                nguoiDung.vaiTro = "seller";
+                await nguoiDung.save();           
             } catch (err) {
                 console.error("Lỗi khi gửi giao dịch:", err);
                 return res.status(500).json({ message: "Lỗi khi gửi giao dịch lên blockchain", error: err.message });

@@ -19,9 +19,9 @@ function OrdersPage() {
 
     const [donhang, setDonHang] = useState([]);
     const [tongPages, setTongPages] = useState(1);
+    const [soLuongChoXacNhan, setSoLuongChoXacNhan] = useState(0);
 
     const [ctDonHang, setCTDonHang] = useState(null);
-
 
     const query = new URLSearchParams(window.location.search); 
     const page = parseInt(query.get('page')) || 1;
@@ -34,6 +34,7 @@ function OrdersPage() {
             //console.log(response.data.donHangs)
             setDonHang(response.data.donHangs);
             setTongPages(response.data.tongPage);
+            setSoLuongChoXacNhan(response.data.soLuongChoXacNhan);
         } catch (error) {
             console.error("Lỗi khi tải đơn hàng:", error);
         }
@@ -98,7 +99,7 @@ function OrdersPage() {
                 <div className='bg-white rounded-xl shadow-lg !px-5 !py-4 h-fit flex justify-between w-350 m-auto'>
                     <span className='flex font-bold items-center gap-3 text-gray-500'>
                         <LiaCartPlusSolid className='text-5xl text-emerald-600'/>
-                        <p className='text-xl'>Bạn có 30 đơn hàng mới</p>
+                        <p className='text-xl'>Bạn có {soLuongChoXacNhan} đơn hàng mới</p>
                     </span>
                     <div className='flex gap-3'>
                         <div className="relative">

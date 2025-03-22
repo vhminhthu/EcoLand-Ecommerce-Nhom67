@@ -1,14 +1,13 @@
 import express from "express"
-import { getAllAdmin, getAllInspector, getAllProduct, getAllProductById, getAllStore } from "../controllers/blockchain.controller.js"
+import { getAllProduct, getCertifier, getInspector, getStore } from "../controllers/blockchain.controller.js"
 
 const router = express.Router()
 
 
-router.get("/all/admin", getAllAdmin)
-router.get("/all/inspector", getAllInspector)
-router.get("/all/store", getAllStore)
+router.get("/certifier", getCertifier)
+router.get("/inspector", getInspector)
+router.get("/store", getStore)
 router.get("/all/product", getAllProduct)
-router.get("/product/:productId", getAllProductById)
 
 
 export default router
