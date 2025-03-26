@@ -218,8 +218,8 @@ function CategoryPage() {
                 value={sort}
               >
                 <option value="" className="text-black bg-white">Giá</option>
-                <option value="giaTang" className={`cursor-pointer text-black ${sort === "giaTang" ? 'bg-[#1B8057] text-white' : 'bg-white'}`}>Giá tăng</option>
-                <option value="giaGiam" className={`cursor-pointer text-black ${sort === "giaGiam" ? 'bg-[#1B8057] text-white' : 'bg-white'}`}>Giá giảm</option>
+                <option value="giatang" onClick={(e) => handleSortChange(e.target.value)} className={`cursor-pointer text-black ${sort === "giaTang" ? 'bg-[#1B8057] text-white' : 'bg-white'}`}>Giá tăng</option>
+                <option value="giagiam" onClick={(e) => handleSortChange(e.target.value)} className={`cursor-pointer text-black ${sort === "giaGiam" ? 'bg-[#1B8057] text-white' : 'bg-white'}`}>Giá giảm</option>
               </select>
             </div>
           </div>
