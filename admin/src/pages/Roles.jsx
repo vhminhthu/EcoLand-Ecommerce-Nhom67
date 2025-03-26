@@ -28,7 +28,7 @@ export const Roles = () => {
       setName("");
       setEmail("");
       setAddress("");
-      setRole("Inspector");
+      setRole("INSPECTOR");
     } catch (error) {
       setMessage(error.response?.data?.message || "Có lỗi xảy ra!");
     } finally {
