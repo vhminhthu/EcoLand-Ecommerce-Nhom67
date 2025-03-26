@@ -905,7 +905,8 @@ export const getTopDeal = async (req, res) => {
                             idPL: "$phanLoai.idPL",
                             tenLoai: "$phanLoai.tenLoai",
                             giaLoai: "$phanLoai.giaLoai",
-                            khuyenMai: "$phanLoai.khuyenMai"
+                            khuyenMai: "$phanLoai.khuyenMai",
+                            donVi: "$phanLoai.donVi",
                         }
                     },
                     nguonGoc: { $first: "$nguonGoc" },
