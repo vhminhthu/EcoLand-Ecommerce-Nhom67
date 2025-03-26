@@ -85,17 +85,17 @@ function ProductCard(props) {
                     {phanLoai && phanLoai.length > 0 && phanLoai[0].khuyenMai > 0 ? (
                         <>
                             <span className="old-price text-gray-400 line-through text-xs">
-                                {phanLoai[0].giaLoai.toLocaleString()}đ/Kg
+                                {phanLoai[0].giaLoai.toLocaleString()}đ/{phanLoai[0].donVi}
                             </span>
                             <span className="new-price text-red-500 font-bold">
                                 {(
                                     phanLoai[0].giaLoai * (1 - phanLoai[0].khuyenMai / 100)
-                                ).toLocaleString()}đ/Kg
+                                ).toLocaleString()}đ/{phanLoai[0].donVi}
                             </span>
                         </>
                     ) : (
                         <span className="old-price text-red-500 font-bold">
-                            {phanLoai && phanLoai.length > 0 ? phanLoai[0].giaLoai.toLocaleString() : '0'}đ/Kg
+                            {phanLoai && phanLoai.length > 0 ? phanLoai[0].giaLoai.toLocaleString() : '0'}đ/{phanLoai[0].donVi}
                         </span>
                     )}
                 </div>
