@@ -77,83 +77,6 @@ const abi=[
 		"type": "function"
 	},
 	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "_certifier",
-				"type": "address"
-			},
-			{
-				"internalType": "string",
-				"name": "_name",
-				"type": "string"
-			}
-		],
-		"name": "addCertifier",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "address",
-				"name": "_inspector",
-				"type": "address"
-			},
-			{
-				"internalType": "string",
-				"name": "_name",
-				"type": "string"
-			}
-		],
-		"name": "addInspector",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "string",
-				"name": "_productId",
-				"type": "string"
-			}
-		],
-		"name": "certifyProduct",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "string",
-				"name": "_storeId",
-				"type": "string"
-			},
-			{
-				"internalType": "string",
-				"name": "_storeName",
-				"type": "string"
-			},
-			{
-				"internalType": "string",
-				"name": "_cid",
-				"type": "string"
-			},
-			{
-				"internalType": "string",
-				"name": "_storeLocation",
-				"type": "string"
-			}
-		],
-		"name": "createStore",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
 		"inputs": [],
 		"stateMutability": "nonpayable",
 		"type": "constructor"
@@ -383,6 +306,81 @@ const abi=[
 		"type": "function"
 	},
 	{
+		"inputs": [],
+		"name": "getAllProducts",
+		"outputs": [
+			{
+				"components": [
+					{
+						"internalType": "string",
+						"name": "productId",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "productName",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "storeName",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "seedType",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "sowingDate",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "harvestingDate",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "packagingDate",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "expirationDate",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "inspectorName",
+						"type": "string"
+					},
+					{
+						"internalType": "bool",
+						"name": "isCertified",
+						"type": "bool"
+					},
+					{
+						"internalType": "string",
+						"name": "certifierName",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "certifierImageCid",
+						"type": "string"
+					}
+				],
+				"internalType": "struct EcoLand.ProductDetail[]",
+				"name": "",
+				"type": "tuple[]"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
 		"inputs": [
 			{
 				"internalType": "string",
@@ -447,6 +445,11 @@ const abi=[
 					{
 						"internalType": "string",
 						"name": "certifierName",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "certifierImageCid",
 						"type": "string"
 					}
 				],
@@ -523,6 +526,11 @@ const abi=[
 					{
 						"internalType": "string",
 						"name": "certifierName",
+						"type": "string"
+					},
+					{
+						"internalType": "string",
+						"name": "certifierImageCid",
 						"type": "string"
 					}
 				],
