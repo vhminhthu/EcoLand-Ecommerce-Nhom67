@@ -63,7 +63,7 @@ export const duyetSanPhamTrenBlockChain = async (req, res) => {
             console.log("Duyệt sản phẩm thành công trên blockchain!");
 
        
-            product.trangThai = "approved";
+            product.trangThai = "Đang bán";
             await product.save();
 
             return res.json({ message: "Sản phẩm đã được duyệt!", txHash: tx.hash });
