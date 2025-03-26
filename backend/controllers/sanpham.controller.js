@@ -111,7 +111,7 @@ export const themSanPhamVaoBlockChain = async (req, res) => {
         const contract = new ethers.Contract(contractAddress, contractABI, signer);
         console.log(contractAddress)
         
-        if (trangThai === "Chờ duyệt") {
+        if (trangThai === "Đang bán") {
             try {
                 console.log("Đang gửi giao dịch tạo sản phẩm lên Blockchain...");
 

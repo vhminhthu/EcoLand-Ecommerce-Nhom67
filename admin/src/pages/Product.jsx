@@ -156,7 +156,7 @@ const Product = () => {
                       </button>
                       <button 
                         className="!px-6 !py-2 bg-green-600 text-white rounded-md"
-                        onClick={() => handleUpdateStatus(product._id, "Chờ chứng nhận")}
+                        onClick={() => handleUpdateStatus(product._id, "Đang bán")}
                       >
                         DUYỆT
                       </button>
