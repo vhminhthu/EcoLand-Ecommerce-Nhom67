@@ -132,7 +132,7 @@ export const duyetCuaHang = async (req, res) => {
         const signer = new ethers.Wallet(matKhau, provider);
         const contract = new ethers.Contract(contractAddress, contractABI, signer);
 
-        if (trangThai === "Đã xác nhận") {
+        if (trangThai === "Mở cửa") {
             try {
                 console.log("Đang gửi giao dịch tạo cửa hàng lên Blockchain...");
                 const tx = await contract.createStore(

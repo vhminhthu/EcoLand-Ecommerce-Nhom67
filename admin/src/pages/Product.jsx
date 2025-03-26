@@ -15,8 +15,6 @@ const Product = () => {
   const [selectedProductId, setSelectedProductId] = useState(null);
   const [selectedImage, setSelectedImage] = useState(null);
 
-
-
   useEffect(() => {
     const fetchProducts = async () => {
       try {
@@ -38,7 +36,6 @@ const Product = () => {
     setOpenId((prevOpenId) => (prevOpenId === id ? null : id));
   };
 
- 
   const handleUpdateStatus = async (productId, trangThai, nguyenNhanTC = "Không") => {
     try {
         const privateKey = prompt("Vui lòng nhập private key để xác nhận:");

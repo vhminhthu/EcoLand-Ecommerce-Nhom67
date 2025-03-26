@@ -44,7 +44,7 @@ export const User = () => {
 
     try {
       await axios.patch(`/api/cuahang/update-status/${storeId}`, {
-          trangThai: "Đã xác nhận",
+          trangThai: "Mở cửa",
           matKhau: matKhau,
           nguyenNhanTC: "Không",
       });
