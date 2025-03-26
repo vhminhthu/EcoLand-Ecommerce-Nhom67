@@ -214,7 +214,12 @@ export const capNhatTrangThaiDonHang = async (req, res) => {
             return res.status(404).json({ message: "Không tìm thấy đơn hàng!" });
         }
 
-        const nguoiDung = await Nguoidung.findById(idND);
+        const cuaHang = await Cuahang.findById(donHang.cuaHangId);
+        if (!cuaHang) {
+            return res.status(404).json({ message: "Không tìm thấy người dùng!" });
+        }
+
+        const nguoiDung = await Nguoidung.findById(cuaHang.idNguoiDung);
         if (!nguoiDung) {
             return res.status(404).json({ message: "Không tìm thấy người dùng!" });
         }
