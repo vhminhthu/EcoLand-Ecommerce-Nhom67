@@ -33,13 +33,22 @@ function ShopPage() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const [res0, res1] = await Promise.all([
+                const [res0, res1, res2] = await Promise.all([
                     axios.get(`/api/quangcao/lay/dangdienra/${id}`),
-                    axios.get('/api/sanpham/lay/tatca'),
+                    axios.get(`/api/sanpham/lay/cuahang/sp?sort=${sort}&page=${page}&limit=${limit}&cuahang=${id}`),
+                    axios.get(`/api/cuahang/lay/${id}`)
                 ]);
                 setAds(res0.data);
-                setProducts(res1.data);
-                //console.log("quảng cáo", res0.data)
+                setProducts(res1.data.sp);
+                setTongPages(res1.data.tongPage);
+                setShop(res2.data);
+                setDaTheoDoi(res2.data.daTheoDoi)
+                setSlTheoDoi(res2.data.idNguoiDung.dsNguoiTheoDoi.length)
+                if (res2.data.createdAt) {
+                    moment.locale("vi");
+                    const timeDiff = moment(res2.data.createdAt).fromNow();
+                    setThoiGianThamGia(timeDiff);
+                }
             } catch (err) {
                 setError(err);
             } finally {
@@ -48,43 +57,7 @@ function ShopPage() {
         };
 
         fetchData();
-    }, [id]);
-
-    useEffect(() => {
-        if (!id) return;
-        const fetchShopDetails = async (id) => {
-            try {
-                const response = await axios.get(`/api/cuahang/lay/${id}`);
-                console.log(response.data)
-                setShop(response.data);
-                setDaTheoDoi(response.data.daTheoDoi)
-                setSlTheoDoi(response.data.idNguoiDung.dsNguoiTheoDoi.length)
-                if (response.data.createdAt) {
-                    moment.locale("vi");
-                    const timeDiff = moment(response.data.createdAt).fromNow();
-                    setThoiGianThamGia(timeDiff);
-                }
-            } catch (error) {
-                console.error("Lỗi khi tải cửa hàng:", error);
-            }
-        };
-    
-        fetchShopDetails(id);
-    }, [id]);
-
-    useEffect(() => {
-        const fetchProducts = async () => {
-            try { 
-                const responsesp = await axios.get(`/api/sanpham/lay/cuahang/sp?sort=${sort}&page=${page}&limit=${limit}&cuahang=${id}`);
-                //console.log(responsesp.data.sp);
-                setProducts(responsesp.data.sp);
-                setTongPages(responsesp.data.tongPage);
-            } catch (error) {
-                console.error("Có lỗi xảy ra khi lấy sản phẩm:", error);
-            }
-        };
-        fetchProducts();
-    }, [id, sort, page, limit]);
+    }, [id,  sort, page, limit]);
 
     //Quảng cáo
     const [quangCaoIndex, setQuangCaoIndex] = useState(0);
