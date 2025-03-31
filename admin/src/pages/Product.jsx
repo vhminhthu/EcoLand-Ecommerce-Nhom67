@@ -38,17 +38,9 @@ const Product = () => {
 
   const handleUpdateStatus = async (productId, trangThai, nguyenNhanTC = "Không") => {
     try {
-        const privateKey = prompt("Vui lòng nhập private key để xác nhận:");
-
-        if (!privateKey) {
-            alert("Bạn phải nhập private key để cập nhật trạng thái!");
-            return;
-        }
-
         const response = await axios.patch(`/api/sanpham/update-status/${productId}`, {
             trangThai,
             nguyenNhanTC,
-            privateKey,
         });
 
         alert(response.data.message);
@@ -84,8 +76,6 @@ const Product = () => {
             <span>Người bán</span>
             <span>Nguồn gốc</span>
             <span>Trạng thái</span>
-            <span>Ngày sản xuất</span>
-            <span>Ngày thu hoạch</span>
             <span></span>
           </div>
 
@@ -109,8 +99,6 @@ const Product = () => {
                   <span className="font-bold">{product.tenNguoiDung}</span>
                   <span>{product.nguonGoc}</span>
                   <span className="text-gray-500">{product.trangThai}</span>
-                  <span>{product.ngaySX}</span>
-                  <span>{product.ngayTH}</span>
                   <button onClick={(e) => e.stopPropagation()}>
                     {openId === product._id ? <FaChevronUp /> : <FaChevronDown />}
                   </button>
@@ -121,27 +109,8 @@ const Product = () => {
                     <div className="flex items-start gap-20">
                       <img src={product.dsAnhSP} alt={product.name} className="!w-32 !h-32 !ml-10 rounded-md border" />
                       <div>
-                        <p><strong className="text-[#075310]">Batch ID:</strong> {product.batchId}</p>
                         <p><strong className="text-[#075310]">Loại sản phẩm:</strong> {product.tenDM}</p>
                         <p><strong className="text-[#075310]">Nhà cung cấp:</strong> {product.tenNguoiDung}</p>
-                        <p>
-                          <strong className="text-[#075310]">Giấy chứng nhận:</strong>{" "}
-                          {product.certify_image ? (
-                            <a
-                              href="#"
-                              className="text-blue-500 underline"
-                              onClick={(e) => {
-                                e.preventDefault();
-                                setSelectedImage(`https://gateway.pinata.cloud/ipfs/${product.certify_image}`);
-                              }}
-                            >
-                              Xem giấy chứng nhận
-                            </a>
-                          ) : (
-                            "Chưa có giấy chứng nhận"
-                          )}
-                        </p>
-                        <p><strong className="text-[#075310]">Nhà chứng nhận:</strong> {product.certifier}</p>
                         <p className="text-gray-500 flex items-center gap-2">
                           <CiShop size={20} /> {product.tenCuaHang}
                         </p>

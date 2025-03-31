@@ -35,17 +35,9 @@ export const User = () => {
   }, []);
 
   const handleApprove = async (storeId) => {
-    const matKhau = prompt("Vui lòng nhập mật khẩu để xác nhận:");
-
-    if (!matKhau) {
-        alert("Bạn phải nhập mật khẩu để cập nhật trạng thái!");
-        return;
-    }
-
     try {
       await axios.patch(`/api/cuahang/update-status/${storeId}`, {
           trangThai: "Mở cửa",
-          matKhau: matKhau,
           nguyenNhanTC: "Không",
       });
 
@@ -66,17 +58,9 @@ const handleReject = async (storeId) => {
         alert("Bạn phải nhập nguyên nhân từ chối!");
         return;
     }
-
-    const matKhau = prompt("Vui lòng nhập mật khẩu để xác nhận:");
-    if (!matKhau) {
-        alert("Bạn phải nhập mật khẩu để cập nhật trạng thái!");
-        return;
-    }
-
     try {
         await axios.patch(`/api/cuahang/update-status/${storeId}`, {
             trangThai: "Từ chối",
-            matKhau: matKhau,
             nguyenNhanTC: nguyenNhanTC,
         });
 

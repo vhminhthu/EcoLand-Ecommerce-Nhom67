@@ -10,22 +10,10 @@ import FormData from "form-data";
 import Cuahang from "../models/cuahang.model.js";
 import Admin from "../models/admin.model.js";
 import CryptoJS from "crypto-js";
-import { ethers } from "ethers";
-import abi from "../abi.js";
-import dotenv from "dotenv";
 import Sanpham from "../models/sanpham.model.js";
-
-dotenv.config();
-
-const provider = new ethers.JsonRpcProvider(process.env.INFURA_API_URL);
-const contractAddress = process.env.CONTRACT_ADDRESS;
-console.log("Contract Address:", process.env.CONTRACT_ADDRESS);
-
-const contractABI = abi; 
 
 export const duyetSanPhamTrenBlockChain = async (req, res) => {
     try {
-        const { privateKey } = req.body;
         const { productId } = req.params;
 
         // Kiểm tra quyền duyệt sản phẩm
@@ -39,33 +27,9 @@ export const duyetSanPhamTrenBlockChain = async (req, res) => {
         if (!product) {
             return res.status(404).json({ message: "Sản phẩm không tồn tại!" });
         }
-
-        if (!privateKey || privateKey.trim() === "") {
-            return res.status(400).json({ message: "Private Key không hợp lệ hoặc trống!" });
-        }
-
-        let signer;
         try {
-            signer = new ethers.Wallet(privateKey, provider);
-        } catch (error) {
-            return res.status(400).json({ message: "Private Key không hợp lệ!" });
-        }
-
-        console.log("Signer address:", signer.address);
-        const contract = new ethers.Contract(contractAddress, contractABI, signer);
-
-        try {
-            console.log("Đang gửi giao dịch duyệt sản phẩm lên Blockchain...");
-
-            const tx = await contract.certifyProduct(productId.toString());
-            console.log("Giao dịch đã gửi:", tx.hash);
-            await tx.wait();
-            console.log("Duyệt sản phẩm thành công trên blockchain!");
-
-       
             product.trangThai = "Đang bán";
             await product.save();
-
             return res.json({ message: "Sản phẩm đã được duyệt!", txHash: tx.hash });
         } catch (err) {
             console.error("Lỗi khi gửi giao dịch:", err);
@@ -78,65 +42,19 @@ export const duyetSanPhamTrenBlockChain = async (req, res) => {
 };
 
 
-export const themSanPhamVaoBlockChain = async (req, res) => {
+export const duyetSanPham = async (req, res) => {
     try {
-        const { trangThai, nguyenNhanTC, privateKey } = req.body;
+        const { trangThai, nguyenNhanTC } = req.body;
         const { productId } = req.params;
-          const admin = await Admin.findById(req.admin._id)
-
-
+        const admin = await Admin.findById(req.admin._id)
         
-            if (!admin || !admin.phanQuyen.includes("INSPECTOR")) {
-              return res.status(403).json({ message: "Bạn không có quyền duyệt sản phẩm" });
-          }
+        if (!admin || !admin.phanQuyen.includes("INSPECTOR")) {
+            return res.status(403).json({ message: "Bạn không có quyền duyệt sản phẩm" });
+        }
         
         const product = await SanPham.findById(productId).populate("idDM");
         if (!product) {
             return res.status(404).json({ message: "Sản phẩm không tồn tại!" });
-        }
-        
-        if (!privateKey || privateKey.trim() === "") {
-            return res.status(403).json({ message: "Private Key không hợp lệ hoặc trống!" });
-        }
-        
-        let signer;
-        try {
-            signer = new ethers.Wallet(privateKey, provider);
-        } catch (error) {
-            return res.status(403).json({ message: "Private Key không hợp lệ!" });
-        }
-        
-        console.log("Signer address:", signer.address);
-        
-        const contract = new ethers.Contract(contractAddress, contractABI, signer);
-        console.log(contractAddress)
-        
-        if (trangThai === "Đang bán") {
-            try {
-                console.log("Đang gửi giao dịch tạo sản phẩm lên Blockchain...");
-
-                const tx = await contract.createProduct(
-                    productId.toString(),
-                    product.tenSP || "Unknown_Product_Name",
-                    product.idCH ? product.idCH.toString() : "Unknown_Store",
-                    product.loaiTrong || "Unknown_Store",
-                    product.ngaySX ? new Date(product.ngaySX).toISOString().split("T")[0] : "Unknown_Sowing_Date",
-                    product.ngayTH ? new Date(product.ngayTH).toISOString().split("T")[0] : "Unknown_Harvest_Date",
-                    product.ngayDG ? new Date(product.ngayDG).toISOString().split("T")[0] : "Unknown_Packaging_Date",
-                    product.hanSX ? new Date(product.hanSX).toISOString().split("T")[0] : "Unknown_Expiration_Date",
-                    product.certifier || "unknown",
-                    product.certify_image  || "Unknown_Image_Name",
-
-                );
-                
-                
-                console.log("Giao dịch đã gửi:", tx.hash);
-                await tx.wait();
-                console.log("Giao dịch hoàn tất trên blockchain!");
-            } catch (err) {
-                console.error("Lỗi khi gửi giao dịch:", err);
-                return res.status(500).json({ message: "Lỗi khi gửi giao dịch lên blockchain", error: err.message });
-            }
         }
         
         if (trangThai === "Từ chối" && nguyenNhanTC) {
@@ -153,163 +71,13 @@ export const themSanPhamVaoBlockChain = async (req, res) => {
     }
 };
 
-
-
-export const themQuyenDuyetSP = async (req, res) => {
-    const { addressNguoiDuyet, idNguoiDuyet, matKhau } = req.body;
-    const adminId = req.admin._id;
-    const { productId } = req.params;
-
-    try {
-        const product = await SanPham.findById(productId);
-        if (!product) {
-            return res.status(404).json({ message: "Sản phẩm không tồn tại!" });
-        }
-
-        const admin = await Admin.findById(adminId);
-        if (!admin) {
-            return res.status(403).json({ message: "Không tìm thấy admin!" });
-        }
-
-        let privateKey;
-        try {
-            privateKey = CryptoJS.AES.decrypt(admin.encryptedPrivateKey, matKhau).toString(CryptoJS.enc.Utf8);
-        } catch (error) {
-            return res.status(403).json({ message: "Mật khẩu không hợp lệ!" });
-        }
-
-        if (!privateKey || privateKey.trim() === "") {
-            return res.status(403).json({ message: "Private Key không hợp lệ hoặc trống!" });
-        }
-
-        console.log("Signer được khởi tạo:", signer.address);
-        console.log("Contract được khởi tạo tại:", contractAddress);
-
-        const Tx = await contract.setInspectorForProduct(productId, addressNguoiDuyet, {
-            gasLimit: 3000000,
-        });
-        await Tx.wait();
-        console.log(`Sản phẩm ${productId} đã được duyệt`);
-
-        product.idNguoiDuyet = idNguoiDuyet;
-        product.addressNguoiDuyet = addressNguoiDuyet;
-        
-        await product.save();
-        return res.status(200).json({ message: "Cập nhật người duyệt sản phẩm thành công!" });
-    } catch (error) {
-        console.error("Lỗi trong quá trình xử lý người duyệt:", error);
-        return res.status(500).json({ message: "Đã xảy ra lỗi khi xử lý cập nhật", error: error.message });
-    }
-};
-
-export const capNhatTrangThaiSanPham = async (req, res) => {
-    const { loaiKiemDinh, matKhau } = req.body;
-    const adminId = req.admin._id;
-    const { productId } = req.params;
-
-    try {
-        const product = await SanPham.findById(productId);
-        if (!product) {
-            return res.status(404).json({ message: "Sản phẩm không tồn tại!" });
-        }
-
-        // Kiểm tra admin hoặc inspector có quyền duyệt sản phẩm
-        // if (product.idNguoiDuyet !== adminId) {
-        //     return res.status(403).json({ message: "Bạn không có quyền duyệt sản phẩm!" });
-        // }
-
-        const admin = await Admin.findById(adminId);
-        if (!admin) {
-            return res.status(403).json({ message: "Không tìm thấy admin!" });
-        }
-
-        let privateKey;
-        try {
-            privateKey = CryptoJS.AES.decrypt(admin.encryptedPrivateKey, matKhau).toString(CryptoJS.enc.Utf8);
-        } catch (error) {
-            return res.status(403).json({ message: "Mật khẩu không hợp lệ!" });
-        }
-
-        if (!privateKey || privateKey.trim() === "") {
-            return res.status(403).json({ message: "Private Key không hợp lệ hoặc trống!" });
-        }
-
-        console.log("Signer được khởi tạo:", signer.address);
-        console.log("Contract được khởi tạo tại:", contractAddress);
-
-        if (loaiKiemDinh === "Kiểm định hạt") {
-            const ngaySX = moment(product.ngaySX).format('YYYY-MM-DD');
-            const approveTx = await contract.approveProduct(productId, admin.address, product.loaiTrong, ngaySX);
-            await approveTx.wait();
-            console.log(`Sản phẩm ${productId} đã được duyệt`);
-            product.trangThai = "Đã duyệt";
-        } else if (loaiKiemDinh === "Kiểm định sản phẩm") {
-            const ngayTH = moment(product.ngayTH).format('YYYY-MM-DD');
-
-            const qualityCheckTx = await contract.checkProductQuality(productId, ngayTH, product.VatTuHTCT, admin.address);
-            await qualityCheckTx.wait();
-            console.log(`Chất lượng sản phẩm ${productId} đã được kiểm tra`);
-            product.trangThai = "Đã kiểm tra chất lượng";
-        } else if (loaiKiemDinh === "Kiểm định đóng gói") {
-            const ngayDG = moment(product.ngayDG).format('YYYY-MM-DD');
-            const hanSX = moment(product.hanSX).format('YYYY-MM-DD');
-            
-            const availableTx = await contract.makeProductAvailable(productId, ngayDG, hanSX, admin.address);
-            await availableTx.wait();
-            console.log(`Sản phẩm ${productId} đã được đưa lên bán`);
-            product.trangThai = "Đã kiểm tra đóng gói";
-        }
-        await product.save();
-
-        return res.status(200).json({ message: "Sản phẩm đã được duyệt, kiểm tra chất lượng và đưa lên bán thành công!" });
-    } catch (error) {
-        console.error("Lỗi trong quá trình xử lý sản phẩm:", error);
-        return res.status(500).json({ message: "Đã xảy ra lỗi khi xử lý sản phẩm", error: error.message });
-    }
-};
-
-const PINATA_API_KEY = process.env.PINATA_API_KEY;
-const PINATA_SECRET_KEY = process.env.PINATA_SECRET_KEY;
-
-const uploadToPinata = async (imageBase64) => {
-    try {
-        if (typeof imageBase64 !== "string") {
-            throw new Error("Dữ liệu ảnh không hợp lệ! Cần dạng chuỗi Base64.");
-        }
-
-        const formData = new FormData();
-        const base64Data = imageBase64.split(",")[1];
-        const imageBuffer = Buffer.from(base64Data, "base64");
-
-        formData.append("file", imageBuffer, { filename: "certify_image.png" });
-
-        const response = await axios.post("https://api.pinata.cloud/pinning/pinFileToIPFS", formData, {
-            headers: {
-                "Content-Type": `multipart/form-data; boundary=${formData._boundary}`,
-                pinata_api_key: PINATA_API_KEY,
-                pinata_secret_api_key: PINATA_SECRET_KEY
-            }
-        });
-
-        const cid = response.data.IpfsHash; // Chỉ lấy CID
-        return cid; // Lưu CID vào MongoDB
-    } catch (error) {
-        console.error("Lỗi upload Pinata:", error.message);
-        throw new Error("Không thể upload ảnh lên Pinata.");
-    }
-};
-
-
-
 export const addSanPham = async (req, res) => {
     try {
         const idND = req.nguoidung._id.toString();
         const { 
-            tenSP, moTaSP, idDM, nguonGoc, phanLoai, image, certify_image,
-            ngaySX, ngayTH, batchId,loaiTrong,ngayDG,hanSX,certifier
-        } = req.body;
+            tenSP, moTaSP, idDM, nguonGoc, phanLoai, image} = req.body;
 
-        if (!tenSP || !moTaSP || !idDM || !nguonGoc || !phanLoai || !ngaySX || !ngayTH || !batchId|| !certifier) {
+        if (!tenSP || !moTaSP || !idDM || !nguonGoc || !phanLoai ) {
             return res.status(400).json({ error: "Vui lòng nhập đầy đủ thông tin!" });
         }
 
@@ -325,17 +93,6 @@ export const addSanPham = async (req, res) => {
             }
         }
 
-        let cidChungNhan = "";
-        if (certify_image) {
-            try {
-                cidChungNhan = await uploadToPinata(certify_image); // Hàm này trả về CID
-            } catch (error) {
-                console.error("Lỗi upload ảnh chứng nhận:", error.message);
-                return res.status(500).json({ error: "Lỗi khi upload ảnh chứng nhận lên Pinata" });
-            }
-        }
-
-
         const cuaHang = await CuaHang.findOne({ idNguoiDung: idND });
         if (!cuaHang) {
             return res.status(404).json({ error: "Không tìm thấy cửa hàng!" });
@@ -349,14 +106,6 @@ export const addSanPham = async (req, res) => {
             nguonGoc,
             phanLoai,
             dsAnhSP: anhSPUrl,
-            ngaySX,
-            ngayTH,
-            batchId,
-            loaiTrong,
-            hanSX,
-            ngayDG,
-            certify_image: cidChungNhan,
-            certifier
         });
 
         const danhMuc = await DanhMuc.findById(idDM);
@@ -377,8 +126,6 @@ export const addSanPham = async (req, res) => {
         res.status(500).json({ message: "Lỗi server!", error: error.message });
     }
 };
-
-
 
 export const getTatCaSanPham = async (req, res) => {
     try {
@@ -715,59 +462,54 @@ export const getPendingProduct = async (req, res) => {
     }
 };
 
+// export const getPendingProductFromCertifier = async (req, res) => {
+//     try {
+//         const { certifierAddress } = req.params;
+//         console.log("Received certifierAddress:", certifierAddress);
+
+//         if (!certifierAddress ||  !ethers.isAddress(certifierAddress)) {
+//             return res.status(400).json({ message: "Địa chỉ certifier không hợp lệ" });
+//         }
+
+//         // Gọi smart contract để lấy danh sách sản phẩm pending
+//         const productDetails = await contract.getProductsByCertifier(certifierAddress);
+
+//         if (!productDetails.length) {
+//             return res.status(200).json([]);
+//         }
+
+//         // Chuyển đổi dữ liệu sang định dạng mong muốn
+//         const results = productDetails.map((p) => ({
+//             _id: p.productId,
+//             tenSP: p.productName,
+//             tenCuaHang: p.storeName || "Không xác định",
+//             nguonGoc: p.seedType || "Không xác định",
+//             trangThai: p.isCertified ? "Đã xác nhận" : "Chờ xác nhận",
+//             ngaySX: formatDate(p.sowingDate),
+//             ngayTH: formatDate(p.harvestingDate),
+//             dsAnhSP: [], // Blockchain có lưu ảnh không? Nếu có, cần truy xuất
+//             certify_image: null,
+//             certifier: p.certifierName,
+//             batchId: p.productId, // Giả sử productId cũng là batchId
+//             tenDM: "Không xác định", // Không có thông tin danh mục trong contract
+//             phanLoai: [] // Blockchain có hỗ trợ phân loại không? Nếu có, cần xử lý
+//         }));
+
+//         res.status(200).json(results);
+//     } catch (error) {
+//         console.error("Lỗi khi lấy sản phẩm pending từ blockchain:", error);
+//         res.status(500).json({ message: "Lỗi server", error: error.message });
+//     }
+// };
 
 
 
-const contract = new ethers.Contract(contractAddress, abi, provider);
-
-export const getPendingProductFromCertifier = async (req, res) => {
-    try {
-        const { certifierAddress } = req.params;
-        console.log("Received certifierAddress:", certifierAddress);
-
-        if (!certifierAddress ||  !ethers.isAddress(certifierAddress)) {
-            return res.status(400).json({ message: "Địa chỉ certifier không hợp lệ" });
-        }
-
-        // Gọi smart contract để lấy danh sách sản phẩm pending
-        const productDetails = await contract.getProductsByCertifier(certifierAddress);
-
-        if (!productDetails.length) {
-            return res.status(200).json([]);
-        }
-
-        // Chuyển đổi dữ liệu sang định dạng mong muốn
-        const results = productDetails.map((p) => ({
-            _id: p.productId,
-            tenSP: p.productName,
-            tenCuaHang: p.storeName || "Không xác định",
-            nguonGoc: p.seedType || "Không xác định",
-            trangThai: p.isCertified ? "Đã xác nhận" : "Chờ xác nhận",
-            ngaySX: formatDate(p.sowingDate),
-            ngayTH: formatDate(p.harvestingDate),
-            dsAnhSP: [], // Blockchain có lưu ảnh không? Nếu có, cần truy xuất
-            certify_image: null,
-            certifier: p.certifierName,
-            batchId: p.productId, // Giả sử productId cũng là batchId
-            tenDM: "Không xác định", // Không có thông tin danh mục trong contract
-            phanLoai: [] // Blockchain có hỗ trợ phân loại không? Nếu có, cần xử lý
-        }));
-
-        res.status(200).json(results);
-    } catch (error) {
-        console.error("Lỗi khi lấy sản phẩm pending từ blockchain:", error);
-        res.status(500).json({ message: "Lỗi server", error: error.message });
-    }
-};
-
-
-
-// Hàm định dạng ngày
-function formatDate(dateStr) {
-    if (!dateStr) return "Không xác định";
-    const date = new Date(dateStr);
-    return date.toLocaleDateString("vi-VN");
-}
+// // Hàm định dạng ngày
+// function formatDate(dateStr) {
+//     if (!dateStr) return "Không xác định";
+//     const date = new Date(dateStr);
+//     return date.toLocaleDateString("vi-VN");
+// }
 
 export const updateProductStatus = async (req, res) => {
     try {

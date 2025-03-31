@@ -12,14 +12,6 @@ function ProductsPageAdd() {
         idDM: null,
         nguonGoc: '',
         image: null,
-        certify_image:null,
-        ngaySX: '',       
-        ngayTH: '',       
-        batchId: '', 
-        ngayDG:'',
-        hanSX:''  ,
-        loaiTrong: '',
-        certifier:'',
         phanLoai: [
             { idPL: "", tenLoai: "", giaLoai: "", donVi: "", khuyenMai: "", khoHang: "" }
         ],
@@ -47,7 +39,6 @@ function ProductsPageAdd() {
         }
     };
     
-       // Chọn danh mục
     const [chonLoai, setChonLoai] = useState(false);
     const [categories, setCategories] = useState([]);
     useEffect(() => {
@@ -69,40 +60,6 @@ function ProductsPageAdd() {
         setChonLoai(false);
     };
 
-    const [chonCertifier, setChonCertifier] = useState(false);
-    const [certifiers, setCertifiers] = useState([]);
-    const [tenCertifier, setTenCertifier] = useState("Chọn certifier");
-
-
-        useEffect(() => {
-            const fetchCertifiers = async () => {
-                try {
-                    const response = await axios.get("/api/admin/lay/certifier");
-                    setCertifiers(response.data);
-                } catch (error) {
-                    console.error("Lỗi khi lấy danh sách certifier:", error);
-                }
-            };
-
-            fetchCertifiers();
-        }, []);
-
-
-        const handleCertifierSelect = (certifier) => {
-            setFormData(prev => ({ ...prev, certifier: certifier.address }));
-            setTenCertifier(certifier.tenAdmin); 
-            setChonCertifier(false);
-        };
-        
-        
-
-    
- 
-
-
-
-
-    // Phân loại
     const xulyThaydoiPhanLoai = (index, field, value) => {
         setFormData(prev => ({
             ...prev,
@@ -111,7 +68,6 @@ function ProductsPageAdd() {
             )
         }));
     };
-    
 
     const themPhanLoai = () => {
         setFormData(prev => ({
@@ -123,16 +79,13 @@ function ProductsPageAdd() {
         }));
     };
     
-
     const xoaPhanLoai = (index) => {
         setFormData(prev => ({
             ...prev,
             phanLoai: prev.phanLoai.filter((_, i) => i !== index)
         }));
     };
-    
 
-    // Thêm ảnh
     const xulyChonFile = (event) => {
         const file = event.target.files[0];  
         if (file) {
@@ -151,27 +104,6 @@ function ProductsPageAdd() {
         setFormData(prev => ({ ...prev, image: null }));
     };
 
-    const xulyChonFileCertify = (event) => {
-        const file2 = event.target.files[0];
-        if (file2) {
-            const reader = new FileReader();
-            reader.readAsDataURL(file2);
-            reader.onloadend = () => {
-                setFormData((prevData) => ({
-                    ...prevData,
-                    certify_image: reader.result, // Chuyển file thành base64
-                }));
-            };
-        }
-    };
-    
-    const xoaFileCertify = () => {
-        setFormData((prev) => ({ ...prev, certify_image: null }));
-    };
-    
-    
-
-
     return (
         <MainLayout>
             <div className="bg-white p-5 rounded-xl mb-5 shadow-xl h-full">
@@ -180,7 +112,7 @@ function ProductsPageAdd() {
                         <BiStoreAlt />
                         Thêm Sản Phẩm Mới
                     </h1>
-                    <button className="text-xl py-3 px-5 rounded-full bg-emerald-600 text-white font-bold flex items-center gap-2" onClick={handleSubmit}>
+                    <button className="mb-5 text-xl py-3 px-5 rounded-full bg-emerald-600 text-white font-bold flex items-center gap-2" onClick={handleSubmit}>
                         <FaCheck />
                         Thêm sản phẩm
                     </button>
@@ -198,16 +130,6 @@ function ProductsPageAdd() {
                             value={formData.tenSP}
                             onChange={(e) => setFormData(prev => ({ ...prev, tenSP: e.target.value }))}
                         />
-                        <p>Loại cây trồng</p>
-                        <input
-                            type="text"
-                            name="loaiTrong"
-                            placeholder="Loại cây trồng"
-                            required
-                            className="mt-2 mb-5 bg-gray-100 w-full p-2 rounded-lg outline-none"
-                            value={formData.loaiTrong}
-                            onChange={(e) => setFormData(prev => ({ ...prev, loaiTrong: e.target.value }))}
-                        />
                         <p>Mô tả sản phẩm</p>
                         <textarea
                             name="moTaSP"
@@ -223,7 +145,7 @@ function ProductsPageAdd() {
                                     className="cursor-pointer relative bg-gray-100 hover:bg-gray-200 w-full h-12 rounded-lg flex gap-2 items-center justify-between px-5"
                                     onClick={() => setChonLoai(!chonLoai)}
                                 >
-                                    {tenDanhMuc}  {/* Hiển thị tên danh mục đã chọn */}
+                                    {tenDanhMuc}
                                     <IoIosArrowDropdownCircle />
                                 </button>
 
@@ -326,58 +248,9 @@ function ProductsPageAdd() {
                                         </button>
                                     </div>
                                 )}
-                             <input type="file" accept="image/*" onChange={xulyChonFileCertify} className="mt-10" />
-                                {formData.certify_image && (
-                                    <div className="mt-3">
-                                        <p>{formData.certify_image.name}</p>
-                                        <button className="bg-red-500 text-white px-3 py-1 rounded-md mt-2" onClick={xoaFileCertify}>
-                                            Xóa ảnh
-                                        </button>
-                                    </div>
-                                )}
-                                 <div className="flex gap-5 items-center mt-10">
-                                    <p>Certifier</p>
-                                    <div className="relative w-full">
-                                    <button
-                                            className="cursor-pointer relative bg-gray-100 hover:bg-gray-200 w-full h-12 rounded-lg flex gap-2 items-center justify-between px-5"
-                                            onClick={() => setChonCertifier(!chonCertifier)}
-                                        >
-                                            {tenCertifier}
-                                            <IoIosArrowDropdownCircle />
-                                        </button>
-                                        {chonCertifier && (
-                                            <div className="absolute left-0 w-full bg-white shadow-lg rounded-lg p-2 z-50">
-                                                <ul>
-                                                    {certifiers.length > 0 ? (
-                                                        certifiers.map((certifier, index) => (
-                                                            <li
-                                                                key={index}
-                                                                className="text-black border-b border-gray-200 hover:bg-gray-100 p-2 cursor-pointer"
-                                                                onClick={() => handleCertifierSelect(certifier)}
-                                                            >
-                                                                {certifier.tenAdmin}
-                                                            </li>
-                                                        ))
-                                                    ) : (
-                                                        <li className="text-gray-500 p-2">Không có certifier nào</li>
-                                                    )}
-                                                </ul>
-                                            </div>
-                                        )}
-                                    </div>
-                                </div>
                         </div>
                         <div className="bg-slate-50 p-5 mt-5">
                             <p className="font-medium text-xl mb-3">Thông tin chi tiết</p>
-                            <input
-                                type="text"
-                                name="batchId"
-                                placeholder="BatchID (Mã lô hàng)"
-                                required
-                                className="mt-2 mb-5 bg-gray-100 w-full p-2 rounded-lg outline-none"
-                                value={formData.batchId}
-                                onChange={(e) => setFormData(prev => ({ ...prev, batchId: e.target.value }))}
-                            />
                             <input
                                 type="text"
                                 name="nguonGoc"
@@ -387,43 +260,6 @@ function ProductsPageAdd() {
                                 value={formData.nguonGoc}
                                 onChange={(e) => setFormData(prev => ({ ...prev, nguonGoc: e.target.value }))}
                             />
-                              <input
-                                type="text"
-                                name="ngaySX"
-                                placeholder="Ngày sản xuất  vd: 01/01/2025"
-                                required
-                                className="mt-2 mb-5 bg-gray-100 w-full p-2 rounded-lg outline-none"
-                                value={formData.ngaySX}
-                                onChange={(e) => setFormData(prev => ({ ...prev, ngaySX: e.target.value }))}
-                            />
-                               <input
-                                type="text"
-                                name="ngayTH"
-                                placeholder="Ngày thu hoạch vd: 01/05/2025"
-                                required
-                                className="mt-2 mb-5 bg-gray-100 w-full p-2 rounded-lg outline-none"
-                                value={formData.ngayTH}
-                                onChange={(e) => setFormData(prev => ({ ...prev, ngayTH: e.target.value }))}
-                            />
-                               <input
-                                type="text"
-                                name="ngayDG"
-                                placeholder="Ngày đóng gói sản phẩm"
-                                required
-                                className="mt-2 mb-5 bg-gray-100 w-full p-2 rounded-lg outline-none"
-                                value={formData.ngayDG}
-                                onChange={(e) => setFormData(prev => ({ ...prev, ngayDG: e.target.value }))}
-                            />
-                              <input
-                                type="text"
-                                name="hanSX"
-                                placeholder="Hạn sử dụng sản phẩm"
-                                required
-                                className="mt-2 mb-5 bg-gray-100 w-full p-2 rounded-lg outline-none"
-                                value={formData.hanSX}
-                                onChange={(e) => setFormData(prev => ({ ...prev, hanSX: e.target.value }))}
-                            />
-                            
                         </div>
                         
                     </div>

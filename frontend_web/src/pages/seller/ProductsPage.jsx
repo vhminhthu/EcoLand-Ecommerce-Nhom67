@@ -150,12 +150,7 @@ function ProductsPage() {
     return (
         <MainLayout>
             <div className="bg-white !p-6 rounded-lg shadow-md min-h-screen !pb-10">
-                <div className="flex justify-between items-center !mb-4">
-                    <input
-                        type="text"
-                        placeholder="Search in product"
-                        className="border-2 border-[#E7E7E7] !px-4 !py-2 rounded-full !w-1/3 !outline-none focus:outline-none"
-                    />
+                <div className="flex justify-end items-center !mb-4">
                     <div>
                         <button 
                             className="border-2 border-[#37906C] text-[#37906C] font-bold bg-white !px-8 !py-2 !mr-5 rounded-lg hover:bg-green-100 hover:border-green-700"
@@ -184,7 +179,6 @@ function ProductsPage() {
                             <tr className="bg-[#1B8057] text-white ">
                                 <th className="!py-3 !px-4 text-left">Sản phẩm</th>
                                 <th className="!py-3 !px-4 text-left">Phân loại</th>
-                                <th className="!py-3 !px-4 text-left">Batch ID</th>
                                 <th className="!py-3 !px-4 text-left">Giá</th>
                                 <th className="!py-3 !px-4 text-left">Giảm</th>
                                 <th className="!py-3 !px-4 text-left">Trạng Thái</th>
@@ -217,7 +211,6 @@ function ProductsPage() {
                 <span className="text-gray-500">Không có phân loại</span>
             )}
         </td>
-        <td className="!py-3 !px-4">{product?.batchId || "Không có Batch ID"}</td>
         <td className="!py-3 !px-4">
             {product?.phanLoai?.map((phanLoai) => (
                 <div key={`${phanLoai?.tenLoai}-${phanLoai?.idPL}`} className="flex justify-between">
@@ -409,15 +402,6 @@ function ProductsPage() {
                                 className="w-full border rounded-md p-2 focus:ring focus:ring-emerald-400" 
                                 value={selectedPhanLoai?.khuyenMai || ''} 
                                 onChange={(e) => setSelectedPhanLoai({ ...selectedPhanLoai, khuyenMai: e.target.value })} 
-                            />
-                        </div>
-
-                        <div>
-                            <label className="block text-sm font-medium text-gray-600">Batch ID</label>
-                            <input 
-                                type="text" 
-                                className="w-full border rounded-md p-2 focus:ring focus:ring-emerald-400" 
-                                defaultValue={selectedProduct.batchId} 
                             />
                         </div>
                     </div>

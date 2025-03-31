@@ -7,7 +7,6 @@ export const Roles = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [role, setRole] = useState("INSPECTOR"); 
-  const [address, setAddress] = useState(""); 
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
 
@@ -21,13 +20,11 @@ export const Roles = () => {
         tenAdmin: name,
         email,
         phanQuyen: role,
-        address,
       });
 
       setMessage(res.data.message);
       setName("");
       setEmail("");
-      setAddress("");
       setRole("INSPECTOR");
     } catch (error) {
       setMessage(error.response?.data?.message || "Có lỗi xảy ra!");
@@ -65,16 +62,6 @@ export const Roles = () => {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="!mt-1 block w-full !p-2 border rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
-                required
-              />
-            </div>
-            <div className="!mb-4">
-              <label className="block text-sm font-medium text-gray-700">Address</label>
-              <input
-                type="address"
-                value={address}
-                onChange={(e) => setAddress(e.target.value)}
                 className="!mt-1 block w-full !p-2 border rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
                 required
               />

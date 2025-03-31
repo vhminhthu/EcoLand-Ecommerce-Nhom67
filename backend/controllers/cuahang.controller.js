@@ -1,24 +1,12 @@
 import CuaHang from "../models/cuahang.model.js";
 import {v2 as cloudinary} from 'cloudinary'
 import SanPham from "../models/sanpham.model.js";
-import mongoose from "mongoose";
-import CryptoJS from "crypto-js";
-import { ethers } from "ethers";
-import abi from "../abi.js";
 import Admin from "../models/admin.model.js";
 import Nguoidung from "../models/nguoidung.model.js";
-import dotenv from "dotenv";
 import axios from "axios";
 import FormData from "form-data";
+import dotenv from "dotenv";
 dotenv.config();
-
-const provider = new ethers.JsonRpcProvider(process.env.INFURA_API_URL);
-const adminPrivateKey = process.env.ADMIN_PRIVATE_KEY;
-const contractAddress = process.env.CONTRACT_ADDRESS;
-const contractABI = abi; 
-
-const PINATA_API_KEY = process.env.PINATA_API_KEY;
-const PINATA_SECRET_KEY = process.env.PINATA_SECRET_KEY;
 
 const uploadToPinata = async (imageBase64) => {
     try {
@@ -35,8 +23,8 @@ const uploadToPinata = async (imageBase64) => {
         const response = await axios.post("https://api.pinata.cloud/pinning/pinFileToIPFS", formData, {
             headers: {
                 "Content-Type": `multipart/form-data; boundary=${formData._boundary}`,
-                pinata_api_key: PINATA_API_KEY,
-                pinata_secret_api_key: PINATA_SECRET_KEY
+                pinata_api_key: process.env.PINATA_API_KEY,
+                pinata_secret_api_key: process.env.PINATA_SECRET_KEY
             }
         });
 
@@ -108,7 +96,7 @@ export const addCuaHang = async (req, res) => {
 export const duyetCuaHang = async (req, res) => {
     try {
         const adminId = req.admin._id;
-        const { trangThai, nguyenNhanTC, matKhau } = req.body;
+        const { trangThai, nguyenNhanTC } = req.body;
         const { idCuaHang } = req.params;
 
         const cuaHang = await CuaHang.findById(idCuaHang);
@@ -129,22 +117,8 @@ export const duyetCuaHang = async (req, res) => {
             return res.status(403).json({ message: `Bạn không có quyền thay đổi trạng thái thành ${trangThai}!` });
         }        
 
-        const signer = new ethers.Wallet(matKhau, provider);
-        const contract = new ethers.Contract(contractAddress, contractABI, signer);
-
         if (trangThai === "Mở cửa") {
             try {
-                console.log("Đang gửi giao dịch tạo cửa hàng lên Blockchain...");
-                const tx = await contract.createStore(
-                    idCuaHang.toString(),
-                    cuaHang.tenCH,
-                    cuaHang.cidChungNhan,
-                    cuaHang.diaChiCH
-                );
-                console.log("Giao dịch đã gửi:", tx.hash);
-                await tx.wait();
-                console.log("Giao dịch hoàn tất trên blockchain!"); 
-                
                 nguoiDung.vaiTro = "seller";
                 await nguoiDung.save();           
             } catch (err) {
