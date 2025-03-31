@@ -8,6 +8,7 @@ import ChatPage from "../pages/seller/ChatPage";
 import ProductsPageAdd from "../pages/seller/ProductsPageAdd";
 import BecomeSeller from "../pages/seller/BecomeSeller";
 import { useAuth } from "../context/AuthContext";
+import  ProductTracking from "../pages/seller/ProductTracking";
 
 function SellerRoutes() {
     const { user, loading } = useAuth();
@@ -20,6 +21,7 @@ function SellerRoutes() {
         <Route path="orders" element={<OrdersPage />} />
         <Route path="finance" element={<FinancePage />} />
         <Route path="products" element={<ProductsPage />} />
+        <Route path="origin" element={<ProductTracking />} />
         <Route path="products/add" element={<ProductsPageAdd />} />
         <Route path="store" element={<StorePage />} />
         <Route path="chat" element={<ChatPage />} />
