@@ -76,13 +76,23 @@ function CategoryPageSearch() {
     });
   };
 
+  // const handleSortChange = (newSort) => {
+  //   navigate(`?sort=${newSort}&page=1&limit=20`, {
+  //       state: {
+  //           id: id,
+  //       }
+  //   });
+  // };
+
   const handleSortChange = (newSort) => {
-    navigate(`?sort=${newSort}&page=1&limit=20`, {
-        state: {
-            id: id,
-        }
+    const searchParams = new URLSearchParams(location.search);
+    searchParams.set("sort", newSort);
+    searchParams.set("page", 1); // Khi thay đổi sắp xếp, quay về trang đầu tiên
+
+    navigate(`${location.pathname}?${searchParams.toString()}`, {
+        state: { id: id }
     });
-  };
+};
 
   const handleCategoryChange = (newCate) => {
     const nameCategory = newCate.tenDM.replace(/\s+/g, '-');
@@ -238,8 +248,8 @@ function CategoryPageSearch() {
                   value={sort}
                 >
                   <option value="" className="text-black bg-white">Giá</option>
-                  <option value="giaTang" className={`cursor-pointer text-black ${sort === "giaTang" ? 'bg-[#1B8057] text-white' : 'bg-white'}`}>Giá tăng</option>
-                  <option value="giaGiam" className={`cursor-pointer text-black ${sort === "giaGiam" ? 'bg-[#1B8057] text-white' : 'bg-white'}`}>Giá giảm</option>
+                  <option value="giatang" onClick={(e) => handleSortChange(e.target.value)} className ={`cursor-pointer text-black ${sort === "giaTang" ? 'bg-[#1B8057] text-white' : 'bg-white'}`}>Giá tăng</option>
+                  <option value="giagiam" onClick={(e) => handleSortChange(e.target.value)} className={`cursor-pointer text-black ${sort === "giaGiam" ? 'bg-[#1B8057] text-white' : 'bg-white'}`}>Giá giảm</option>
                 </select>
               </div>
             </div>
