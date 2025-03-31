@@ -11,10 +11,7 @@ function PurchasePage() {
     const [donhang, setDonHang] = useState([]);
     const [danhGiaMoi, setDanhGiaMoi] = useState(null);
     const [showChat, setShowChat] = useState(false);
-    
-
     const [isDanhGia, setIsDanhGia] = useState(false);
-
 
     const fetchDonHang = async () => {
         try {

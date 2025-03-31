@@ -21,26 +21,13 @@ const sanphamSchema = new mongoose.Schema(
         trangThai: { type: String, default: "Chờ xác nhận" },
         luotXem: { type: Number, default: 0 },
         dsAnhSP: { type: String },
-        certify_image:{type: String},
         nguonGoc: { type: String },
         tongSoSao: { type: Number, default: 0 },
         tongSoDanhGia: { type: Number, default: 0 },
         dsDanhGia: [{ type: mongoose.Schema.Types.ObjectId, ref: "Danhgia", default: [] }],
         dsDonHang: [{ type: mongoose.Schema.Types.ObjectId, ref: "Donhang", default: [] }],
-        addressNguoiDuyet:{type: String},
         idNguoiDuyet: { type: mongoose.Schema.Types.ObjectId, ref: "Admin"},
-
-        ngaySX: { type: Date }, 
-        loaiTrong: { type: String },  //
-
-        ngayTH: { type: Date}, 
-
-        ngayDG: { type: Date}, 
-        hanSX: { type: Date}, 
-
-        batchId: { type: String },
         nguyenNhanTC:{type: String},
-        certifier:{type: String}
     },
     {
         timestamps: true
