@@ -1,8 +1,10 @@
 import MainLayout from "../../layouts/seller/MainLayout"
 import { IoIosArrowDown } from "react-icons/io";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import DoanhThuChart from "../../components/seller/common/chart/DoanhThuChart";
 import DonHangChart from "../../components/seller/common/chart/DonHangChart";
+import axios from "axios";
+
 const orders = [
     {
         id: 1,
@@ -56,6 +58,41 @@ const bestSellingProducts = [
 
 function HomePage() {
     const [isOpenCategory, setIsOpenCategory] = useState(false); 
+    const [doanhThu, setDoanhThu] = useState([]);
+    const [tongDoanhThu, setTongDoanhThu] = useState([]);
+
+    const [type, setType] = useState("Ngày");
+
+
+    useEffect(() => {
+        const getDoanhThu = async () => {
+            try {
+                const response = await axios.get(`/api/donhang/lay/doanh-thu?type=${type}`);
+                console.log(response.data.data)
+                setDoanhThu(response.data.data);
+                setTongDoanhThu(response.data.tong)
+            } catch (error) {
+                console.error("Lỗi khi lấy tên cửa hàng:", error);
+            }
+        };
+
+        getDoanhThu();
+    }, [type]);
+
+    useEffect(() => {
+        const getDoanhThu = async () => {
+            try {
+                const response = await axios.get(`/api/donhang/lay/tinh-trang-don-hang`);
+                console.log(response.data.data)
+                setDoanhThu(response.data.data);
+                setTongDoanhThu(response.data.tong)
+            } catch (error) {
+                console.error("Lỗi khi lấy tên cửa hàng:", error);
+            }
+        };
+
+        getDoanhThu();
+    }, [type]);
     
     return (
         <MainLayout>
@@ -64,32 +101,38 @@ function HomePage() {
                     <span className="flex justify-between">
                         <p className="font-bold text-xl text-emerald-700">Tổng doanh thu</p>
                         <div className="relative">
-                            <button className="w-30 cursor-pointer flex items-center justify-center gap-3 bg-gray-100 !px-5 !py-2 rounded-xl" 
-                                onMouseEnter={() => setIsOpenCategory(true)}
-                                onMouseLeave={() => setIsOpenCategory(false)}
-                            >
-                                <span>Ngày</span>
-                                <IoIosArrowDown className="text-2xl" />
-                            </button>
-                            {isOpenCategory && (
-                                <div className="w-30 absolute left-0 !mt-2 bg-white shadow-lg rounded-lg !p-2 z-50">
-                                    <ul>
-                                        <li className="hover:bg-gray-100 !p-2 cursor-pointer">
-                                            Tuần
-                                        </li>
-                                        <li className="hover:bg-gray-100 !p-2 cursor-pointer">
-                                            Tháng
-                                        </li>
-                                        <li className="hover:bg-gray-100 !p-2 cursor-pointer">
-                                            Năm
-                                        </li>
-                                    </ul>
-                                </div>
-                            )}
+                        <button
+                            className="w-[120px] cursor-pointer flex items-center justify-center gap-3 bg-gray-100 px-5 py-2 rounded-xl"
+                            onClick={() => setIsOpenCategory(!isOpenCategory)}
+                        >
+                            <span>{type}</span>
+                            <IoIosArrowDown className="text-2xl" />
+                        </button>
+                        {isOpenCategory && (
+                            <div className="w-[120px] absolute left-0 mt-2 bg-white shadow-lg rounded-lg p-2 z-50">
+                                <ul>
+                                    <li className="hover:bg-gray-100 p-2 cursor-pointer" 
+                                        onClick={() => {
+                                            setType("Ngày");  
+                                            setIsOpenCategory(false);
+                                        }}>
+    
+                                        Ngày
+                                    </li>
+                                    <li className="hover:bg-gray-100 p-2 cursor-pointer" 
+                                        onClick={() => {
+                                            setType("Tuần");  
+                                            setIsOpenCategory(false);
+                                        }}>
+                                        Tuần
+                                    </li>
+                                </ul>
+                            </div>
+                        )}
                         </div>
                     </span>
-                    <p className="font-black !mt-1 text-3xl">10.000.000 đ</p>
-                    <DoanhThuChart/>
+                    <p className="font-black !mt-1 text-3xl">{tongDoanhThu?.toLocaleString() || 0} đ</p>
+                    {doanhThu && <DoanhThuChart doanhThu={doanhThu} />}
                 </div>
 
                 <div className="col-start-7 col-end-10 bg-white !p-5 rounded-xl shadow-xl row-start-1 row-end-3">
