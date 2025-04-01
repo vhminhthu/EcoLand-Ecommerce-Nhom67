@@ -221,8 +221,8 @@ const ProductTracking = () => {
                   <div className="text-center">UUID</div>
                 </div>
                 {products.map((product, index) => (
-                  <>
-                            <div
+                <>
+                  <div
                     key={index}
                     className="text-lg bg-white grid grid-cols-4 p-5 border-b hover:bg-gray-100 cursor-pointer"
                     onClick={() => handleSelectProduct(product)}
@@ -257,38 +257,38 @@ const ProductTracking = () => {
                         ? "Kiểm tra chất lượng cuối cùng"
                         : "Không xác định"}
                     </div>
-                    <FaQrcode
-                        size={30}
-                        className="cursor-pointer text-green-500 hover:text-green-600"
-                        onClick={(event) => {
-                          event.stopPropagation(); 
-                          openQRDialog();
-                        }}
-                      />
+                    <div className="mx-auto">
+                      <FaQrcode
+                          size={30}
+                          className="cursor-pointer text-green-500 hover:text-green-600"
+                          onClick={(event) => {
+                            event.stopPropagation(); 
+                            openQRDialog();
+                          }}
+                        />
+                    </div>
                   </div>
                   {isModalOpen && (
-            <div className="fixed top-0 left-0 w-full h-screen bg-black/40 flex items-center justify-center z-50" onClick={closeQRDialog}>
-                <div className="w-[830px] bg-white p-5 rounded-lg shadow-xl text-center" onClick={(e) => e.stopPropagation()}>
-                <h2 className="text-sm text-gray-800 mb-4"><strong>UUID</strong> {product.uuid}</h2>
-                <QRCode
-                    value={`https://frontend-tttn-t7hc.vercel.app/product/detail/${product.uuid}`}
-                    size={256}
-                    fgColor="#000000"
-                    bgColor="#ffffff"
-                    className="mx-auto"
-                />
-                <button
-                    onClick={closeQRDialog}
-                    className="mt-4 py-2 px-4 w-full bg-green-600 text-white rounded-xl hover:bg-green-500"
-                >
-                    Đóng
-                </button>
-                </div>
-            </div>
-            )}
-                  </>
-        
-                  
+                    <div className="fixed top-0 left-0 w-full h-screen bg-black/40 flex items-center justify-center z-50" onClick={closeQRDialog}>
+                        <div className="w-[830px] bg-white p-5 rounded-lg shadow-xl text-center" onClick={(e) => e.stopPropagation()}>
+                        <h2 className="text-sm text-gray-800 mb-4"><strong>UUID</strong> {product.uuid}</h2>
+                        <QRCode
+                            value={`https://frontend-tttn-t7hc.vercel.app/product/detail/${product.uuid}`}
+                            size={256}
+                            fgColor="#000000"
+                            bgColor="#ffffff"
+                            className="mx-auto"
+                        />
+                        <button
+                            onClick={closeQRDialog}
+                            className="mt-4 py-2 px-4 w-full bg-green-600 text-white rounded-xl hover:bg-green-500"
+                        >
+                            Đóng
+                        </button>
+                        </div>
+                    </div>
+                  )}
+                </>
                 ))}
               </div>
             </div>       
