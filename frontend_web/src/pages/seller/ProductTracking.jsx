@@ -3,6 +3,8 @@ import MainLayout from "../../layouts/seller/MainLayout";
 import ConnectAccount from "./ConnectAccount";
 import EcoLandSupplyChainABI from "../../EcoLandSupplyChainABI.js"
 import { BrowserProvider, Contract } from "ethers";
+import { FaQrcode } from 'react-icons/fa'; 
+import QRCode from 'react-qr-code'; 
 
 const steps = ["Nhập thông tin cơ bản", "Nhập loại giống & vật tư", "Nhập ngày thu hoạch", "Nhập ngày đóng gói", "Hoàn thành"];
 const contractAddress = import.meta.env.VITE_CONTRACT_ADDRESS;
@@ -15,6 +17,15 @@ const ProductTracking = () => {
   const [error, setError] = useState('');
   const [contract, setContract] = useState(null);
   const [selectedProduct, setSelectedProduct] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+    const openQRDialog = () => {
+      setIsModalOpen(true);
+  };
+
+  const closeQRDialog = () => {
+      setIsModalOpen(false);
+  };
+
 
   useEffect(() => {
     const savedAddress = localStorage.getItem("userAddress");
@@ -203,15 +214,17 @@ const ProductTracking = () => {
                 <button onClick={handleCreateProduct} disabled={!userAddress} className={`px-4 py-2 rounded-lg text-white cursor-pointer ${userAddress ? "bg-green-600 hover:bg-green-700" : "bg-gray-400 cursor-not-allowed"}`}>Tạo sản phẩm</button>
               </div>
               <div className=" rounded-lg overflow-hidden">
-                <div className="text-xl grid grid-cols-3 bg-green-700 text-white p-3">
+                <div className="text-xl grid grid-cols-4 bg-green-700 text-white p-3">
                   <div className="text-center">Tên sản phẩm</div>
                   <div className="text-center">Tên nông dân</div>
                   <div className="text-center">Trạng thái</div>
+                  <div className="text-center">UUID</div>
                 </div>
                 {products.map((product, index) => (
-                  <div
+                  <>
+                            <div
                     key={index}
-                    className="text-lg bg-white grid grid-cols-3 p-5 border-b hover:bg-gray-100 cursor-pointer"
+                    className="text-lg bg-white grid grid-cols-4 p-5 border-b hover:bg-gray-100 cursor-pointer"
                     onClick={() => handleSelectProduct(product)}
                   >
                     <div className="text-center font-semibold">{product.productName}</div>
@@ -244,7 +257,38 @@ const ProductTracking = () => {
                         ? "Kiểm tra chất lượng cuối cùng"
                         : "Không xác định"}
                     </div>
+                    <FaQrcode
+                        size={30}
+                        className="cursor-pointer text-green-500 hover:text-green-600"
+                        onClick={(event) => {
+                          event.stopPropagation(); 
+                          openQRDialog();
+                        }}
+                      />
                   </div>
+                  {isModalOpen && (
+            <div className="fixed top-0 left-0 w-full h-screen bg-black/40 flex items-center justify-center z-50" onClick={closeQRDialog}>
+                <div className="w-[830px] bg-white p-5 rounded-lg shadow-xl text-center" onClick={(e) => e.stopPropagation()}>
+                <h2 className="text-sm text-gray-800 mb-4"><strong>UUID</strong> {product.uuid}</h2>
+                <QRCode
+                    value={`https://frontend-tttn-t7hc.vercel.app/product/detail/${product.uuid}`}
+                    size={256}
+                    fgColor="#000000"
+                    bgColor="#ffffff"
+                    className="mx-auto"
+                />
+                <button
+                    onClick={closeQRDialog}
+                    className="mt-4 py-2 px-4 w-full bg-green-600 text-white rounded-xl hover:bg-green-500"
+                >
+                    Đóng
+                </button>
+                </div>
+            </div>
+            )}
+                  </>
+        
+                  
                 ))}
               </div>
             </div>       
@@ -797,7 +841,7 @@ const ProductTracking = () => {
                     )}
                     </div>  
                   </>
-                )}
+                )}      
               </div>
             </div>
           )}
