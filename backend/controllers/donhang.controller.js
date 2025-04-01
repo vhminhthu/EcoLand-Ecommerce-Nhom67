@@ -258,3 +258,117 @@ export const capNhatTrangThaiDonHang = async (req, res) => {
         res.status(500).json({ message: "Lỗi server!", error });
     }
 };
+
+
+export const getDoanhThu = async (req, res) => { 
+    try {
+        const { type } = req.query;
+
+        const now = new Date();
+        const yearNum = now.getFullYear();
+        const monthNum = now.getMonth() + 1;
+        const dayNum = now.getDate();
+
+        const firstDayOfWeek = new Date(now);
+        firstDayOfWeek.setDate(now.getDate() - now.getDay() + 1);
+        firstDayOfWeek.setHours(0, 0, 0, 0);
+
+        let matchStage = {}; // Điều kiện lọc thời gian
+        let groupStage = {}; // Điều kiện nhóm dữ liệu
+        let formatStage = {}; // Format đầu ra
+
+        if (type === "Ngày") {
+            matchStage = {
+                $expr: {
+                    $and: [
+                        { $eq: [{ $year: "$ngayDat" }, yearNum] },
+                        { $eq: [{ $month: "$ngayDat" }, monthNum] },
+                        { $eq: [{ $dayOfMonth: "$ngayDat" }, dayNum] }
+                    ]
+                }
+            };
+            groupStage = { _id: { $hour: "$ngayDat" } };
+            formatStage = {
+                $set: { _id: { $concat: [{ $toString: "$_id" }, ":00"] } }
+            };
+        } 
+        else if (type === "Tuần") {
+            matchStage = { ngayDat: { $gte: firstDayOfWeek, $lt: now } };
+            groupStage = { _id: { $dayOfWeek: "$ngayDat" } };
+            formatStage = {
+                $set: {
+                    _id: {
+                        $switch: {
+                            branches: [
+                                { case: { $eq: ["$_id", 1] }, then: "Thứ 6" },
+                                { case: { $eq: ["$_id", 2] }, then: "Thứ 2" },
+                                { case: { $eq: ["$_id", 3] }, then: "Thứ 3" },
+                                { case: { $eq: ["$_id", 4] }, then: "Thứ 4" },
+                                { case: { $eq: ["$_id", 5] }, then: "Thứ 5" },
+                                { case: { $eq: ["$_id", 6] }, then: "Thứ 6" },
+                                { case: { $eq: ["$_id", 7] }, then: "Thứ 7" }
+                            ],
+                            default: "Unknown"
+                        }
+                    }
+                }
+            };
+        }
+        else {
+            return res.status(400).json({ message: "Loại thống kê không hợp lệ" });
+        }
+
+        const revenue = await Donhang.aggregate([
+            { $match: matchStage },
+            {
+                $group: {
+                    _id: groupStage._id,
+                    totalRevenue: { $sum: "$tongTienThanhToan" }
+                }
+            },
+            formatStage,
+            { $sort: { _id: 1 } }
+        ]);
+
+        // Tính tổng doanh thu
+        const tong = await Donhang.aggregate([
+            { $match: matchStage },
+            {
+                $group: {
+                    _id: null,
+                    tong: { $sum: "$tongTienThanhToan" }
+                }
+            }
+        ]);
+
+        res.status(200).json({
+            success: true,
+            data: revenue,
+            tong: tong[0]?.tong || 0
+        });
+
+    } catch (error) {
+        console.error("Lỗi khi lấy doanh thu:", error);
+        res.status(500).json({ message: "Lỗi server" });
+    }
+};
+
+
+export const getTinhTrangDonHang = async (req, res) => {
+    try {
+        const orderStats = await Donhang.aggregate([
+            {
+                $group: {
+                    _id: "$trangThai",
+                    count: { $sum: 1 }
+                }
+            }
+        ]);
+
+        res.status(200).json({ success: true, data: orderStats });
+
+    } catch (error) {
+        console.error("Lỗi khi lấy tình trạng đơn hàng:", error);
+        res.status(500).json({ message: "Lỗi server" });
+    }
+};

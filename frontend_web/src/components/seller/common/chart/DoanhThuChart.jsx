@@ -1,4 +1,3 @@
-import React from "react";
 import { Line } from "react-chartjs-2";
 import {
     Chart as ChartJS,
@@ -9,23 +8,31 @@ import {
     Legend,
     Tooltip,
 } from "chart.js";
+import PropTypes from "prop-types";
 
 ChartJS.register(LineElement, CategoryScale, LinearScale, PointElement, Legend, Tooltip);
 
-const DoanhThuChart = () => {
+const DoanhThuChart = ({ doanhThu }) => {
+    if (!doanhThu || doanhThu.length === 0) {
+        return <p>Không có dữ liệu doanh thu</p>;
+    }
+
+    const labels = doanhThu.map(item => `${item._id}`);
+    const dataPoints = doanhThu.map(item => item.totalRevenue);
+
     const data = {
-        labels: ["Day 1", "Day 2", "Day 3", "Day 4", "Day 5", "Day 6"],
+        labels,
         datasets: [
-        {
-            label: "Dataset",
-            data: [-100, -80, -40, -60, 80, -90],
-            borderColor: "#ff6384",
-            backgroundColor: "rgba(255, 99, 132, 0.5)",
-            pointBorderColor: "#ff6384",
-            pointBackgroundColor: "#fff",
-            pointRadius: 6,
-            pointHoverRadius: 8,
-        },
+            {
+                label: "Doanh thu (VNĐ)",
+                data: dataPoints,
+                borderColor: "#ff6384",
+                backgroundColor: "rgba(255, 99, 132, 0.5)",
+                pointBorderColor: "#ff6384",
+                pointBackgroundColor: "#fff",
+                pointRadius: 6,
+                pointHoverRadius: 8,
+            },
         ],
     };
 
@@ -33,10 +40,10 @@ const DoanhThuChart = () => {
         responsive: true,
         maintainAspectRatio: false,
         plugins: {
-        legend: {
-            display: true,
-            position: "top",
-        },
+            legend: {
+                display: true,
+                position: "top",
+            },
         },
     };
 
@@ -45,6 +52,15 @@ const DoanhThuChart = () => {
             <Line data={data} options={options} />
         </div>
     );
+};
+
+DoanhThuChart.propTypes = {
+    doanhThu: PropTypes.arrayOf(
+        PropTypes.shape({
+            _id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+            totalRevenue: PropTypes.number.isRequired,
+        })
+    ),
 };
 
 export default DoanhThuChart;
