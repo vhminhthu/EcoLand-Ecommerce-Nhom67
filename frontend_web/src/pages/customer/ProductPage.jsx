@@ -13,7 +13,7 @@ import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import moment from "moment";
 import "moment/locale/vi";
-import { FaQrcode } from 'react-icons/fa'; // Icon QR
+import { FaQrcode } from 'react-icons/fa'; 
 import QRCode from 'react-qr-code'; 
 
 function ProductPage() {
