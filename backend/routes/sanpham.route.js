@@ -22,7 +22,7 @@ router.get("/search/timkiem",timKiem)
 router.get("/lay/danhmuc/sp",getSanPhamByIdDM)
 router.get("/lay/cuahang/sp", getSanPhamByIdCH)
 
-router.patch("/sua/:id", updateProduct);
+router.patch("/sua/:id",protectRoute, updateProduct);
 
 router.get("/get/pending", getPendingProduct);
 // router.get("/get/:certifierAddress", getPendingProductFromCertifier);

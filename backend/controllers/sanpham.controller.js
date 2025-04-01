@@ -74,10 +74,9 @@ export const duyetSanPham = async (req, res) => {
 export const addSanPham = async (req, res) => {
     try {
         const idND = req.nguoidung._id.toString();
-        const { 
-            tenSP, moTaSP, idDM, nguonGoc, phanLoai, image} = req.body;
+        const {tenSP, moTaSP, idDM, nguonGoc, phanLoai, image, uuid} = req.body;
 
-        if (!tenSP || !moTaSP || !idDM || !nguonGoc || !phanLoai ) {
+        if (!tenSP || !moTaSP || !idDM || !nguonGoc || !phanLoai || !image || !uuid ) {
             return res.status(400).json({ error: "Vui lòng nhập đầy đủ thông tin!" });
         }
 
@@ -106,6 +105,7 @@ export const addSanPham = async (req, res) => {
             nguonGoc,
             phanLoai,
             dsAnhSP: anhSPUrl,
+            uuid,
         });
 
         const danhMuc = await DanhMuc.findById(idDM);
@@ -212,6 +212,7 @@ export const goiYTimKiem = async (req, res) => {
     try {
         const goiY = await SanPham.find({
             tenSP: { $regex: search, $options: 'i' },
+            trangThai: 'Đang bán',
             ...(danhmuc && { idDM: danhmuc })  // Chỉ thêm điều kiện idDM nếu danhmuc có giá trị
         }).limit(5);
 
@@ -220,7 +221,7 @@ export const goiYTimKiem = async (req, res) => {
             trangThaiCH: "Mở cửa"
         }).limit(5);
 
-        res.json({ goiY, goiYCuaHang }); // Trả về cả hai kết quả
+        res.json({ goiY, goiYCuaHang });
     } catch (err) {
         console.error('Lỗi trả về gợi ý:', err);
         res.status(500).json({ message: 'Server error' });
@@ -367,7 +368,6 @@ export const laySanPhamvoiIdCuaHang = async (req, res) => {
         const idND = req.nguoidung?._id?.toString();
         if (!idND) return res.status(401).json({ error: "Không xác thực được người dùng!" });
         const cuaHang = await CuaHang.findOne({ idNguoiDung: idND });
-        console.log("Cửa hàng tìm thấy:", cuaHang);
         if (!cuaHang) return res.status(404).json({ error: "Không tìm thấy cửa hàng!" });
         const danhSachSanPham = await SanPham.find({ idCH: cuaHang._id });
         console.log("Sản phẩm tìm thấy:", danhSachSanPham);
@@ -381,6 +381,8 @@ export const laySanPhamvoiIdCuaHang = async (req, res) => {
 export const updateProduct = async (req, res) => {
     const { id } = req.params; 
     const { tenSP, phanLoai, batchId, trangThai, dsAnhSP } = req.body;
+    const idND = req.nguoidung?._id?.toString();
+
     try {
         let product = await SanPham.findById(id); 
         if (!product) {
@@ -400,8 +402,12 @@ export const updateProduct = async (req, res) => {
             }
         }
         await product.save();
-        const allProducts = await SanPham.find();
-        return res.status(200).json({ products: allProducts });
+
+        if (!idND) return res.status(401).json({ error: "Không xác thực được người dùng!" });
+        const cuaHang = await CuaHang.findOne({ idNguoiDung: idND });
+        if (!cuaHang) return res.status(404).json({ error: "Không tìm thấy cửa hàng!" });
+        const danhSachSanPham = await SanPham.find({ idCH: cuaHang._id });
+        return res.status(200).json({ products: danhSachSanPham });
     } catch (error) {
         console.log("Lỗi khi cập nhật sản phẩm", error.message);
         return res.status(500).json({ error: error.message });
@@ -418,8 +424,6 @@ export const getPendingProduct = async (req, res) => {
                 if (!date) return null;
                 return new Date(date).toLocaleDateString("vi-VN"); 
             };
-
-           
 
         const results = await Promise.all(
             sanPhams.map(async (sp) => {

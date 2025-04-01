@@ -4,8 +4,10 @@ import axios from "axios";
 import { BiStoreAlt } from "react-icons/bi";
 import { FaCheck } from "react-icons/fa6";
 import { IoIosArrowDropdownCircle } from "react-icons/io";
+import { useNavigate } from "react-router-dom";
 
 function ProductsPageAdd() {
+    const navigate = useNavigate();
     const [formData, setFormData] = useState({
         tenSP: '',
         moTaSP: '',
@@ -15,6 +17,7 @@ function ProductsPageAdd() {
         phanLoai: [
             { idPL: "", tenLoai: "", giaLoai: "", donVi: "", khuyenMai: "", khoHang: "" }
         ],
+        uuid: ''
     });
     const [tenDanhMuc, setTenDanhMuc] = useState('Chọn loại');
 
@@ -22,9 +25,9 @@ function ProductsPageAdd() {
         try {
             
             const response = await axios.post("/api/sanpham/them", formData);
-    
             if (response.status === 200 || response.status === 201) {
                 alert("Thêm sản phẩm thành công!");
+                navigate("/seller/products")
             } else {
                 alert("Có lỗi xảy ra, vui lòng thử lại!");
             }
@@ -112,7 +115,7 @@ function ProductsPageAdd() {
                         <BiStoreAlt />
                         Thêm Sản Phẩm Mới
                     </h1>
-                    <button className="mb-5 text-xl py-3 px-5 rounded-full bg-emerald-600 text-white font-bold flex items-center gap-2" onClick={handleSubmit}>
+                    <button className="cursor-pointer mb-5 text-xl py-3 px-5 rounded-full bg-emerald-600 text-white font-bold flex items-center gap-2 hover:bg-emerald-700" onClick={handleSubmit}>
                         <FaCheck />
                         Thêm sản phẩm
                     </button>
@@ -260,7 +263,17 @@ function ProductsPageAdd() {
                                 value={formData.nguonGoc}
                                 onChange={(e) => setFormData(prev => ({ ...prev, nguonGoc: e.target.value }))}
                             />
+                            <textarea
+                                name="uuid"
+                                placeholder="UUID QR"
+                                required
+                                className="mt-2 mb-5 bg-gray-100 w-full p-2 rounded-lg outline-none"
+                                value={formData.uuid}
+                                onChange={(e) => setFormData(prev => ({ ...prev, uuid: e.target.value }))}
+                            />
+
                         </div>
+                        
                         
                     </div>
                 </div>

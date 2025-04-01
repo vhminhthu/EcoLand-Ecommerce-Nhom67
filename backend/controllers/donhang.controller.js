@@ -74,7 +74,6 @@ export const themDonHang = async (req, res) => {
         // Lọc lại từng cửa hàng
         giohang.sanPhams = giohang.sanPhams.map((cuaHang) => {
             if (cuaHang.idCH.toString() === cuaHangId.toString()) {
-                // Giữ lại các sản phẩm không có trong dsSanPham
                 cuaHang.sanPhamChiTiet = cuaHang.sanPhamChiTiet.filter(
                     (sp) => !dsSanPham.some(
                         (item) => item.idSP.toString() === sp.idSP.toString() &&
@@ -83,7 +82,7 @@ export const themDonHang = async (req, res) => {
                 );
             }
             return cuaHang;
-        }).filter(cuaHang => cuaHang.sanPhamChiTiet.length > 0); // Xóa cửa hàng nếu không còn sản phẩm
+        }).filter(cuaHang => cuaHang.sanPhamChiTiet.length > 0);
 
         await giohang.save();
 
@@ -92,8 +91,8 @@ export const themDonHang = async (req, res) => {
             if (!sanPham) {
                 return res.status(404).json({ message: "Sản phẩm không tồn tại!" });
             }
-            sanPham.dsDonHang.push(savedOrder._id); // Thêm ID đơn hàng vào sản phẩm
-            await sanPham.save(); // Lưu lại thay đổi
+            sanPham.dsDonHang.push(savedOrder._id); 
+            await sanPham.save();
         }
 
         return res.status(201).json({
@@ -110,7 +109,15 @@ export const layDonHangTheoNguoiDung = async (req, res) => {
     try {
         const idND = req.nguoidung._id;
 
-        const donHangs = await Donhang.find({ khachHangId: idND })
+        const filterStage = {
+            khachHangId: idND,
+            $or: [
+                { idGiaoDich: { $exists: false } },
+                { "idGiaoDich.thongTinGiaoDich.trangThaiThanhToan": "Thành công" }
+            ]
+        };
+
+        const donHangs = await Donhang.find(filterStage)
         .sort({ ngayDat: -1 })
         .populate({
             path: "cuaHangId",
@@ -161,6 +168,18 @@ export const layDonHangTheoCuaHang = async (req, res) => {
                 filterStage.trangThai = trangThaiMap[filter];
             }
         }
+
+        filterStage = {
+            $and: [
+                filterStage,
+                {
+                    $or: [
+                        { idGiaoDich: { $exists: false } },
+                        { "idGiaoDich.thongTinGiaoDich.trangThaiThanhToan": "Thành công" }
+                    ]
+                }
+            ]
+        };
 
         const tong = await Donhang.countDocuments(filterStage);
         const tongPage = Math.ceil(tong / limit);

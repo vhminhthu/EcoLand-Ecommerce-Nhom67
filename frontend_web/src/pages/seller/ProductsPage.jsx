@@ -7,12 +7,8 @@ import axios from "axios";
 
 function ProductsPage() {
     const navigate = useNavigate();
-
     const [image, setImage] = useState("");
-
     const [selectedPhanLoai, setSelectedPhanLoai] = useState(null);
-
-
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -20,18 +16,11 @@ function ProductsPage() {
     const [selectedProduct, setSelectedProduct] = useState(null);
     const [trangThai, setTrangThai] = useState(selectedProduct?.trangThai || "");
 
-
-
     const laySanPham = async () => {
         try {
             setLoading(true);
             const response = await axios.get("/api/sanpham/lay/theocuahang");
-    
-            console.log("Dữ liệu sản phẩm từ API:", response.data);
             setProducts(response.data.products || response.data); 
-            console.log("Sản phẩm từ API:", response.data);
-
-    
         } catch (error) {
             console.error("Lỗi khi lấy sản phẩm:", error);
             setError("Lỗi khi lấy dữ liệu, vui lòng thử lại!");
@@ -39,21 +28,15 @@ function ProductsPage() {
             setLoading(false);
         }
     };
-    
-
 
     useEffect(() => {
         laySanPham();
     }, []);
-
-  
     
 
     const handleSave = async () => {
         if (!selectedProduct || !selectedPhanLoai) return;
-    
         try {
-           
             const updatedProduct = {
                 phanLoai: selectedProduct.phanLoai.map((pl) =>
                     pl.idPL === selectedPhanLoai.idPL
@@ -67,27 +50,18 @@ function ProductsPage() {
                 trangThai,
                 tenSP: selectedProduct.tenSP, 
             };
-    
             if (image) {
                 updatedProduct.dsAnhSP = image;
             }
-    
-        
             const response = await axios.patch(`/api/sanpham/sua/${selectedProduct._id}`, updatedProduct);
-    
-            
             setProducts(response.data.products); 
-    
-            console.log("Cập nhật thành công:", response.data);
             setIsEditing(false);
-            
         } catch (error) {
             console.error("Lỗi khi cập nhật sản phẩm:", error);
             alert("Cập nhật thất bại!");
         }
     };
     
-   
     const handleImageChange = (e) => {
         const file = e.target.files[0];
         if (file) {
@@ -99,10 +73,6 @@ function ProductsPage() {
         }
     };
     
-    
-    
-    
-
     const itemsPerPage = 7;
     const [currentPage, setCurrentPage] = useState(1);
     const totalPages = Math.ceil(products.length / itemsPerPage);
@@ -110,8 +80,6 @@ function ProductsPage() {
         (currentPage - 1) * itemsPerPage,
         currentPage * itemsPerPage
     );
-
-
 
     const openEditDialog = (product) => {
         setSelectedProduct(product);
@@ -153,7 +121,7 @@ function ProductsPage() {
                 <div className="flex justify-end items-center !mb-4">
                     <div>
                         <button 
-                            className="border-2 border-[#37906C] text-[#37906C] font-bold bg-white !px-8 !py-2 !mr-5 rounded-lg hover:bg-green-100 hover:border-green-700"
+                            className="cursor-pointer border-2 border-[#37906C] text-[#37906C] font-bold bg-white !px-8 !py-2 !mr-5 rounded-lg hover:bg-green-100 hover:border-green-700"
                             onClick={() => {
                                 navigate(`/seller/products/add`);
                             }}
@@ -234,6 +202,8 @@ function ProductsPage() {
                         ? "bg-[#FFF4CC] text-[#C59100]"
                         : product?.trangThai === "Đã duyệt"
                         ? "bg-[#D6E4FF] text-[#0052CC]"
+                        : product?.trangThai === "Hết hàng"
+                        ? "bg-fuchsia-100 text-fuchsia-800"
                         : "bg-[#FFDAD6] text-[#FF451B]"
                 }`}
             >
@@ -243,6 +213,8 @@ function ProductsPage() {
                     ? "● Đang chờ xác nhận"
                     : product?.trangThai === "Đã duyệt"
                     ? "● Đã duyệt"
+                    : product?.trangThai === "Hết hàng"
+                    ? "● Hết hàng"
                     : "● Từ chối"}
             </span>
         </td>
@@ -413,16 +385,9 @@ function ProductsPage() {
                     <select 
                         className="w-full border rounded-md p-2 focus:ring focus:ring-emerald-400" 
                         value={trangThai} 
-                        onChange={(e) => {
-                            console.log(" Trạng thái được chọn:", e.target.value);
-                            setTrangThai(e.target.value);
-                        }}
-                    >
-                        {selectedProduct.trangThai === "Chờ xác nhận" ? (
-                            <>
-                                <option value="Chờ xác nhận">Chờ xác nhận</option>
-                            </>
-                        ) : selectedProduct.trangThai === "Đã duyệt" ? (
+                        onChange={(e) => setTrangThai(e.target.value)}
+                    >   
+                        {selectedProduct.trangThai === "Đã duyệt" ? (
                             <>
                                 <option value="Đang bán">Đang bán</option>
                                 <option value="Hết hàng">Hết hàng</option>

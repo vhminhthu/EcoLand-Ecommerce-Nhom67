@@ -28,6 +28,7 @@ const sanphamSchema = new mongoose.Schema(
         dsDonHang: [{ type: mongoose.Schema.Types.ObjectId, ref: "Donhang", default: [] }],
         idNguoiDuyet: { type: mongoose.Schema.Types.ObjectId, ref: "Admin"},
         nguyenNhanTC:{type: String},
+        uuid: {type: String},
     },
     {
         timestamps: true
