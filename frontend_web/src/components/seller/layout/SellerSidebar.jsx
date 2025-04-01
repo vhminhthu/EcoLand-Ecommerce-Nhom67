@@ -1,9 +1,9 @@
-import { BiHome, BiCopyAlt, BiHelpCircle } from "react-icons/bi";
-import { IoChatboxEllipsesOutline } from "react-icons/io5";
+import { BiHome, BiCopyAlt} from "react-icons/bi";
 import { HiOutlineWallet } from "react-icons/hi2";
-import { AiOutlineProduct, AiOutlineSetting } from "react-icons/ai";
+import { AiOutlineProduct} from "react-icons/ai";
 import { BsShopWindow } from "react-icons/bs";
-import { MdOutlineDiscount, MdOutlineLocalShipping, MdOutlineLogout } from "react-icons/md";
+import { MdOutlineLogout } from "react-icons/md";
+import { TbAccessPoint } from "react-icons/tb";
 import { useLocation } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 
@@ -16,6 +16,7 @@ function SellerSidebar() {
         { to: "/seller/orders?filter=tatca&page=1&limit=7", label: "Đơn hàng", icon: <BiCopyAlt /> },
         { to: "/seller/finance", label: "Tài chính", icon: <HiOutlineWallet /> },
         { to: "/seller/products", label: "Sản phẩm", icon: <AiOutlineProduct /> },
+        { to: "/seller/origin", label: "Truy xuất", icon: <TbAccessPoint /> },
         { to: "/seller/store", label: "Cửa hàng", icon: <BsShopWindow /> },
     ];
 
