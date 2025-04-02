@@ -879,3 +879,33 @@ export const getStatisticsByCategory = async (req, res) => {
         });
     }
 };
+
+export const getDashboardSummary = async (req, res) => {
+    try {
+
+        const totalUsers = await NguoiDung.countDocuments();
+
+    
+        const totalProducts = await Sanpham.countDocuments();
+
+       
+        const oneWeekAgo = moment().subtract(7, 'days').toDate();
+        const productsThisWeek = await Sanpham.countDocuments({
+            createdAt: { $gte: oneWeekAgo }
+        });
+
+        res.status(200).json({
+            success: true,
+            totalUsers,
+            totalProducts,
+            productsThisWeek
+        });
+    } catch (error) {
+        console.error("Lỗi khi lấy tổng quan dashboard:", error);
+        res.status(500).json({ 
+            success: false, 
+            message: "Lỗi server!", 
+            error: error.message 
+        });
+    }
+};

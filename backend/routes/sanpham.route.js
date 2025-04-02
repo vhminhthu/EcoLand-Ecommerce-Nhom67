@@ -1,5 +1,5 @@
 import express from "express"
-import  { updateProduct,addSanPham, capNhatLuotXem, getSanPhamById, getSanPhamByIdCH, getSanPhamByIdDM, getTatCaSanPham, getTatCaSanPhamDM, goiYTimKiem, laySanPhamvoiIdCuaHang, timKiem, getPendingProduct, deleteProduct, getProductInfo, getProductsByCategory, getTopDeal, getTopSelling, getProductSuggestions, getProducTrelated, duyetSanPham, getStatisticsByCategory } from "../controllers/sanpham.controller.js"
+import  { updateProduct,addSanPham, capNhatLuotXem, getSanPhamById, getSanPhamByIdCH, getSanPhamByIdDM, getTatCaSanPham, getTatCaSanPhamDM, goiYTimKiem, laySanPhamvoiIdCuaHang, timKiem, getPendingProduct, deleteProduct, getProductInfo, getProductsByCategory, getTopDeal, getTopSelling, getProductSuggestions, getProducTrelated, duyetSanPham, getStatisticsByCategory, getDashboardSummary } from "../controllers/sanpham.controller.js"
 import { protectRoute } from "../middleware/protectRoute.js"
 import { protectAdmin } from "../middleware/protectAdmin.js"
 const router = express.Router()
@@ -40,5 +40,6 @@ router.get("/suggestions", getProductSuggestions)
 router.get("/trelated/:idCH", getProducTrelated)
 
 router.get("/view-category",getStatisticsByCategory)
+router.get("/overview",getDashboardSummary)
 
 export default router
