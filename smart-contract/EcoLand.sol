@@ -1,238 +1,333 @@
-// SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: FIT
 pragma solidity ^0.8.0;
 
-contract EcoLand {
-    address public superAdmin;
-
-    struct Inspector {
-        address inspectorAddress;
-        string name;
-        bool isActive;
+contract EcoLandSupplyChain {
+    enum ProductStatus { 
+        Sowed,              // Gieo trồng
+        InspectionAfterSowing,  // Kiểm tra sau gieo trồng
+        Growing,            // Phát triển
+        InspectionDuringGrowth,  // Kiểm tra trong quá trình phát triển
+        Harvested,          // Thu hoạch
+        InspectionAfterHarvest,  // Kiểm tra sau thu hoạch
+        Packaged,           // Đóng gói
+        FinalQualityCheck   // Kiểm tra chất lượng cuối cùng trước khi phân phối
     }
 
-    struct Certifier {
-        address certifierAddress;
-        string name;
-        bool isActive;
+    address public admin;
+
+    constructor() {
+        admin = msg.sender;
     }
 
-    struct Store {
-        string storeId;      // ID của nông dân hoặc trang trại
-        string storeName;    // Tên trang trại / nông dân
-        string cid;          // CID của IPFS lưu thông tin chi tiết
-        string storeLocation; // Địa chỉ trang trại
+    struct Participant {
+        string name;
+        string role; // Chỉ có thể là "VERIFIER"
+        bool isActive;
+    }
+    
+    mapping(address => Participant) public participants;
+    address[] public participantAddresses;
+    mapping(address => bool) public participantRegistered;
+
+    // Thêm người dùng
+    function setParticipant(
+        address _participant,
+        string memory _name,
+        string memory _role,
+        bool _isActive
+    ) public {
+        require(msg.sender == admin, "Only Admin can perform this action");
+        require(
+            keccak256(bytes(_role)) == keccak256(bytes("VERIFIER")),
+            "Role must be VERIFIER"
+        );
+        require(!participantRegistered[_participant], "Participant already exists");
+        
+        if (!participantRegistered[_participant]) {
+            participantAddresses.push(_participant);
+            participantRegistered[_participant] = true;
+        }
+        participants[_participant] = Participant(_name, _role, _isActive);
+    }
+    
+    // Lấy tất cả người dùng
+    function getParticipants() public view returns (Participant[] memory) {
+        uint256 len = participantAddresses.length;
+        Participant[] memory result = new Participant[](len);
+        for (uint256 i = 0; i < len; i++) {
+            result[i] = participants[participantAddresses[i]];
+        }
+        return result;
+    }
+    
+    struct SowingInfo {
+        string seedType;
+        string sowingDate;
+        uint256 quantity;
+    }
+
+    struct GrowingInfo {
+        string fertilizerType;
+        string fertilizationDate;
+        string pesticideType;
+        string pesticideApplicationDate;
+    }
+
+    struct HarvestInfo {
+        string harvestingDate;
+        uint256 harvestingQuantity;
+    }
+
+    struct PackagingInfo {
+        string packagingDate;
+        string expirationDate;
     }
 
     struct Product {
-        string productId;           //ID sản phẩm
-        string productName;         //Tên sản phẩm
-        string storeId;             //ID cửa hàng
-        string seedType;            //Loại giống
-        string sowingDate;          //Ngày gieo trồng/sản xuất
-        string harvestingDate;      //Ngày thu hoạch
-        string packagingDate;       //Ngày đóng gói
-        string expirationDate;      //Ngày hết hạn
-        address inspectorAddress;  //Địa chỉ của nhà kiểm duyệt
-        address certifierAddress; // Địa chỉ của nhà kiểm định
-        bool isCertified;         // true nếu đã được kiểm định
-        string certifierImageCid;
+        uint256 productId;
+        uint256 uuid;
+        string productName;
+        string farmerName;
+        address farmer;
+        SowingInfo sowing;
+        GrowingInfo growing;
+        HarvestInfo harvest;
+        PackagingInfo packaging;
+        ProductStatus status;
+        address approvedBy;
     }
+    
+    mapping(uint256 => Product) public products;
+    uint256 public nextProductId= 1;
+    
+    event ProductCreated(uint256 productId, string productName, string farmerName, string seedType, string sowingDate, uint256 quantity);
+    event ProductSowedApproved(uint256 productId);
 
-    mapping(address => Inspector) public inspectors;
-    mapping(address => Certifier) public certifiers;
-    mapping(string => Store) public stores;
-    mapping(string => Product) public products;
-    mapping(string => string) public productToStore;
-    mapping(address => string[]) public certifierToProducts;
+    event ProductAdvancedToGrowing(uint256 productId);
+    event ProductGrowingApproved(uint256 productId);
 
-    string[] public productList;
+    event ProductHarvested(uint256 productId, string harvestingDate, uint256 harvestingQuantity);
+    event ProductHarvestedApproved(uint256 productId);
 
-    modifier onlySuperAdmin() {
-        require(msg.sender == superAdmin, "Only SuperAdmin can perform this action");
-        _;
-    }
+    event ProductPackaged(uint256 productId, string packagingDate, string expirationDate);
+    event ProductPackagedApproved(uint256 productId);
 
-    modifier onlyInspector() {
-        require(inspectors[msg.sender].isActive, "Only Inspector can perform this action");
-        _;
-    }
-
-    modifier onlyCertifier() {
-        require(certifiers[msg.sender].isActive, "Only Certifier can perform this action");
-        _;
-    }
-
-    constructor() {
-        superAdmin = msg.sender;
-    }
-
-    event InspectorAdded(address indexed inspectorAddress, string name);
-    event CertifierAdded(address indexed certifierAddress, string name);
-    event StoreCreated(string storeId, string storeName, string cid);
-    event ProductCreated(string productId, string productName, string storeId, address indexed inspector);
-    event ProductCertified(string productId, address indexed certifier);
-
-    // SuperAdmin thêm người kiểm duyệt
-    function addInspector(address _inspector, string memory _name) public onlySuperAdmin {
-        require(inspectors[_inspector].inspectorAddress == address(0), "Inspector already exists");
-        inspectors[_inspector] = Inspector(_inspector, _name, true);
-        emit InspectorAdded(_inspector, _name);
-    }
-
-    // SuperAdmin thêm nhà kiểm định
-    function addCertifier(address _certifier, string memory _name) public onlySuperAdmin {
-        require(certifiers[_certifier].certifierAddress == address(0), "Certifier already exists");
-        certifiers[_certifier] = Certifier(_certifier, _name, true);
-        emit CertifierAdded(_certifier, _name);
-    }
-
-    // Kiểm duyệt viên tạo cửa hàng
-    function createStore(string memory _storeId, string memory _storeName, string memory _cid, string memory _storeLocation) public onlyInspector {
-        require(bytes(stores[_storeId].storeId).length == 0, "Store ID already exists");
-        stores[_storeId] = Store(_storeId, _storeName, _cid, _storeLocation);
-        emit StoreCreated(_storeId, _storeName, _cid);
-    }
-
-    // Kiểm duyệt viên tạo sản phẩm
+    //Thêm sản phẩm - Giai đoạn gieo trồng
     function createProduct(
-        string memory _productId,
         string memory _productName,
-        string memory _storeId,
+        string memory _farmerName,
         string memory _seedType,
         string memory _sowingDate,
-        string memory _harvestingDate,
-        string memory _packagingDate,
-        string memory _expirationDate,
-        address _certifierAddress,
-        string memory _certifierImageCid
-    ) public onlyInspector {
-        require(bytes(products[_productId].productId).length == 0, "Product already exists");
-        require(bytes(stores[_storeId].storeId).length != 0, "Store ID does not exist");
-        require(certifiers[_certifierAddress].certifierAddress != address(0), "Certifier is not authorized");
-
-        products[_productId] = Product({
-            productId: _productId,
+        uint256 _quantity
+    ) public {
+        address farmer = msg.sender;
+        uint256 currentId = nextProductId;
+        nextProductId++;
+        uint256 currentUUID = uint256(keccak256(abi.encodePacked(msg.sender, block.timestamp, _productName)));
+        
+        products[currentId] = Product({
+            productId: currentId,
+            uuid: currentUUID,
             productName: _productName,
-            storeId: _storeId,
-            seedType: _seedType,
-            sowingDate: _sowingDate,
-            harvestingDate: _harvestingDate,
-            packagingDate: _packagingDate,
-            expirationDate: _expirationDate,
-            inspectorAddress: msg.sender,
-            certifierAddress: _certifierAddress,
-            isCertified: false,
-            certifierImageCid: _certifierImageCid
+            farmerName: _farmerName,
+            farmer: farmer,
+            sowing: SowingInfo(_seedType, _sowingDate, _quantity),
+            growing: GrowingInfo("", "", "", ""),
+            harvest: HarvestInfo("", 0),
+            packaging: PackagingInfo("", ""),
+            status: ProductStatus.Sowed,
+            approvedBy: address(0)
         });
 
-        productToStore[_productId] = _storeId;
-        productList.push(_productId);
-        certifierToProducts[_certifierAddress].push(_productId); // Thêm sản phẩm vào danh sách của nhà kiểm định
-
-        emit ProductCreated(_productId, _productName, _storeId, msg.sender);
+        emit ProductCreated(currentId, _productName, _farmerName, _seedType, _sowingDate, _quantity);
     }
 
-    // Nhà kiểm định kiểm tra sản phẩm và ký xác nhận trên blockchain nếu đạt chuẩn
-    function certifyProduct(string memory _productId) public onlyCertifier {
-        require(bytes(products[_productId].productId).length > 0, "Product does not exist");
-        require(!products[_productId].isCertified, "Product already certified");
-        require(products[_productId].certifierAddress == msg.sender, "You are not authorized to certify this product");
-
-        products[_productId].isCertified = true;
-        emit ProductCertified(_productId, msg.sender);
+    //Kiểm tra sau gieo trồng
+    function approveSowedProduct(uint256 _productId ) public {
+        require(participants[msg.sender].isActive, "Participant is not active");
+        require(
+            keccak256(bytes(participants[msg.sender].role)) == keccak256(bytes("VERIFIER")),
+            "Only VERIFIER can approve"
+        );
+        require(products[_productId].productId != 0, "Product does not exist");
+        require(products[_productId].status == ProductStatus.Sowed, "Product must be in Sowed status to approve");
+        
+        Product storage product = products[_productId];
+        product.approvedBy = msg.sender;
+        product.status = ProductStatus.InspectionAfterSowing;
+        emit ProductSowedApproved(_productId);
     }
 
-    struct ProductDetail {
-        string productId;
-        string productName;
-        string storeName;
-        string seedType;
-        string sowingDate;
-        string harvestingDate;
-        string packagingDate;
-        string expirationDate;
-        string inspectorName;
-        bool isCertified;
-        string certifierName;
-        string certifierImageCid;
+    //Cập nhật - Giai đoạn phát triển
+    function advanceToGrowing(
+        uint256 _productId,
+        string memory _fertilizerType,
+        string memory _fertilizationDate,
+        string memory _pesticideType,
+        string memory _pesticideApplicationDate
+    ) public {
+        require(products[_productId].farmer == msg.sender, "Only the assigned farmer can update this product");
+        require(products[_productId].productId != 0, "Product does not exist");
+        require(products[_productId].status  == ProductStatus.InspectionAfterSowing, "Product must be in InspectionAfterSowing status to advance to Growing");
+
+        Product storage product = products[_productId];
+        product.status = ProductStatus.Growing;
+        
+        product.growing = GrowingInfo(
+            _fertilizerType,
+            _fertilizationDate,
+            _pesticideType,
+            _pesticideApplicationDate
+        );
+
+        emit ProductAdvancedToGrowing(_productId);
     }
 
-    // Lấy tất cả sản phẩm của một nhà kiểm định
-    function getProductsByCertifier(address _certifierAddress) public view returns (ProductDetail[] memory) {
-        string[] memory productIds = certifierToProducts[_certifierAddress];
-        ProductDetail[] memory productDetails = new ProductDetail[](productIds.length);
-        for (uint256 i = 0; i < productIds.length; i++) {
-            string memory productId = productIds[i];
-            Product memory p = products[productId];
+    // Kiểm tra trong quá trình phát triển
+    function approveGrowingProduct(uint256 _productId) public {
+        require(participants[msg.sender].isActive, "Participant is not active");
+        require(
+            keccak256(bytes(participants[msg.sender].role)) == keccak256(bytes("VERIFIER")),
+            "Only VERIFIER can approve"
+        );
+        require(products[_productId].approvedBy == msg.sender, "Only approved designees can approve this product");
+        require(products[_productId].productId != 0, "Product does not exist");
+        require(products[_productId].status == ProductStatus.Growing, "Product must be in Growing status to approve");
+        
+        Product storage product = products[_productId];
+        product.status = ProductStatus.InspectionDuringGrowth;
+        emit ProductGrowingApproved(_productId);
+    }
 
-            productDetails[i] = ProductDetail({
-                productId: p.productId,
-                productName: p.productName,
-                storeName: stores[p.storeId].storeName,
-                seedType: p.seedType,
-                sowingDate: p.sowingDate,
-                harvestingDate: p.harvestingDate,
-                packagingDate: p.packagingDate,
-                expirationDate: p.expirationDate,
-                inspectorName: inspectors[p.inspectorAddress].name,
-                isCertified: p.isCertified,
-                certifierName: certifiers[p.certifierAddress].name,
-                certifierImageCid: p.certifierImageCid
-            });
+    //Cập nhật - Giai đoạn thu hoạch
+    function recordHarvest(
+        uint256 _productId,
+        uint256 _harvestingQuantity,
+        string memory _harvestingDate
+    ) public {
+        require(products[_productId].farmer == msg.sender, "Only the assigned farmer can update this product");
+        require(products[_productId].productId != 0, "Product does not exist");
+        require(products[_productId].status  == ProductStatus.InspectionDuringGrowth, "Product must be in InspectionDuringGrowth status to advance to Growing");
+
+        Product storage product = products[_productId];
+        product.status = ProductStatus.Harvested;
+
+        product.harvest = HarvestInfo(
+            _harvestingDate,
+            _harvestingQuantity
+        );
+        emit ProductHarvested(_productId, _harvestingDate, _harvestingQuantity );
+    }
+
+    // Kiểm tra sau thu hoạch
+    function approveHarvestedProduct(uint256 _productId) public {
+        require(participants[msg.sender].isActive, "Participant is not active");
+        require(
+            keccak256(bytes(participants[msg.sender].role)) == keccak256(bytes("VERIFIER")),
+            "Only VERIFIER can approve"
+        );
+        require(products[_productId].approvedBy == msg.sender, "Only approved designees can approve this product");
+        require(products[_productId].productId != 0, "Product does not exist");
+        require(products[_productId].status == ProductStatus.Harvested, "Product must be in Harvested status to approve");
+        
+        Product storage product = products[_productId];
+        product.status = ProductStatus.InspectionAfterHarvest;
+        emit ProductHarvestedApproved(_productId);
+    }
+
+    //Cập nhật - Giai đoạn đóng gói
+    function packageProduct(
+        uint256 _productId,
+        string memory _packagingDate,  
+        string memory _expirationDate  
+    ) public {
+        require(products[_productId].farmer == msg.sender, "Only the assigned farmer can update this product");
+        require(products[_productId].productId != 0, "Product does not exist");
+        require(products[_productId].status  == ProductStatus.InspectionAfterHarvest, "Product must be in InspectionAfterHarvest status to advance to Growing");
+
+        Product storage product = products[_productId];
+        product.status = ProductStatus.Packaged;
+        product.packaging = PackagingInfo(
+            _packagingDate,
+            _expirationDate
+        );
+        emit ProductPackaged(_productId, _packagingDate, _expirationDate);
+    }
+
+    // Kiểm tra chất lượng cuối cùng trước khi phân phối
+    function approvePackagedProduct(uint256 _productId) public {
+        require(participants[msg.sender].isActive, "Participant is not active");
+        require(
+            keccak256(bytes(participants[msg.sender].role)) == keccak256(bytes("VERIFIER")),
+            "Only VERIFIER can approve"
+        );
+        require(products[_productId].approvedBy == msg.sender, "Only approved designees can approve this product");
+        require(products[_productId].productId != 0, "Product does not exist");
+        require(products[_productId].status == ProductStatus.Packaged, "Product must be in Packaged status to approve");
+        
+        Product storage product = products[_productId];
+        product.status = ProductStatus.FinalQualityCheck;
+        emit ProductPackagedApproved(_productId);
+    }
+
+    // Lấy chi tiết sản phẩm
+    function getProductDetails(uint256 _uuid) public view returns (ProductDetail memory) {
+        // Duyệt qua tất cả các sản phẩm để tìm UUID tương ứng
+        Product memory product;
+        bool found = false;
+        
+        // Lặp qua tất cả các sản phẩm để tìm sản phẩm theo UUID
+        for (uint256 i = 1; i < nextProductId; i++) {
+            if (products[i].uuid == _uuid) {
+                product = products[i];
+                found = true;
+                break;
+            }
         }
+        
+        // Kiểm tra xem sản phẩm có tồn tại không
+        require(found, "Product does not exist");
 
-        return productDetails;
-    }
-
-
-    // Truy xuất nguồn gốc sản phẩm
-    function getProductDetails(string memory _productId) public view returns (ProductDetail memory) {
-        require(bytes(products[_productId].productId).length > 0, "Product does not exist");
-
-        Product memory p = products[_productId];
+        string memory approvedByName = participants[product.approvedBy].name;
 
         ProductDetail memory detail = ProductDetail({
-            productId: p.productId,
-            productName: p.productName,
-            storeName: stores[p.storeId].storeName,
-            seedType: p.seedType,
-            sowingDate: p.sowingDate,
-            harvestingDate: p.harvestingDate,
-            packagingDate: p.packagingDate,
-            expirationDate: p.expirationDate,
-            inspectorName: inspectors[p.inspectorAddress].name,
-            isCertified: p.isCertified,
-            certifierName: certifiers[p.certifierAddress].name,
-            certifierImageCid: p.certifierImageCid
+            productId: product.productId,
+            productName: product.productName,
+            farmerName: product.farmerName,
+            approvedBy: approvedByName,
+            seedType: product.sowing.seedType,
+            sowingDate: product.sowing.sowingDate,
+            quantity: product.sowing.quantity,
+            fertilizerType: product.growing.fertilizerType,
+            fertilizationDate: product.growing.fertilizationDate,
+            pesticideType: product.growing.pesticideType,
+            pesticideApplicationDate: product.growing.pesticideApplicationDate,
+            harvestingDate: product.harvest.harvestingDate,
+            harvestingQuantity: product.harvest.harvestingQuantity,
+            packagingDate: product.packaging.packagingDate,
+            expirationDate: product.packaging.expirationDate,
+            status: product.status
         });
 
         return detail;
     }
 
-    //Lấy tất cả sản phẩm
-    function getAllProducts() public view returns (ProductDetail[] memory) {
-        ProductDetail[] memory productArray = new ProductDetail[](productList.length);
-        
-        for (uint256 i = 0; i < productList.length; i++) {
-            Product memory p = products[productList[i]];
-
-            productArray[i] = ProductDetail({
-                productId: p.productId,
-                productName: p.productName,
-                storeName: stores[p.storeId].storeName,
-                seedType: p.seedType,
-                sowingDate: p.sowingDate,
-                harvestingDate: p.harvestingDate,
-                packagingDate: p.packagingDate,
-                expirationDate: p.expirationDate,
-                inspectorName: inspectors[p.inspectorAddress].name,
-                isCertified: p.isCertified,
-                certifierName: certifiers[p.certifierAddress].name,
-                certifierImageCid: p.certifierImageCid
-            });
-        }
-
-        return productArray;
+    struct ProductDetail {
+        uint256 productId;
+        string productName;
+        string farmerName;
+        string approvedBy;
+        string seedType;
+        string sowingDate;
+        uint256 quantity;
+        string fertilizerType;
+        string fertilizationDate;
+        string pesticideType;
+        string pesticideApplicationDate;
+        string harvestingDate;
+        uint256 harvestingQuantity;
+        string packagingDate;
+        string expirationDate;
+        ProductStatus status;
     }
-
 }
