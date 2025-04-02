@@ -3,6 +3,7 @@ import MainLayout from '../../layouts/customer/MainLayout';
 import { useState, useEffect } from "react";
 import axios from 'axios';
 import { useNavigate } from "react-router-dom";
+import Loading from '../../components/customer/layout/Loading';
 
 function CartPage() {
     const navigate = useNavigate();
@@ -10,6 +11,7 @@ function CartPage() {
     const [selectedItems, setSelectedItems] = useState([]);
     const [totalPrice, setTotalPrice] = useState(0);
     const [totalQuantity, setTotalQuantity] = useState(0);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const fetchCartDetails = async () => {
@@ -24,6 +26,8 @@ function CartPage() {
                 setSelectedItems(checkedItems);
             } catch (error) {
                 console.error("Lỗi khi tải giỏ hàng:", error);
+            }finally {
+                setLoading(false);
             }
         };
         fetchCartDetails();
@@ -125,6 +129,8 @@ function CartPage() {
         });
     };
     
+    if (loading) return <Loading />;
+
     return (
         <MainLayout>
             <h1 className='text-xl mb-5'>Giỏ hàng</h1>

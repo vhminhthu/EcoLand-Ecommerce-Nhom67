@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import { FaRegCalendarAlt, FaUserCheck } from "react-icons/fa";
 import { ethers } from "ethers";
 import EcoLandSupplyChainABI from "../../EcoLandSupplyChainABI.js";
+import Loading from "../../components/customer/layout/Loading.jsx";
 
 export const DetailPage = () => {
   const { uuid } = useParams();
@@ -67,7 +68,7 @@ export const DetailPage = () => {
     fetchProductInfo();
   }, [uuid]);
 
-  if (loading) return <div>Đang tải...</div>;
+  if (loading) return <Loading />;
   if (error) return <div>{error}</div>;
   if (!product) return <div>Không có sản phẩm</div>;
 

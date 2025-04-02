@@ -4,102 +4,52 @@ import { useEffect, useState } from "react";
 import DoanhThuChart from "../../components/seller/common/chart/DoanhThuChart";
 import DonHangChart from "../../components/seller/common/chart/DonHangChart";
 import axios from "axios";
-
-const orders = [
-    {
-        id: 1,
-        maDon: "000000000000",
-        ngay: "30-1-2025",
-        trangThai: "Chưa xác nhận",
-        tong: "100.000đ",
-        nguoiMua: "Tên người dùng",
-    },
-    {
-        id: 2,
-        maDon: "000000000000",
-        ngay: "30-1-2025",
-        trangThai: "Chưa xác nhận",
-        tong: "100.000đ",
-        nguoiMua: "Tên người dùng",
-    },
-    {
-        id: 3,
-        maDon: "000000000000",
-        ngay: "30-1-2025",
-        trangThai: "Chưa xác nhận",
-        tong: "100.000đ",
-        nguoiMua: "Tên người dùng",
-    },
-    {
-        id: 4,
-        maDon: "000000000000",
-        ngay: "30-1-2025",
-        trangThai: "Chưa xác nhận",
-        tong: "100.000đ",
-        nguoiMua: "Tên người dùng",
-    },
-    {
-        id: 5,
-        maDon: "000000000000",
-        ngay: "30-1-2025",
-        trangThai: "Chưa xác nhận",
-        tong: "100.000đ",
-        nguoiMua: "Tên người dùng",
-    },
-];
-
-const bestSellingProducts = [
-    { id: 1, name: "Rau xanh", sold: "100kg", price: "100.000đ/kg" },
-    { id: 2, name: "Rau xanh", sold: "100kg", price: "100.000đ/kg" },
-    { id: 3, name: "Rau xanh", sold: "100kg", price: "100.000đ/kg" },
-    { id: 4, name: "Rau xanh", sold: "100kg", price: "100.000đ/kg" },
-    { id: 5, name: "Rau xanh", sold: "100kg", price: "100.000đ/kg" },
-];
+import moment from "moment";
 
 function HomePage() {
     const [isOpenCategory, setIsOpenCategory] = useState(false); 
     const [doanhThu, setDoanhThu] = useState([]);
-    const [tongDoanhThu, setTongDoanhThu] = useState([]);
+    const [donHang, setDonHang] = useState([]);
+    const [donHangCXN, setDonHangCXN] = useState([]);
+    const [sanPham, setSanPham] = useState([]);
 
+    const [tongDoanhThu, setTongDoanhThu] = useState([]);
     const [type, setType] = useState("Ngày");
 
 
     useEffect(() => {
-        const getDoanhThu = async () => {
+        const fetchData = async () => {
             try {
-                const response = await axios.get(`/api/donhang/lay/doanh-thu?type=${type}`);
-                console.log(response.data.data)
-                setDoanhThu(response.data.data);
-                setTongDoanhThu(response.data.tong)
+                const [doanhThuResponse, donHangResponse, donHangCXNResponse, sanPhamResponse] = await Promise.all([
+                    axios.get(`/api/donhang/lay/doanh-thu?type=${type}`),
+                    axios.get(`/api/donhang/lay/tinh-trang-don-hang`),
+                    axios.get(`/api/donhang/lay/don-hang-cxn`),
+                    axios.get(`/api/donhang/lay/san-pham-ban-chay`)
+                ]);
+    
+                setDoanhThu(doanhThuResponse.data.data);
+                setTongDoanhThu(doanhThuResponse.data.tong);
+    
+                setDonHang(donHangResponse.data.data);
+    
+                setDonHangCXN(donHangCXNResponse.data.data);
+    
+                setSanPham(sanPhamResponse.data.data);
             } catch (error) {
-                console.error("Lỗi khi lấy tên cửa hàng:", error);
+                console.error("Lỗi khi lấy dữ liệu:", error);
             }
         };
-
-        getDoanhThu();
+    
+        fetchData();
     }, [type]);
-
-    useEffect(() => {
-        const getDoanhThu = async () => {
-            try {
-                const response = await axios.get(`/api/donhang/lay/tinh-trang-don-hang`);
-                console.log(response.data.data)
-                setDoanhThu(response.data.data);
-                setTongDoanhThu(response.data.tong)
-            } catch (error) {
-                console.error("Lỗi khi lấy tên cửa hàng:", error);
-            }
-        };
-
-        getDoanhThu();
-    }, [type]);
+    
     
     return (
         <MainLayout>
             <div className="h-full min-w-7xl grid grid-cols-9 grid-rows-5 gap-4">
                 <div className="col-start-1 col-end-7 bg-white !p-5 rounded-xl shadow-xl row-start-1 row-end-4">
                     <span className="flex justify-between">
-                        <p className="font-bold text-xl text-emerald-700">Tổng doanh thu</p>
+                        <p className="font-bold text-2xl text-emerald-700">Tổng doanh thu</p>
                         <div className="relative">
                         <button
                             className="w-[120px] cursor-pointer flex items-center justify-center gap-3 bg-gray-100 px-5 py-2 rounded-xl"
@@ -136,62 +86,77 @@ function HomePage() {
                 </div>
 
                 <div className="col-start-7 col-end-10 bg-white !p-5 rounded-xl shadow-xl row-start-1 row-end-3">
-                    <p className="font-bold text-xl text-emerald-700">Sản phẩm bán chạy</p>
+                    <p className="font-bold text-2xl text-emerald-700">Sản phẩm bán chạy</p>
                     <div className="space-y-2 max-h-[200px] overflow-y-auto mt-2">
-                        {bestSellingProducts.map((product) => (
-                        <div key={product.id} className="flex items-center p-2 bg-gray-100 rounded-lg">
-                            <span className="w-6 h-6 flex items-center justify-center bg-green-500 text-white text-sm font-bold rounded-full">
-                                {product.id}
+                    {sanPham.map((product, index) => (
+                        <div key={index} className="flex items-center p-4 bg-gray-50 rounded-lg shadow-md mb-4">
+                            <span className="w-8 h-8 flex items-center justify-center text-green-600 text-lg font-bold">
+                            {index + 1}
                             </span>
-                            <div className="flex-1 ml-3">
-                                <p className="text-sm font-medium">{product.name}</p>
-                                <p className="text-xs text-gray-500">Đã bán {product.sold}</p>
+                            
+                            <img 
+                                src={product.sanPhamInfo.dsAnhSP || "/default-image.jpg"} 
+                                alt={product.sanPhamInfo.tenSP} 
+                                className="w-16 h-16 object-cover rounded-md ml-3"
+                            />
+                            
+                            <div className="flex-1 ml-4">
+                            <p className="text-lg font-semibold text-gray-800">{product.sanPhamInfo.tenSP}</p>
+                            <p className="text-md text-gray-500">Đã bán {product.totalSold} đơn</p>
                             </div>
-                            <p className="text-sm font-medium">{product.price}</p>
+
+                            <p className="text-md font-semibold text-gray-700">
+                            {product.sanPhamInfo.phanLoai[0].giaLoai.toLocaleString()}đ/{product.sanPhamInfo.phanLoai[0].donVi}
+                            </p>
                         </div>
                         ))}
+
                     </div>
                 </div>
 
                 <div className="col-start-1 col-end-7 bg-white !p-5 rounded-xl shadow-xl row-start-4 row-end-6">
-                    <p className="font-bold text-xl text-emerald-700">Đơn hàng mới</p>
+                    <p className="font-bold text-2xl mb-3 text-emerald-700">Đơn hàng mới</p>
                     <div className="mt-1 overflow-y-auto max-h-[200px]">
-                        <table className="min-w-full border rounded-lg overflow-hidden">
-                        <thead className="bg-gray-100 text-gray-700">
+                    <table className="min-w-full border border-gray-300 rounded-lg overflow-hidden shadow-lg">
+                        <thead className="text-gray-700">
                             <tr>
-                            <th className="p-2 border">#</th>
-                            <th className="p-2 border">Mã đơn</th>
-                            <th className="p-2 border">Ngày</th>
-                            <th className="p-2 border">Trạng thái</th>
-                            <th className="p-2 border">Tổng</th>
-                            <th className="p-2 border">Người mua</th>
+                            <th className="p-3">#</th>
+                            <th className="p-3">Mã đơn</th>
+                            <th className="p-3">Ngày</th>
+                            <th className="p-3">Trạng thái</th>
+                            <th className="p-3">Tổng</th>
+                            <th className="p-3">Người mua</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {orders.map((order, index) => (
-                            <tr key={order.id} className="text-center border">
-                                <td className="p-2 border">{index + 1}</td>
-                                <td className="p-2 border">{order.maDon}</td>
-                                <td className="p-2 border">{order.ngay}</td>
-                                <td className="p-2 border">
-                                <span
-                                    className={`px-2 py-1 border rounded-full text-sm text-red-600 border-red-400`}
-                                >
-                                    {order.trangThai}
-                                </span>
+                            {donHangCXN.map((order, index) => (
+                            <tr
+                                key={index}
+                                className={`text-center ${index % 2 === 0 ? 'bg-gray-50' : 'bg-white'} hover:bg-gray-100`}
+                            >
+                                <td className="p-3">{index + 1}</td>
+                                <td className="p-3">{order.maDonHang}</td>
+                                <td className="p-3">{moment(order.ngayDat).format('DD/MM/YYYY')}</td>
+                                <td className="p-3">
+                                    <span
+                                        className="px-2 py-1 border rounded-full text-sm text-red-600 border-red-400"
+                                    >
+                                        {order.trangThai}
+                                    </span>
                                 </td>
-                                <td className="p-2 border">{order.tong}</td>
-                                <td className="p-2 border">{order.nguoiMua}</td>
+                                <td className="p-3">{order.tongTienThanhToan.toLocaleString()}đ</td>
+                                <td className="p-3">{order?.khachHangId?.tenNguoiDung || 'N/A'}</td>
                             </tr>
                             ))}
                         </tbody>
-                        </table>
+                    </table>
+
                     </div>
                 </div>
 
                 <div className="col-start-7 col-end-10 bg-white !p-5 rounded-xl shadow-xl row-start-3 row-end-6">
-                    <p className="font-bold text-xl text-emerald-700">Tình trạng đơn hàng</p>
-                    <DonHangChart />
+                    <p className="font-bold text-2xl text-emerald-700">Tình trạng đơn hàng</p>
+                    {donHang && <DonHangChart donHang={donHang} />}
                 </div>
             </div>
         </MainLayout>

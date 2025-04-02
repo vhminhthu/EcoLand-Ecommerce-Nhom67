@@ -44,7 +44,6 @@ function OrdersPage() {
         fetchDonHang();
     }, [page, filter, limit]);
 
-
     const filters = [
         { key: "tatca", label: "Tất cả" },
         { key: "choxacnhan", label: "Chờ xác nhận" },
@@ -61,7 +60,6 @@ function OrdersPage() {
         navigate(`?filter=${filter}&page=1&limit=7`);
     };
 
-    
     const handlePageChange = (newPage) => {
         const searchParams = new URLSearchParams(location.search);
         
@@ -90,7 +88,6 @@ function OrdersPage() {
             console.error("Chi tiết lỗi:", error.response?.data);
         }
     };
-
 
     return (
         <MainLayout>

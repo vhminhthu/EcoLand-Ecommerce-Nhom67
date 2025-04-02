@@ -7,6 +7,7 @@ import { FaChevronLeft, FaChevronRight  } from "react-icons/fa";
 import { FaArrowRight, FaArrowLeft } from "react-icons/fa6";
 import { useState, useEffect } from "react";
 import axios from "axios";
+import Loading from "../../components/customer/layout/Loading";
 
 function HomePage() {
     const [ads, setAds] = useState([]);
@@ -128,7 +129,7 @@ function HomePage() {
     };    
     const sanPhamGHienTai = productSuggestions.slice(0, sanPhamGIndex + soSanPhamGMoiSlide);
 
-    if (loading) return <p>Đang tải dữ liệu...</p>;
+    if (loading) return <Loading />;
     if (error) return <p>Lỗi: {error.message}</p>;
     return (
         <MainLayout>
