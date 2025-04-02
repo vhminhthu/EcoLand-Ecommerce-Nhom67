@@ -13,6 +13,8 @@ import ShopCard from "../../components/customer/common/cards/ShopCard";
 const ratings = [5, 4, 3, 2, 1];
 
 function CategoryPageSearch() {
+  const [loading, setLoading] = useState(true);
+
   const [expanded, setExpanded] = useState(false);
   const [categories, setCategories] = useState([]);
   const [products, setProducts] = useState([]);
@@ -53,7 +55,9 @@ function CategoryPageSearch() {
               }
           } catch (error) {
               console.error("Có lỗi xảy ra khi lấy sản phẩm:", error);
-          }
+          }finally {
+            setLoading(false);
+        }
       };
       fetchProducts();
   }, [search, sort, page, limit, id, minStar, maxStar, locations]);
@@ -129,6 +133,7 @@ function CategoryPageSearch() {
       state: { id: id }
     });
   };
+  if (loading) return <Loading />;
 
   return (
     <MainLayout>

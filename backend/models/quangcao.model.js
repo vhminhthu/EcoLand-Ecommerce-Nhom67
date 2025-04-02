@@ -9,7 +9,7 @@ const quangcaoSchema = new mongoose.Schema(
         noiDung: { type: String, required: true },
         ngayBatDau: { type: Date, required: true },
         ngayKetThuc: { type: Date, required: true },
-        trangThai: { type: String, required: true, enum: ["Chưa diễn ra", "Đang diễn ra", "Đã kết thúc"], default: "Chưa diễn ra"}
+        trangThai: { type: String, required: true, enum: ["Chưa diễn ra", "Đang diễn ra","Tạm dừng", "Đã kết thúc"], default: "Chưa diễn ra"}
     },
     {
         timestamps: true

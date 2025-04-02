@@ -6,8 +6,12 @@ import { useNavigate } from "react-router-dom";
 import { IoIosArrowDown } from "react-icons/io";
 import { useEffect } from "react";
 import axios from "axios";
+import { useAuth } from "../../../context/AuthContext";
+import Loading from "./Loading";
 
 function Header() {
+    const { user, loading } = useAuth();
+    
     const navigate = useNavigate();
 
     const [isOpenUser, setIsOpenUser] = useState(false);
@@ -102,6 +106,7 @@ function Header() {
         }
     };
 
+    if (loading) return <Loading />;
 
     return (
         <div className="header bg-emerald-600 min-w-7xl">
@@ -234,10 +239,14 @@ function Header() {
                                         </Link>
                                     </li>
                                     <li>
-                                        <Link to="/seller/become-a-seller" className="block hover:text-emerald-600 hover:bg-gray-100 font-medium !p-3">
+                                        <Link
+                                            to={user?.vaiTro === "seller" ? "/seller/home" : "/seller/become-a-seller"}
+                                            className="block hover:text-emerald-600 hover:bg-gray-100 font-medium !p-3"
+                                        >
                                             Kênh người bán
                                         </Link>
                                     </li>
+
                                     <li>
                                         <button 
                                             onClick={logout} 

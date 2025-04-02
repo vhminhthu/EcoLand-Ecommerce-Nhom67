@@ -8,6 +8,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import moment from "moment";
 import "moment/dist/locale/vi";
 import { FaAngleLeft, FaAngleRight } from "react-icons/fa6";
+import Loading from '../../components/customer/layout/Loading';
 
 function ShopPage() {
     const navigate = useNavigate();
@@ -119,7 +120,7 @@ function ShopPage() {
         }
     };
 
-    if (loading) return <p>Đang tải dữ liệu...</p>;
+    if (loading) return <Loading />;
     if (error) return <p>Lỗi: {error.message}</p>;
     
     return (

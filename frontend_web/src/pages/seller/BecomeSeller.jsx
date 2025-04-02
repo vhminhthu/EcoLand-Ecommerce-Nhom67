@@ -4,6 +4,7 @@ import { IoIosInformationCircleOutline } from "react-icons/io";
 import axios from "axios";
 import PropTypes from "prop-types";
 import { useNavigate } from "react-router-dom";
+import Loading from "../../components/customer/layout/Loading";
 
 const steps = [
     "Thông tin Shop",
@@ -120,7 +121,7 @@ export default function BecomeSeller() {
         console.log("formData đã thay đổi:", formData);
     }, [formData]); 
 
-    if (loading) return <p>Đang tải thông tin...</p>;
+    if (loading) return <Loading />;
     
     return (
         <div className="h-screen bg-slate-50">

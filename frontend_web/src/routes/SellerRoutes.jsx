@@ -9,11 +9,12 @@ import ProductsPageAdd from "../pages/seller/ProductsPageAdd";
 import BecomeSeller from "../pages/seller/BecomeSeller";
 import { useAuth } from "../context/AuthContext";
 import  ProductTracking from "../pages/seller/ProductTracking";
+import Loading from "../components/customer/layout/Loading";
 
 function SellerRoutes() {
     const { user, loading } = useAuth();
 
-    if (loading) return <p>Đang tải thông tin...</p>;
+    if (loading) return <Loading />;
 
     return (
     <Routes>
@@ -25,7 +26,7 @@ function SellerRoutes() {
         <Route path="products/add" element={<ProductsPageAdd />} />
         <Route path="store" element={<StorePage />} />
         <Route path="chat" element={<ChatPage />} />
-        <Route path="become-a-seller" element={user?.vaiTro == 'seller' ? <HomePage /> :<BecomeSeller/>} />
+        <Route path="become-a-seller" element={user?.vaiTro === "seller" ? <HomePage /> :<BecomeSeller/>} />
     </Routes>
     );
 }

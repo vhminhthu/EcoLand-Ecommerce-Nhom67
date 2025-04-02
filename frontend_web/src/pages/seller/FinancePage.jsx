@@ -4,6 +4,7 @@ import { useAuth } from '../../context/AuthContext';
 import MainLayout from '../../layouts/seller/MainLayout';
 import { BsArrowDownRightCircleFill, BsArrowDownLeftCircleFill } from "react-icons/bs";
 import axios from 'axios';
+import Loading from '../../components/customer/layout/Loading';
 
 function FinancePage() {
     const { user, loading } = useAuth();
@@ -86,7 +87,7 @@ function FinancePage() {
         setHienForm(false);
     };
     
-    if (loading) return <p>Loading...</p>;
+    if (loading) return <Loading />;
     if (error) return <p className="text-red-500 font-semibold">Đã xảy ra lỗi: {error.message}</p>;
     return (
         <MainLayout>

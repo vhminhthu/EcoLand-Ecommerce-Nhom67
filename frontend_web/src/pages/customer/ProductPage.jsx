@@ -15,6 +15,7 @@ import moment from "moment";
 import "moment/locale/vi";
 import { FaQrcode } from 'react-icons/fa'; 
 import QRCode from 'react-qr-code'; 
+import Loading from '../../components/customer/layout/Loading.jsx';
 
 function ProductPage() {
     const navigate = useNavigate()
@@ -209,7 +210,7 @@ function ProductPage() {
             console.error("Lỗi khi thêm báo cáo:", error);
         }
     };
-    if (loading) return <p>Đang tải dữ liệu...</p>;
+    if (loading) return <Loading />;
     if (error) return <p>Lỗi: {error.message}</p>;
     return (
     <>

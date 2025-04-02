@@ -226,7 +226,6 @@ export const capNhatTrangThaiDonHang = async (req, res) => {
     try {
         const { id } = req.params;
         const { trangThai } = req.body;
-        const idND = req.nguoidung._id;
 
         const donHang = await Donhang.findById(id);
         if (!donHang) {
@@ -282,6 +281,11 @@ export const capNhatTrangThaiDonHang = async (req, res) => {
 export const getDoanhThu = async (req, res) => { 
     try {
         const { type } = req.query;
+        const idND = req.nguoidung._id;
+        if (!idND) return res.status(401).json({ error: "Không xác thực được người dùng!" });
+
+        const cuaHang = await Cuahang.findOne({ idNguoiDung: idND });
+        if (!cuaHang) return res.status(404).json({ error: "Không tìm thấy cửa hàng!" });
 
         const now = new Date();
         const yearNum = now.getFullYear();
@@ -296,8 +300,16 @@ export const getDoanhThu = async (req, res) => {
         let groupStage = {}; // Điều kiện nhóm dữ liệu
         let formatStage = {}; // Format đầu ra
 
+        matchStage = {
+            $and: [
+                { "cuaHangId": cuaHang._id },
+                { "trangThai": "Hoàn thành" },
+                { $expr: {} }
+            ]
+        };
+
         if (type === "Ngày") {
-            matchStage = {
+            matchStage.$and[1] = {
                 $expr: {
                     $and: [
                         { $eq: [{ $year: "$ngayDat" }, yearNum] },
@@ -312,7 +324,7 @@ export const getDoanhThu = async (req, res) => {
             };
         } 
         else if (type === "Tuần") {
-            matchStage = { ngayDat: { $gte: firstDayOfWeek, $lt: now } };
+            matchStage.$and[1] = { ngayDat: { $gte: firstDayOfWeek, $lt: now } };
             groupStage = { _id: { $dayOfWeek: "$ngayDat" } };
             formatStage = {
                 $set: {
@@ -372,10 +384,18 @@ export const getDoanhThu = async (req, res) => {
     }
 };
 
-
 export const getTinhTrangDonHang = async (req, res) => {
     try {
+        const idND = req.nguoidung._id;
+        if (!idND) return res.status(401).json({ error: "Không xác thực được người dùng!" });
+
+        const cuaHang = await Cuahang.findOne({ idNguoiDung: idND });
+        if (!cuaHang) return res.status(404).json({ error: "Không tìm thấy cửa hàng!" });
+
         const orderStats = await Donhang.aggregate([
+            {
+                $match: { cuaHangId: cuaHang._id }
+            },
             {
                 $group: {
                     _id: "$trangThai",
@@ -385,9 +405,79 @@ export const getTinhTrangDonHang = async (req, res) => {
         ]);
 
         res.status(200).json({ success: true, data: orderStats });
-
     } catch (error) {
         console.error("Lỗi khi lấy tình trạng đơn hàng:", error);
+        res.status(500).json({ message: "Lỗi server" });
+    }
+};
+
+
+export const getDonHangCXN = async (req, res) => {
+    try {
+        const idND = req.nguoidung._id;
+        if (!idND) return res.status(401).json({ error: "Không xác thực được người dùng!" });
+
+        const cuaHang = await Cuahang.findOne({ idNguoiDung: idND });
+        if (!cuaHang) return res.status(404).json({ error: "Không tìm thấy cửa hàng!" });
+
+        const danhSachDonHang = await Donhang
+            .find({ cuaHangId: cuaHang._id, trangThai: "Chờ xác nhận" })
+            .select("maDonHang trangThai ngayDat tongTienThanhToan khachHangId")
+            .populate("khachHangId", "tenNguoiDung"); 
+
+        res.status(200).json({ success: true, data: danhSachDonHang });
+    } catch (error) {
+        console.error("Lỗi khi lấy tình trạng đơn hàng:", error);
+        res.status(500).json({ message: "Lỗi server" });
+    }
+};
+
+export const getSanPhamBanChay = async (req, res) => {
+    try {
+        const idND = req.nguoidung._id;
+        if (!idND) return res.status(401).json({ error: "Không xác thực được người dùng!" });
+
+        const cuaHang = await Cuahang.findOne({ idNguoiDung: idND });
+        if (!cuaHang) return res.status(404).json({ error: "Không tìm thấy cửa hàng!" });
+
+        const sanPhamBanChay = await Donhang.aggregate([
+            {
+                $match: { cuaHangId: cuaHang._id, trangThai: "Hoàn thành" }
+            },
+            {
+                $unwind: "$dsSanPham"
+            },
+            {
+                $match: { "dsSanPham.soLuong": { $gt: 0 } } 
+            },
+            {
+                $group: {
+                    _id: "$dsSanPham.idSP", 
+                    totalSold: { $sum: "$dsSanPham.soLuong" } 
+                }
+            },
+            {
+                $lookup: {
+                    from: "Sanpham", 
+                    localField: "_id",
+                    foreignField: "_id", 
+                    as: "sanPhamInfo"
+                }
+            },
+            {
+                $unwind: "$sanPhamInfo"
+            },
+            {
+                $sort: { totalSold: -1 }
+            },
+            {
+                $limit: 10
+            }
+        ]);        
+
+        res.status(200).json({ success: true, data: sanPhamBanChay });
+    } catch (error) {
+        console.error("Lỗi khi lấy sản phẩm bán chạy:", error);
         res.status(500).json({ message: "Lỗi server" });
     }
 };

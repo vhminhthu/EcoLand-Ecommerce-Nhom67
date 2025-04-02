@@ -7,6 +7,7 @@ import { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import {ListLocations} from "../../data/ListLocations";
 import { FaAngleLeft, FaAngleRight } from "react-icons/fa6";
+import Loading from "../../components/customer/layout/Loading";
 
 const ratings = [5, 4, 3, 2, 1];
 
@@ -27,6 +28,7 @@ function CategoryPage() {
   const minStar = query.get('minStar') || 0;
   const maxStar = query.get('maxStar') || 0;
   const locations = query.get('locations') || '';
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
       const fetchProducts = async () => {
@@ -48,7 +50,10 @@ function CategoryPage() {
             }
           } catch (error) {
             console.error("Có lỗi xảy ra khi lấy sản phẩm:", error);
-          }
+          } finally {
+            setLoading(false);
+        }
+          
       };
       fetchProducts();
   }, [id, sort, page, limit, minStar, maxStar, locations]);
@@ -115,7 +120,8 @@ function CategoryPage() {
       state: { id: id }
     });
   };
-  
+
+  if (loading) return <Loading />;
 
   return (
     <MainLayout>

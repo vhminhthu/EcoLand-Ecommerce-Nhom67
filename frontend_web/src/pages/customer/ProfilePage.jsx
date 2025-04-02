@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import CustomerLayout from "../../layouts/customer/CustomerLayout";
 import MainLayout from "../../layouts/customer/MainLayout";
 import axios from "axios";
+import Loading from "../../components/customer/layout/Loading";
 
 export default function ProfilePage() {
   const [user, setUser] = useState(null);
@@ -81,9 +82,7 @@ const handleUpload = async () => {
     fetchUser();
   }, [userId]);
 
-  if (loading) {
-    return <div className="text-center py-10">Đang tải...</div>;
-  }
+  if (loading) { <Loading />;}
 
   if (!user) {
     return <div className="text-center py-10 text-red-500">Không tìm thấy người dùng!</div>;
