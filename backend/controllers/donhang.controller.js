@@ -481,3 +481,44 @@ export const getSanPhamBanChay = async (req, res) => {
         res.status(500).json({ message: "Lỗi server" });
     }
 };
+
+export const getOrderStatusPercentage = async (req, res) => {
+    try {
+      
+        const totalOrders = await Donhang.countDocuments();
+
+        if (totalOrders === 0) {
+            return res.status(200).json({
+                success: true,
+                chuaXacNhan: 0,
+                choGiaoHang: 0,
+                hoanThanh: 0,
+            });
+        }
+
+    
+        const chuaXacNhanCount = await Donhang.countDocuments({ trangThai: 'Chờ xác nhận' });
+        const choGiaoHangCount = await Donhang.countDocuments({ trangThai: 'Chờ giao hàng' });
+        const hoanThanhCount = await Donhang.countDocuments({ trangThai: 'Hoàn thành' });
+
+    
+        const chuaXacNhanPercent = ((chuaXacNhanCount / totalOrders) * 100).toFixed(2);
+        const choGiaoHangPercent = ((choGiaoHangCount / totalOrders) * 100).toFixed(2);
+        const hoanThanhPercent = ((hoanThanhCount / totalOrders) * 100).toFixed(2);
+
+       
+        res.status(200).json({
+            success: true,
+            chuaXacNhan: chuaXacNhanPercent,
+            choGiaoHang: choGiaoHangPercent,
+            hoanThanh: hoanThanhPercent,
+        });
+    } catch (error) {
+        console.error("Lỗi khi tính toán phần trăm trạng thái đơn hàng:", error);
+        res.status(500).json({
+            success: false,
+            message: 'Lỗi server!',
+            error: error.message,
+        });
+    }
+};

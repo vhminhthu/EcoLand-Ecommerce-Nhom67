@@ -7,6 +7,21 @@ import axios from "axios";
 
 const Dashboard = () => {
   const [products, setProducts] = useState([]);
+
+  const [data, setData] = useState({
+    totalUsers: 0,
+    totalProducts: 0,
+    productsThisWeek: 0,
+  });
+
+  const [percentages, setPercentages] = useState({
+    chuaXacNhan: 0,
+    choGiaoHang: 0,
+    hoanThanh: 0,
+  });
+
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   
   useEffect(() => {
     const fetchTopSelling = async () => {
@@ -22,6 +37,44 @@ const Dashboard = () => {
 
     fetchTopSelling();
   }, []);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get('api/sanpham/overview'); // Đảm bảo đường dẫn chính xác
+        setData(response.data);
+      } catch (err) {
+        setError('Lỗi khi gọi API: ' + err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    const fetchOrderPercentages = async () => {
+      try {
+        const response = await axios.get('api/donhang/order-percent');
+        setPercentages(response.data); 
+      } catch (err) {
+        setError('Lỗi khi gọi API: ' + err.message); 
+      } finally {
+        setLoading(false); 
+      }
+    };
+
+    fetchOrderPercentages();
+  }, []);
+
+  if (loading) {
+    return <div>Đang tải...</div>;
+  }
+
+  if (error) {
+    return <div>{error}</div>;
+  }
   
   return (
     <Navigation>
@@ -31,40 +84,40 @@ const Dashboard = () => {
 
         {/* Grid chính */}
         <div className="grid grid-cols-3 gap-4 !mt-4">
-          {/* Transaction */}
+          {/* Order */}
           <div className="bg-white !p-5 rounded-lg shadow">
-            <h3 className="text-green-700 font-bold">Các đơn hàng</h3>
-            <div className="flex justify-around !mt-4">
-              <div className="text-center">
-                <div className="text-xl font-bold text-purple-700">25%</div>
-                <p className="text-gray-600 text-sm">On Delivery</p>
-              </div>
-              <div className="text-center">
-                <div className="text-xl font-bold text-purple-700">85%</div>
-                <p className="text-gray-600 text-sm">Delivered</p>
-              </div>
-              <div className="text-center">
-                <div className="text-xl font-bold text-purple-700">7%</div>
-                <p className="text-gray-600 text-sm">Cancelled</p>
-              </div>
-            </div>
-          </div>
+      <h3 className="text-green-700 font-bold !mb-15">Các đơn hàng</h3>
+      <div className="flex justify-around !mt-4">
+        <div className="text-center !px-4  !py-5 rounded-lg bg-green-50">
+          <div className="text-xl font-bold text-purple-700">{percentages.chuaXacNhan}%</div>
+          <p className="text-gray-600 text-sm">Chờ xác nhận</p>
+        </div>
+        <div className="text-center !px-4  !py-5 rounded-lg bg-green-50">
+          <div className="text-xl font-bold text-purple-700">{percentages.choGiaoHang}%</div>
+          <p className="text-gray-600 text-sm">Chờ giao hàng</p>
+        </div>
+        <div className="text-center !px-4  !py-5 rounded-lg bg-green-50">
+          <div className="text-xl font-bold text-purple-700">{percentages.hoanThanh}%</div>
+          <p className="text-gray-600 text-sm">Hoàn thành</p>
+        </div>
+      </div>
+    </div>
 
           {/* Overview */}
           <div className="bg-white !p-5 rounded-lg shadow">
-            <h3 className="text-green-700 font-bold">Tổng quan</h3>
-            <div className="flex flex-col gap-2 !mt-2">
-              <p className="bg-gray-200 !px-3 !py-1 rounded font-semibold">
-                3100 new users
-              </p>
-              <p className="bg-gray-200 !px-3 !py-1 rounded font-semibold">
-                2931 products in total
-              </p>
-              <p className="bg-gray-200 !px-3 !py-1 rounded font-semibold">
-                1432 new products this week
-              </p>
-            </div>
-          </div>
+      <h3 className="text-green-700 font-bold !mb-7">Tổng quan</h3>
+      <div className="flex flex-col gap-2 !mt-2">
+        <p className="bg-gray-200 !px-3 !py-3 !mb-3 rounded font-semibold">
+          {data.totalUsers} người dùng
+        </p>
+        <p className="bg-gray-200 !px-3 !py-3 !mb-3 rounded font-semibold">
+          {data.totalProducts} sản phẩm
+        </p>
+        <p className="bg-gray-200 !px-3 !py-3 rounded font-semibold">
+          {data.productsThisWeek} sản phẩm mới trong tuần
+        </p>
+      </div>
+    </div>
 
           {/* Top Selling Items */}
           <div className="bg-white !p-5 rounded-lg shadow">
