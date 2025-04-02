@@ -840,3 +840,42 @@ export const getProducTrelated = async (req, res) => {
     }
 };
 
+export const getStatisticsByCategory = async (req, res) => {
+    try {
+        const statistics = await Sanpham.aggregate([
+            { 
+                $lookup: {
+                    from: "Danhmuc", 
+                    localField: "idDM",
+                    foreignField: "_id",
+                    as: "danhMuc"
+                }
+            },
+            { 
+                $unwind: "$danhMuc" 
+            },
+            { 
+                $group: {
+                    _id: "$danhMuc.tenDM", 
+                    tongLuotXem: { $sum: "$luotXem" }, 
+                    soSanPham: { $sum: 1 } 
+                }
+            },
+            { 
+                $sort: { tongLuotXem: -1 } 
+            }
+        ]);
+
+        res.status(200).json({
+            success: true,
+            message: "Thống kê lượt xem theo danh mục sản phẩm",
+            data: statistics
+        });
+    } catch (error) {
+        console.error("Lỗi lấy thống kê:", error);
+        res.status(500).json({
+            success: false,
+            message: "Lỗi server khi lấy thống kê"
+        });
+    }
+};

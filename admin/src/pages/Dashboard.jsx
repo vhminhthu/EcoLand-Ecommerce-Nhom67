@@ -2,8 +2,27 @@ import Navigation from "../components/Navigation";
 import Header from "../components/Header";
 import { CiShop } from "react-icons/ci";
 import AreaChartComponent from "./other/AreaChart.jsx";
+import { useEffect, useState } from "react";
+import axios from "axios";
 
 const Dashboard = () => {
+  const [products, setProducts] = useState([]);
+  
+  useEffect(() => {
+    const fetchTopSelling = async () => {
+      try {
+        const res = await axios.get("/api/sanpham/top-selling");
+        if (res.data.success) {
+          setProducts(res.data.data.slice(0, 5)); 
+        }
+      } catch (error) {
+        console.error("Lỗi khi lấy danh sách sản phẩm:", error);
+      }
+    };
+
+    fetchTopSelling();
+  }, []);
+  
   return (
     <Navigation>
       <Header title="Dashboard" />
@@ -14,7 +33,7 @@ const Dashboard = () => {
         <div className="grid grid-cols-3 gap-4 !mt-4">
           {/* Transaction */}
           <div className="bg-white !p-5 rounded-lg shadow">
-            <h3 className="text-green-700 font-bold">Transaction</h3>
+            <h3 className="text-green-700 font-bold">Các đơn hàng</h3>
             <div className="flex justify-around !mt-4">
               <div className="text-center">
                 <div className="text-xl font-bold text-purple-700">25%</div>
@@ -33,7 +52,7 @@ const Dashboard = () => {
 
           {/* Overview */}
           <div className="bg-white !p-5 rounded-lg shadow">
-            <h3 className="text-green-700 font-bold">Overview</h3>
+            <h3 className="text-green-700 font-bold">Tổng quan</h3>
             <div className="flex flex-col gap-2 !mt-2">
               <p className="bg-gray-200 !px-3 !py-1 rounded font-semibold">
                 3100 new users
@@ -49,28 +68,30 @@ const Dashboard = () => {
 
           {/* Top Selling Items */}
           <div className="bg-white !p-5 rounded-lg shadow">
-            <h3 className="text-green-700 font-bold">Top Selling Items</h3>
-            <p className="text-gray-600 text-sm">The top order products this week</p>
-            <div className="!mt-3 !space-y-2">
-              {[1, 2, 3].map((_, index) => (
-                <div key={index} className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <img
-                    src="https://i.pinimg.com/736x/e5/8a/0d/e58a0dd8a9f5dc2f410a6699f71a2319.jpg"
-                    alt="Product"
-                    className="!w-10 !h-10 rounded-full"
-                  />
-                  <p className="text-gray-800 font-medium">Cabbage</p>
-                </div>
-                {/* Căn chỉnh icon shop kế bên chữ */}
-                <div className="flex items-center gap-1 text-gray-500 text-sm">
-                  <CiShop size={20} />  
-                  <span>LanLanTan</span>
-                </div>
-              </div>                           
-              ))}
-            </div>
-          </div>
+      <h3 className="text-green-700 font-bold">Top những sản phẩm bán chạy</h3>
+      <div className="!mt-3 !space-y-2">
+        {products.length > 0 ? (
+          products.map((product, index) => (
+            <div key={index} className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <img
+                  src={product.dsAnhSP|| "https://via.placeholder.com/40"}
+                  alt={product.tenSP}
+                  className="!w-10 !h-10 rounded-full"
+                />
+                <p className="text-gray-800 font-medium">{product.tenSP}</p>
+              </div>
+              <div className="flex items-center gap-1 text-gray-500 text-sm">
+                <CiShop size={20} />
+                <span>{product.idCH?.tenCH || "Unknown Shop"}</span>
+              </div>
+            </div>                           
+          ))
+        ) : (
+          <p className="text-gray-500 text-sm">No top-selling items found.</p>
+        )}
+      </div>
+    </div>
         </div>
 
         {/* Biểu đồ cột */}
@@ -81,5 +102,7 @@ const Dashboard = () => {
     </Navigation>
   );
 };
+
+
 
 export default Dashboard;

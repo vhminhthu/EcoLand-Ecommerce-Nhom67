@@ -25,7 +25,7 @@ function Hoithoai({ chat }) {
             )}
             <div className="ml-3 flex-grow">
                 <h4 className="font-semibold">{tenNguoiDung}</h4>
-                <p className="text-sm text-gray-500 truncate">{chat?.lastMessage ?? "Không có tin nhắn"}</p>
+                <p className="text-sm text-gray-500 truncate">{chat?.lastMessage ?? ""}</p>
             </div>
             <div className="text-right text-xs text-gray-400">
                 <p className="mb-3">{chat?.time ?? ""}</p>

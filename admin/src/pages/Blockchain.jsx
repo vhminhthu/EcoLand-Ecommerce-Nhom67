@@ -115,7 +115,7 @@ export const Blockchain = () => {
   return (
     <div className="bg-gradient-to-r from-blue-200 via-indigo-100 to-pink-200 min-h-screen h-fit">
       <Navigation>
-        <Header title="Blockchain Management" />
+        <Header title="Quản lý Blockchain" />
         <div>
           <div className="!mt-16 flex flex-col justify-center">
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 h-30">

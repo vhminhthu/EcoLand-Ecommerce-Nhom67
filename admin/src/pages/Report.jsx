@@ -53,7 +53,7 @@ export default function ReportManagement() {
 
   return (
     <Navigation>
-      <Header title="Report Management" />
+      <Header title="Quản lý báo cáo" />
       <div className="!pt-16 !p-4">
         <div className="!p-6">
           <h1 className="text-2xl font-bold !mb-4">Quản lý báo cáo</h1>

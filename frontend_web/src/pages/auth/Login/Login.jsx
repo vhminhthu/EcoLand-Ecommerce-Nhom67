@@ -53,7 +53,7 @@ const Login = () => {
       />
 
       <div className="bg-white/30 backdrop-blur-[1px] p-8 rounded-lg shadow-lg w-full max-w-sm z-10">
-        <h2 className="text-2xl font-semibold text-center text-gray-800 mb-6">Login</h2>
+        <h2 className="text-2xl font-semibold text-center text-gray-800 mb-6">Đăng nhập</h2>
         <form onSubmit={handleDangNhap}>
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="email">
@@ -75,7 +75,7 @@ const Login = () => {
           </div>
           <div className="mb-6">
             <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="password">
-              Password
+              Mật khẩu
             </label>
             <div className="relative">
               <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500">
@@ -95,7 +95,7 @@ const Login = () => {
             type="submit"
             className="w-full bg-white text-black font-bold py-2 px-4 rounded-lg hover:bg-slate-100 transition duration-200"
           >
-            Login
+            Đăng nhập
           </button>
           <button
             type="button"
@@ -103,7 +103,7 @@ const Login = () => {
             className="w-full mt-4 flex items-center justify-center bg-transparent text-white font-semibold py-2 px-4 rounded-lg border border-white hover:border-gray-500 hover:bg-opacity-70 transition duration-200"
           >
             <FcGoogle className="w-4 h-4 mr-2" />
-            Login with Google
+            Đăng nhập với Google
           </button>
         </form>
 

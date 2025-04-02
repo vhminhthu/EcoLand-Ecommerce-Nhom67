@@ -68,7 +68,7 @@ const Product = () => {
 
   return (
     <Navigation>
-      <Header title="Product Management" />
+      <Header title="Quản lý sản phẩm" />
       <div className="!pt-7 !p-4">
         <div className="!max-w-6xl !mx-auto !mt-8">
           <div className="bg-[#075310] text-white !p-3 font-bold grid grid-cols-7 items-center">

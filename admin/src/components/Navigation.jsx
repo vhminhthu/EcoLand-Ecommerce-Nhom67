@@ -29,15 +29,15 @@ const Navigation = ({ children }) => {
 
   const menuItems = [
     { name: "Dashboard", icon: <BiSolidDashboard size={24} />, path: "/" },
-    { name: "User Management", icon: <FaUserGroup size={24} />, path: "/user" },
-    { name: "Category", icon: <TbCategoryFilled size={22} />, path: "/category" },
-    { name: "Product Management", icon: <BsFillBoxSeamFill size={20} />, path: "/product" },
+    { name: "Cửa hàng", icon: <FaUserGroup size={24} />, path: "/user" },
+    { name: "Danh mục", icon: <TbCategoryFilled size={22} />, path: "/category" },
+    { name: "Sản phẩm", icon: <BsFillBoxSeamFill size={20} />, path: "/product" },
     { name: "Blockchain", icon: <SiBlockchaindotcom size={22} />, path: "/blockchain" },
-    { name: "Report Management", icon: <FaFileAlt size={24} />, path: "/report" },
-    { name: "Transaction Management", icon: <MdOutlinePayments size={24} /> , path: "/transaction" },
-    { name: "Ads Management", icon: <LiaAdSolid size={24} /> , path: "/ads" },
-    { name: "Roles", icon: <IoMdSettings size={25} />, path: "/roles" },
-    { name: "Logout", icon: <TbLogout2 size={25} />, action: handleLogout },
+    { name: "Báo cáo", icon: <FaFileAlt size={24} />, path: "/report" },
+    { name: "Giao dịch", icon: <MdOutlinePayments size={24} /> , path: "/transaction" },
+    { name: "Quảng cáo", icon: <LiaAdSolid size={24} /> , path: "/ads" },
+    { name: "Phân quyền", icon: <IoMdSettings size={25} />, path: "/roles" },
+    { name: "Đăng xuất", icon: <TbLogout2 size={25} />, action: handleLogout },
   ];
 
   return (
