@@ -471,7 +471,7 @@ function ProductPage() {
                 <div className="w-[430px] bg-white p-5 rounded-lg shadow-xl text-center" onClick={(e) => e.stopPropagation()}>
                 <h2 className="text-2xl font-semibold text-gray-800 mb-4">Quét để xem nguồn gốc</h2>
                 <QRCode
-                    value={`https://frontend-tttn-t7hc.vercel.app/product/detail/${id}`}
+                    value={`https://frontend-tttn-t7hc.vercel.app/product/detail/${sanPham.uuid}`}
                     size={256}
                     fgColor="#000000"
                     bgColor="#ffffff"
