@@ -126,11 +126,11 @@ function ProductsPage() {
                                 navigate(`/seller/products/add`);
                             }}
                             >
-                            New product
+                            Thêm sản phẩm 
                         </button>
 
                         <button className="bg-[#EAEAEA] text-gray-600 !px-7 !py-2 rounded-lg cursor-not-allowed">
-                            Delete
+                            Xóa 
                         </button>
                     </div>
                 </div>

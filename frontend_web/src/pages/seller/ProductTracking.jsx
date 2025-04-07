@@ -187,8 +187,8 @@ const ProductTracking = () => {
     }
 
     try {
-      const gasLimit = await contract.packageProduct.estimateGas(selectedProduct.productId, formData.packaging.packagingDate, formData.packaging.packagingDate);
-      const tx = await contract.packageProduct(selectedProduct.productId, formData.packaging.packagingDate, formData.packaging.packagingDate,
+      const gasLimit = await contract.packageProduct.estimateGas(selectedProduct.productId, formData.packaging.packagingDate, formData.packaging.expirationDate);
+      const tx = await contract.packageProduct(selectedProduct.productId, formData.packaging.packagingDate, formData.packaging.expirationDate,
         { gasLimit }
       );
       await tx.wait();
@@ -747,7 +747,7 @@ const ProductTracking = () => {
                         {/* Hạn sử dụng */}
                         {formData.packaging.expirationDate ? (
                           <div>
-                            <label className="block font-medium mb-1">Ngày đóng gói</label>
+                            <label className="block font-medium mb-1">Hạn Sử Dụng</label>
                             <input
                               type="text"
                               disabled={selectedProduct?.packaging?.expirationDate}
@@ -764,7 +764,7 @@ const ProductTracking = () => {
                           </div>
                         ) : (
                           <div>
-                            <label className="block font-medium mb-1">Ngày đóng gói</label>
+                            <label className="block font-medium mb-1">Hạn Sử Dụng </label>
                             <input
                               type="date"
                               disabled={selectedProduct?.packaging?.expirationDate}
