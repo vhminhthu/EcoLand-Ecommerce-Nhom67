@@ -14,6 +14,7 @@ function ProductsPageAdd() {
         idDM: null,
         nguonGoc: '',
         image: null,
+        video:null,
         phanLoai: [
             { idPL: "", tenLoai: "", giaLoai: "", donVi: "", khuyenMai: "", khoHang: "" }
         ],
@@ -103,9 +104,29 @@ function ProductsPageAdd() {
             }
     };
 
+    const xulyChonVideo = (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+    
+        const reader = new FileReader();
+        reader.onloadend = () => {
+            setFormData((prev) => ({
+                ...prev,
+                video: reader.result,  
+            }));
+        };
+        reader.readAsDataURL(file);
+    };
+    
+
     const xoaFile = () => {
         setFormData(prev => ({ ...prev, image: null }));
     };
+
+    const xoaVideo = () => {
+        setFormData((prev) => ({ ...prev, video: null }));
+    };
+    
 
     return (
         <MainLayout>
@@ -252,6 +273,27 @@ function ProductsPageAdd() {
                                     </div>
                                 )}
                         </div>
+                        <div className="bg-slate-50 p-5">
+                                <p className="font-medium text-xl mb-3">Tải video lên</p>
+
+                                <input type="file" accept="video/*" onChange={xulyChonVideo} className="mt-2" />
+                                
+                                {formData.video && (
+                                    <div className="mt-3">
+                                        <p>{formData.video.name}</p>
+                                        <video controls className="mt-2 w-full max-w-md rounded">
+                                            <source src={formData.video.url} type="video/mp4" />
+                                            Trình duyệt không hỗ trợ video.
+                                        </video>
+                                        <button
+                                            className="bg-red-500 text-white px-3 py-1 rounded-md mt-2"
+                                            onClick={xoaVideo}
+                                        >
+                                            Xóa video
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
                         <div className="bg-slate-50 p-5 mt-5">
                             <p className="font-medium text-xl mb-3">Thông tin chi tiết</p>
                             <input

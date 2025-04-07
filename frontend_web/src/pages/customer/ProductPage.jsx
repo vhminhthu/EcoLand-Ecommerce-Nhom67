@@ -398,6 +398,15 @@ function ProductPage() {
             </div>
             <div className='!mt-10 !mb-2 text-center border-b-2 border-emerald-600 text-emerald-600 font-bold text-xl'>MÔ TẢ SẢN PHẨM</div>
             <span className='!py-5'>{sanPham?.moTaSP}</span>
+            <div className="flex justify-center mt-10">
+                    <video 
+                        src={sanPham?.video} 
+                        alt={sanPham?.tenSP}  
+                        className="w-[800px] h-[500px] object-cover"
+                        controls
+                    />
+                </div>
+
             <div className='!mt-10 !mb-2 text-center border-b-2 border-emerald-600 text-emerald-600 font-bold text-xl'>ĐÁNH GIÁ SẢN PHẨM</div>
             <div className='!py-5 flex flex-col items-center'>
                 <div className='flex flex-col items-center w-full bg-gray-50 !py-5'>

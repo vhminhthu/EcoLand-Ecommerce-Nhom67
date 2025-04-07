@@ -29,6 +29,7 @@ const sanphamSchema = new mongoose.Schema(
         idNguoiDuyet: { type: mongoose.Schema.Types.ObjectId, ref: "Admin"},
         nguyenNhanTC:{type: String},
         uuid: {type: String},
+        video:{type:String},
     },
     {
         timestamps: true

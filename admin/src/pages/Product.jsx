@@ -14,6 +14,8 @@ const Product = () => {
   const [rejectReason, setRejectReason] = useState("");
   const [selectedProductId, setSelectedProductId] = useState(null);
   const [selectedImage, setSelectedImage] = useState(null);
+  const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
+  const [videoUrl, setVideoUrl] = useState("");
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -66,6 +68,17 @@ const Product = () => {
     setShowRejectDialog(true);
   };
 
+  const openVideoModal = (videoUrl) => {
+    setVideoUrl(videoUrl);
+    setIsVideoModalOpen(true);
+  };
+
+
+  const closeVideoModal = () => {
+    setIsVideoModalOpen(false);
+    setVideoUrl("");
+  };
+
   return (
     <Navigation>
       <Header title="Quản lý sản phẩm" />
@@ -114,6 +127,12 @@ const Product = () => {
                         <p className="text-gray-500 flex items-center gap-2">
                           <CiShop size={20} /> {product.tenCuaHang}
                         </p>
+                        <button
+                          onClick={() => openVideoModal(product.video)}
+                          className="text-blue-600"
+                        >
+                          Click to view video
+                        </button>
                       </div>
                     </div>
                     <div className="flex gap-4 !mt-3 justify-end">
@@ -181,6 +200,25 @@ const Product = () => {
               >
                 Xác nhận
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+{isVideoModalOpen && (
+        <div className="fixed inset-0 flex justify-center items-center bg-black/50 z-50">
+          <div className="bg-white p-4 rounded-lg max-w-3xl w-full">
+            <button
+              onClick={closeVideoModal}
+              className="absolute top-2 right-2 text-gray-500 hover:text-black"
+            >
+              ✖
+            </button>
+            <div>
+              <video width="100%" controls>
+                <source src={videoUrl} type="video/mp4" />
+                Your browser does not support the video tag.
+              </video>
             </div>
           </div>
         </div>

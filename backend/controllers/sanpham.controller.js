@@ -74,13 +74,14 @@ export const duyetSanPham = async (req, res) => {
 export const addSanPham = async (req, res) => {
     try {
         const idND = req.nguoidung._id.toString();
-        const {tenSP, moTaSP, idDM, nguonGoc, phanLoai, image, uuid} = req.body;
+        const {tenSP, moTaSP, idDM, nguonGoc, phanLoai, image, uuid, video} = req.body;
 
         if (!tenSP || !moTaSP || !idDM || !nguonGoc || !phanLoai || !image || !uuid ) {
             return res.status(400).json({ error: "Vui lòng nhập đầy đủ thông tin!" });
         }
 
         let anhSPUrl = image;
+        let videoUrl = video;
 
         if (image) {
             try {
@@ -89,6 +90,19 @@ export const addSanPham = async (req, res) => {
             } catch (uploadError) {
                 console.log("Lỗi upload ảnh sản phẩm:", uploadError.message);
                 return res.status(500).json({ error: "Lỗi khi upload ảnh sản phẩm lên Cloudinary" });
+            }
+        }
+
+        if (video) {
+            try {
+                const uploadVideo = await cloudinary.uploader.upload(video, {
+                    resource_type: "video",
+                    folder: "sanpham_videos"
+                });
+                videoUrl = uploadVideo.secure_url;
+            } catch (videoError) {
+                console.log("Lỗi upload video sản phẩm:", videoError.message);
+                return res.status(500).json({ error: "Lỗi khi upload video sản phẩm lên Cloudinary" });
             }
         }
 
@@ -106,6 +120,7 @@ export const addSanPham = async (req, res) => {
             phanLoai,
             dsAnhSP: anhSPUrl,
             uuid,
+            video: videoUrl,
         });
 
         const danhMuc = await DanhMuc.findById(idDM);
@@ -442,6 +457,7 @@ export const getPendingProduct = async (req, res) => {
                     trangThai: sp.trangThai,
                     ngaySX: formatDate(sp.ngaySX),
                     dsAnhSP: sp.dsAnhSP,
+                    video: sp.video,
                     certify_image: sp.certify_image,
                     certifier: certifierInfo?.tenAdmin || "Không xác định", 
                     ngayTH: formatDate(sp.ngayTH),
