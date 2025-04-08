@@ -5,11 +5,13 @@ import { BrowserProvider, Contract } from "ethers";
 const contractAddress = import.meta.env.VITE_CONTRACT_ADDRESS;
 import EcoLandSupplyChainABI from '../EcoLandSupplyChainABI';
 import ConnectAccount from './ConnectAccount';
+import Loading from '../components/Loading';
 
 export const Blockchain = () => {
   const [userAddress, setUserAddress] = useState("");
   const [contract, setContract] = useState(null);
   const [productList, setProductList] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const savedAddress = localStorage.getItem("userAddress");
@@ -47,12 +49,16 @@ export const Blockchain = () => {
       setProductList(productList);
     } catch (err) {
       console.error("Lỗi khi lấy sản phẩm:", err);
+    } finally {
+      setLoading(false);
     }
   };
 
   useEffect(() => {
     fetchProducts();
   }, [contract, userAddress]);
+
+  if (loading) return <Loading />;
 
   return (
     <div className="bg-gradient-to-r from-blue-200 via-indigo-100 to-pink-200 min-h-screen h-fit">
