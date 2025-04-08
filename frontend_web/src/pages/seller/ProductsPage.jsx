@@ -128,10 +128,6 @@ function ProductsPage() {
                             >
                             Thêm sản phẩm 
                         </button>
-
-                        <button className="bg-[#EAEAEA] text-gray-600 !px-7 !py-2 rounded-lg cursor-not-allowed">
-                            Xóa 
-                        </button>
                     </div>
                 </div>
 
@@ -157,7 +153,6 @@ function ProductsPage() {
                         {displayedProducts?.map((product) => (
     <tr key={product?._id || Math.random()} className="border-b !h-16">
         <td className="!py-3 !px-4 font-bold flex items-center">
-            <input type="checkbox" className="!mr-3" />
             {product?.dsAnhSP && (
                 <img
                     src={product.dsAnhSP}

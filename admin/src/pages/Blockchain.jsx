@@ -11,7 +11,7 @@ export const Blockchain = () => {
   const [userAddress, setUserAddress] = useState("");
   const [contract, setContract] = useState(null);
   const [productList, setProductList] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const savedAddress = localStorage.getItem("userAddress");
@@ -39,6 +39,7 @@ export const Blockchain = () => {
   const fetchProducts = async () => {
     if (!contract) return;
     try {
+      setLoading(true);
       const nextProductId = await contract.nextProductId();
       let productList = [];
 

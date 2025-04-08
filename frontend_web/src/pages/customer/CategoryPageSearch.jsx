@@ -9,6 +9,7 @@ import {ListLocations} from "../../data/ListLocations";
 import { GrInfo } from "react-icons/gr";
 import { FaAngleLeft, FaAngleRight } from "react-icons/fa6";
 import ShopCard from "../../components/customer/common/cards/ShopCard";
+import Loading from "../../components/customer/layout/Loading";
 
 const ratings = [5, 4, 3, 2, 1];
 
