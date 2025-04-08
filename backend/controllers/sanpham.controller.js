@@ -458,6 +458,7 @@ export const getPendingProduct = async (req, res) => {
                     ngaySX: formatDate(sp.ngaySX),
                     dsAnhSP: sp.dsAnhSP,
                     video: sp.video,
+                    uuid: sp.uuid,
                     certify_image: sp.certify_image,
                     certifier: certifierInfo?.tenAdmin || "Không xác định", 
                     ngayTH: formatDate(sp.ngayTH),

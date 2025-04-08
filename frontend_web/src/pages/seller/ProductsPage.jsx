@@ -150,7 +150,7 @@ function ProductsPage() {
                                 <th className="!py-3 !px-4 text-left">Giá</th>
                                 <th className="!py-3 !px-4 text-left">Giảm</th>
                                 <th className="!py-3 !px-4 text-left">Trạng Thái</th>
-                                <th className="!py-3 !px-4 text-left">Edit</th>
+                                <th className="!py-3 !px-4 text-left">Sửa</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -265,10 +265,10 @@ function ProductsPage() {
                         onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
                         disabled={currentPage === 1}
                     >
-                        Previous
+                        Trước
                     </button>
                     <span className="text-lg font-semibold">
-                        Page {currentPage} of {totalPages}
+                        Trang {currentPage} trong tổng {totalPages}
                     </span>
                     <button
                         className={`!px-4 !py-2 !ml-4 rounded-lg ${
@@ -279,7 +279,7 @@ function ProductsPage() {
                         onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
                         disabled={currentPage === totalPages}
                     >
-                        Next
+                        Sau
                     </button>
                 </div>
             </div>

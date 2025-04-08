@@ -85,11 +85,11 @@ import crypto from "crypto";
 
 export const createAdmin = async (req, res) => {
   try {
-    const { tenAdmin, email, phanQuyen } = req.body;
+    const { tenAdmin, email } = req.body;
     console.log(req.body)
 
-    // Kiểm tra đầu vào
-    if (!tenAdmin || !email || !phanQuyen) {
+
+    if (!tenAdmin || !email) {
       return res.status(400).json({ message: "Vui lòng nhập đầy đủ thông tin!" });
     }
 
@@ -102,15 +102,12 @@ export const createAdmin = async (req, res) => {
       return res.status(403).json({ message: "Bạn không có quyền tạo admin mới!" });
     }
 
-    const validRoles = ["CERTIFIER", "INSPECTOR"];
-    if (!validRoles.includes(phanQuyen)) {
-      return res.status(400).json({ message: "Quyền hạn không hợp lệ!" });
-    }
-
     const existingAdmin = await Admin.findOne({ email });
     if (existingAdmin) {
       return res.status(400).json({ message: "Email này đã tồn tại!" });
     }
+
+    const phanQuyen = "INSPECTOR";
 
     const newAdminData = {
       tenAdmin,
@@ -118,36 +115,31 @@ export const createAdmin = async (req, res) => {
       phanQuyen: [phanQuyen]
     };
 
-    let rawPassword = "";
-    if (phanQuyen === "INSPECTOR") {
-      rawPassword = crypto.randomBytes(12).toString("hex");
-      const hashedPassword = await bcrypt.hash(rawPassword, 10);
-      newAdminData.matKhau = hashedPassword;
-    }
+    const rawPassword = crypto.randomBytes(12).toString("hex");
+    const hashedPassword = await bcrypt.hash(rawPassword, 10);
+    newAdminData.matKhau = hashedPassword;
 
     const newAdmin = new Admin(newAdminData);
     await newAdmin.save();
 
-    if (phanQuyen === "INSPECTOR") {
-      const emailTemplate = `
-        <div class="content">
-          <h2>Xin chào, ${tenAdmin}</h2>
-          <p>Bạn đã được cấp quyền truy cập hệ thống với tư cách ${phanQuyen}.</p>
-          <p>Mật khẩu tạm thời của bạn là:</p>
-          <div class="password-box">${rawPassword}</div>
-          <p>Hãy đổi mật khẩu ngay sau khi đăng nhập!</p>
-        </div>
-        <div class="footer">
-          <p>&copy; 2025 Ecoland. All rights reserved.</p>
-        </div>`;
+    const emailTemplate = `
+      <div class="content">
+        <h2>Xin chào, ${tenAdmin}</h2>
+        <p>Bạn đã được cấp quyền truy cập hệ thống với tư cách ${phanQuyen}.</p>
+        <p>Mật khẩu tạm thời của bạn là:</p>
+        <div class="password-box">${rawPassword}</div>
+        <p>Hãy đổi mật khẩu ngay sau khi đăng nhập!</p>
+      </div>
+      <div class="footer">
+        <p>&copy; 2025 Ecoland. All rights reserved.</p>
+      </div>`;
 
-      try {
-        await sendEmail(email, `Tài khoản ${phanQuyen} Ecoland`, emailTemplate);
-      } catch (emailError) {
-        console.error("Lỗi khi gửi email:", emailError);
-        await Admin.findByIdAndDelete(newAdmin._id); // Rollback nếu email gửi lỗi
-        return res.status(500).json({ message: "Không thể gửi email, admin chưa được tạo." });
-      }
+    try {
+      await sendEmail(email, `Tài khoản ${phanQuyen} Ecoland`, emailTemplate);
+    } catch (emailError) {
+      console.error("Lỗi khi gửi email:", emailError);
+      await Admin.findByIdAndDelete(newAdmin._id); 
+      return res.status(500).json({ message: "Không thể gửi email, admin chưa được tạo." });
     }
 
     return res.status(201).json({ 

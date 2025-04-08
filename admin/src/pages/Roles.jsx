@@ -6,7 +6,6 @@ import axios from "axios";
 export const Roles = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [role, setRole] = useState("INSPECTOR"); 
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
 
@@ -19,13 +18,11 @@ export const Roles = () => {
       const res = await axios.post("/api/admin/create-admin", {
         tenAdmin: name,
         email,
-        phanQuyen: role,
       });
 
       setMessage(res.data.message);
       setName("");
       setEmail("");
-      setRole("INSPECTOR");
     } catch (error) {
       setMessage(error.response?.data?.message || "Có lỗi xảy ra!");
     } finally {
@@ -65,17 +62,6 @@ export const Roles = () => {
                 className="!mt-1 block w-full !p-2 border rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
                 required
               />
-            </div>
-            <div className="!mb-4">
-              <label className="block text-sm font-medium text-gray-700">Vai trò</label>
-              <select
-                value={role}
-                onChange={(e) => setRole(e.target.value)}
-                className="!mt-1 block w-full !p-2 border rounded-md shadow-sm focus:ring-green-500 focus:border-green-500"
-              >
-                <option value="INSPECTOR">Inspector</option>
-                <option value="CERTIFIER">Certify</option>
-              </select>
             </div>
             <button
               type="submit"

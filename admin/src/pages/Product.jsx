@@ -3,7 +3,9 @@ import axios from "axios";
 import { FaChevronDown, FaChevronUp } from "react-icons/fa";
 import { CiShop } from "react-icons/ci";
 import Navigation from "../components/Navigation";
-import Header from "../components/Header";
+import Header from "../components/Header"; 
+import QRCode from 'react-qr-code'; 
+
 
 const Product = () => {
   const [products, setProducts] = useState([]);
@@ -16,6 +18,7 @@ const Product = () => {
   const [selectedImage, setSelectedImage] = useState(null);
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
   const [videoUrl, setVideoUrl] = useState("");
+
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -131,9 +134,16 @@ const Product = () => {
                           onClick={() => openVideoModal(product.video)}
                           className="text-blue-600"
                         >
-                          Click to view video
+                          Click to view video 
                         </button>
                       </div>
+                      <QRCode
+                    value={`https://frontend-tttn-t7hc.vercel.app/product/detail/${product.uuid}`}
+                    size={80}
+                    fgColor="#000000"
+                    bgColor="#ffffff"
+                    className="mx-auto"
+                />
                     </div>
                     <div className="flex gap-4 !mt-3 justify-end">
                       <button 
