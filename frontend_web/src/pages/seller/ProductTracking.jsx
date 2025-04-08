@@ -18,14 +18,14 @@ const ProductTracking = () => {
   const [contract, setContract] = useState(null);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-    const openQRDialog = () => {
+
+  const openQRDialog = () => {
       setIsModalOpen(true);
   };
 
   const closeQRDialog = () => {
       setIsModalOpen(false);
   };
-
 
   useEffect(() => {
     const savedAddress = localStorage.getItem("userAddress");
@@ -50,7 +50,7 @@ const ProductTracking = () => {
     }
     init();
   }, []);
-  
+
   const fetchProducts = async () => {
     if (!contract || !userAddress) return;
 

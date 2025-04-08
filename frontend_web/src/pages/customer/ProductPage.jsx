@@ -282,19 +282,19 @@ function ProductPage() {
                     <div className="flex gap-3 items-center !mb-3">
                         {selectedLoai && selectedLoai?.khuyenMai > 0 ? (
                             <>
-                            <span className="text-red-600 font-bold text-2xl">
-                                {(
-                                selectedLoai?.giaLoai * (1 - selectedLoai?.khuyenMai / 100)
-                                ).toLocaleString()} đ
-                            </span>
-                            <span className="text-gray-500 line-through text-lg">
-                                {selectedLoai?.giaLoai.toLocaleString()} đ
-                            </span>
+                                <span className="text-red-600 font-bold text-2xl">
+                                    {(
+                                    selectedLoai?.giaLoai * (1 - selectedLoai?.khuyenMai / 100)
+                                    ).toLocaleString()} đ
+                                </span>
+                                <span className="text-gray-500 line-through text-lg">
+                                    {selectedLoai?.giaLoai.toLocaleString()} đ
+                                </span>
+                                <span className='border border-red-500 text-red-500 rounded-full !py-0.5 !px-3'>-{selectedLoai?.khuyenMai}%</span>
                             </>
                         ) : (
                             <span className="text-2xl font-bold">{selectedLoai?.giaLoai.toLocaleString()} đ</span>
                         )}
-                        <span className='border border-red-500 text-red-500 rounded-full !py-0.5 !px-3'>-{selectedLoai?.khuyenMai}%</span>
                     </div>
 
                     <div className='!my-3'>
