@@ -8,6 +8,7 @@ import { useEffect } from "react";
 import axios from "axios";
 import { useAuth } from "../../../context/AuthContext";
 import Loading from "./Loading";
+import logo from '../../../assets/logo.png';
 
 function Header() {
     const { user, loading } = useAuth();
@@ -111,8 +112,13 @@ function Header() {
     return (
         <div className="header bg-emerald-600 min-w-7xl">
             <div className="flex justify-between items-center !py-4 !mx-auto max-w-7xl">
-                <div className="flex items-center gap-3 cursor-pointer">
-                    <div className="logo bg-emerald-500 w-12 h-12 rounded-full"></div>
+                <div className="flex items-center cursor-pointer gap-3 transition-transform duration-300 hover:scale-105" onClick={() => navigate("/")}>
+                    <div
+                        className="logo bg-emerald-500 w-12 h-12 rounded-full flex items-center justify-center overflow-hidden"
+                    >
+                        <img src={logo} alt="logo" className="w-10 h-10 object-contain" />
+                    </div>
+
                     <h1 className="text-white font-bold text-3xl">EcoLand</h1>
                 </div>
                 <div className="flex rounded-xl">

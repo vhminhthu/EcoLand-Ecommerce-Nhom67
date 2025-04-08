@@ -1,4 +1,4 @@
-import { BiEdit, BiUser, BiCopyAlt, BiBell, BiHeart } from "react-icons/bi";
+import { BiEdit, BiUser, BiCopyAlt, BiHeart } from "react-icons/bi";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
 
@@ -6,10 +6,8 @@ function AccountSidebar() {
     const navigate = useNavigate();
     const location = useLocation();
 
-  
     const [user, setUser] = useState({ tenNguoiDung: "Người dùng", anhND: "/default-avatar.png" });
 
-  
     useEffect(() => {
         const storedUser = localStorage.getItem("chat-user");
         if (storedUser) {

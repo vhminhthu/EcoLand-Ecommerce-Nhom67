@@ -6,6 +6,7 @@ import { MdOutlineLogout } from "react-icons/md";
 import { TbAccessPoint } from "react-icons/tb";
 import { useLocation } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
+import logo from '../../../assets/logo.png';
 
 function SellerSidebar() {
     const location = useLocation();
@@ -29,8 +30,14 @@ function SellerSidebar() {
     };
     
     return (
-        <div className='seller-sidebar bg-white h-fit shadow-xl !m-6 rounded-xl min-w-fit'>
-            <div className='logo-seller h-40'></div>
+        <div className='seller-sidebar bg-white h-fit shadow-xl !m-6 rounded-xl min-w-fit flex flex-col justify-center items-center gap-2'>
+            <div
+                className="logo bg-emerald-500 w-22 h-22 rounded-full flex items-center justify-center overflow-hidden mt-10 cursor-pointer transition-transform duration-300 hover:scale-105 hover:shadow-lg"
+                onClick={() => navigate("/")}
+            >
+                <img src={logo} alt="logo" className="w-20 h-20 object-contain" />
+            </div>
+            <h1 className="mb-10 text-emerald-500 font-bold text-2xl">EcoLand</h1>
 
             <ul>
                 {menuItems.map((item) => (
