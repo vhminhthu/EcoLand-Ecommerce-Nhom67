@@ -172,10 +172,18 @@ export const updateGiaoDich = async (req, res) => {
         const { id } = req.params;
         const idAdmin = req.admin._id;
         const { trangThai } = req.body;
-        console.log("idAdmin", idAdmin);
         const giaodich = await Giaodich.findById(id);
         if (!giaodich) {
             return res.status(404).json({ message: "Không tìm thấy giao dịch!" });
+        }
+        
+        if(trangThai === "Từ chối"){
+            const nguoiDung = await Nguoidung.findById(giaodich.idNguoiDungGD);
+            if (!nguoiDung) {
+                return res.status(404).json({ message: "Người dùng không tồn tại!" });
+            }
+            nguoiDung.soDuTien += giaodich.soTien;
+            await nguoiDung.save();
         }
 
         giaodich.trangThai = trangThai;

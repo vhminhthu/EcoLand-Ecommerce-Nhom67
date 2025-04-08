@@ -94,9 +94,7 @@ function CartPage() {
                 );
                 if (!sanPhamChiTiet) return total;
 
-                const phanLoai = sanPhamChiTiet.sanPhamChiTiet.find(sp => 
-                    sp.idSP?.phanLoai?.some(loai => loai.idPL === item.idLoai)
-                )?.idSP?.phanLoai?.find(loai => loai.idPL === item.idLoai);
+                const phanLoai = sanPhamChiTiet.sanPhamChiTiet.find(sp => sp.idSP?.phanLoai?.some(loai => loai.idPL === item.idLoai))?.idSP?.phanLoai?.find(loai => loai.idPL === item.idLoai);
                 if (!phanLoai) return total;
 
                 const { giaLoai, khuyenMai } = phanLoai;
@@ -163,7 +161,7 @@ function CartPage() {
                     className='bg-emerald-600 text-white px-15 py-3 hover:bg-emerald-700 cursor-pointer hover:font-bold'
                     onClick={handlePurchase}
                     disabled={selectedItems.length === 0}>
-                Mua hàng
+                    Mua hàng
                 </div>
             </div>
         </MainLayout>

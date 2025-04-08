@@ -44,14 +44,7 @@ cloudinary.config({
     api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-
-app.use(session({
-    secret: process.env.SESSION_SECRET,
-    resave: false,
-    saveUninitialized: false,
-}));
 app.use(passport.initialize());
-app.use(passport.session());
 
 
 app.use(morgan("tiny"));
